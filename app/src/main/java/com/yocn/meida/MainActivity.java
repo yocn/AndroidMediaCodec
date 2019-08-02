@@ -1,9 +1,14 @@
-package media.yocn.com.myapplication;
+package com.yocn.meida;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.yocn.media.R;
+
+/**
+ * @author yocn
+ */
 public class MainActivity extends Activity {
 
     // Used to load the 'native-lib' library on application startup.
