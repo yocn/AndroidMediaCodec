@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.yocn.media.R;
 import com.yocn.meida.camera.Camera2Provider;
@@ -19,6 +20,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         View rootView = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(rootView);
         initView(rootView);

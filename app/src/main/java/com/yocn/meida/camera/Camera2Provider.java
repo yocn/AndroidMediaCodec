@@ -8,10 +8,12 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CaptureFailure;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
@@ -32,12 +34,14 @@ public class Camera2Provider {
     private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
     private TextureView mTextureView;
-
+    CaptureRequest.Builder mPreviewBuilder;
     private Size previewSize;
 
     public Camera2Provider(Context mContext) {
         this.mContext = mContext;
-        mCameraHandler = new Handler();
+        HandlerThread handlerThread = new HandlerThread("camera");
+        handlerThread.start();
+        mCameraHandler = new Handler(handlerThread.getLooper());
     }
 
     public void initTexture(TextureView textureView) {
@@ -131,22 +135,45 @@ public class Camera2Provider {
         surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
         Surface previewSurface = new Surface(surfaceTexture);
         try {
-            final CaptureRequest.Builder builder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            builder.addTarget(previewSurface);
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface), new CameraCaptureSession.StateCallback() {
-                @Override
-                public void onConfigured(CameraCaptureSession session) {
-                    CaptureRequest request = builder.build();
-                }
-
-                @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
-
-                }
-            }, mCameraHandler);
+            mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_RECORD);
+            mPreviewBuilder.addTarget(previewSurface);
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface), mStateCallBack, mCameraHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
     }
+
+    private CameraCaptureSession.StateCallback mStateCallBack = new CameraCaptureSession.StateCallback() {
+        @Override
+        public void onConfigured(CameraCaptureSession session) {
+            CaptureRequest request = mPreviewBuilder.build();
+            try {
+                session.capture(request, mSessionCaptureCallback, mCameraHandler);
+                //返回结果
+                session.setRepeatingRequest(request, mSessionCaptureCallback, mCameraHandler);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onConfigureFailed(CameraCaptureSession session) {
+
+        }
+    };
+
+    //CameraCaptureSession.CaptureCallback监听拍照过程
+    private CameraCaptureSession.CaptureCallback mSessionCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+
+        @Override
+        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
+//            LogUtil.d("这里接受到数据" + result.toString());
+        }
+
+        @Override
+        public void onCaptureProgressed(CameraCaptureSession session, CaptureRequest request, CaptureResult partialResult) {
+
+        }
+    };
 
 }
