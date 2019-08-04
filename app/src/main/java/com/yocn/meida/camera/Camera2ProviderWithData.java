@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -32,7 +33,7 @@ import java.util.Arrays;
  * @Date 2019/8/2 10:58 AM
  * @ClassName Camera1
  */
-public class Camera2Provider {
+public class Camera2ProviderWithData {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
@@ -40,9 +41,10 @@ public class Camera2Provider {
     private TextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
     private Size previewSize;
+    private ImageReader mImageReader;
     private int REQUEST_CAMERA_CODE = 0;
 
-    public Camera2Provider(Activity mContext) {
+    public Camera2ProviderWithData(Activity mContext) {
         this.mContext = mContext;
         HandlerThread handlerThread = new HandlerThread("camera");
         handlerThread.start();
@@ -92,6 +94,9 @@ public class Camera2Provider {
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }
+                    mImageReader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(),
+                            ImageFormat.JPEG, 1);
+                    mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mCameraHandler);
                 }
             }
         } catch (CameraAccessException r) {
@@ -149,7 +154,7 @@ public class Camera2Provider {
             mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             mPreviewBuilder.addTarget(previewSurface);
 //            mPreviewBuilder.addTarget(mImageReader.getSurface());
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface), mStateCallBack, mCameraHandler);
+            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface()), mStateCallBack, mCameraHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }

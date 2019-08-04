@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Black.NoTitleBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@drawable/bg_window_drawable</item>
     </style>
 
 </resources>
