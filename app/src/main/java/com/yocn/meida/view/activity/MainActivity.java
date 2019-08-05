@@ -40,6 +40,7 @@ public class MainActivity extends Activity {
         List<JumpBean> list = new ArrayList<>();
         list.add(new JumpBean("PurePreviewActivity", PurePreviewActivity.class));
         list.add(new JumpBean("PreviewDataActivity", PreviewDataActivity.class));
+        list.add(new JumpBean("PreviewYUVDataActivity", PreviewYUVDataActivity.class));
         MainAdapter mMainAdapter = new MainAdapter(list);
         mMainAdapter.setmContext(this);
         mRecyclerView.setAdapter(mMainAdapter);

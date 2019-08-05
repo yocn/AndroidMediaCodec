@@ -53,4 +53,10 @@ public class PreviewDataActivity extends Activity {
             });
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        mCamera2Provider.closeCamera();
+        super.onDestroy();
+    }
 }

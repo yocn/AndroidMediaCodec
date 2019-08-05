@@ -25,4 +25,20 @@ public class BitmapUtil {
         origin.recycle();
         return newBM;
     }
+
+    public static byte[] convertColorToByte(int color[]) {
+        if (color == null) {
+            return null;
+        }
+
+        byte[] data = new byte[color.length * 3];
+        for (int i = 0; i < color.length; i++) {
+            data[i * 3] = (byte) (color[i] >> 16 & 0xff);
+            data[i * 3 + 1] = (byte) (color[i] >> 8 & 0xff);
+            data[i * 3 + 2] = (byte) (color[i] & 0xff);
+        }
+
+        return data;
+    }
+
 }
