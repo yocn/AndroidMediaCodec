@@ -25,7 +25,7 @@ public class PreviewDataActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_pure_preview, null);
+        View rootView = getLayoutInflater().inflate(R.layout.activity_preview_data, null);
         setContentView(rootView);
         initView(rootView);
         initData();

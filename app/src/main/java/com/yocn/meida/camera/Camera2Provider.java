@@ -40,7 +40,6 @@ public class Camera2Provider {
     private TextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
     private Size previewSize;
-    private int REQUEST_CAMERA_CODE = 0;
 
     public Camera2Provider(Activity mContext) {
         this.mContext = mContext;
@@ -54,9 +53,7 @@ public class Camera2Provider {
         textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-                LogUtil.d("w/h->" + width + "|" + height);
-                setupCamera(width, height);
-                openCamera();
+                openCamera(width, height);
             }
 
             @Override
@@ -76,7 +73,7 @@ public class Camera2Provider {
         });
     }
 
-    private void setupCamera(int width, int height) {
+    private void openCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         try {
             for (String cameraId : cameraManager.getCameraIdList()) {
@@ -94,77 +91,49 @@ public class Camera2Provider {
                     }
                 }
             }
-        } catch (CameraAccessException r) {
-
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private void openCamera() {
-        CameraManager cameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
-        try {
             String[] params = new String[]{Manifest.permission.CAMERA};
             if (!PermissionUtil.checkPermission(mContext, params)) {
                 PermissionUtil.requestPermission(mContext, "", 0, params);
             }
             cameraManager.openCamera(mCameraId, mStateCallback, mCameraHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
+        } catch (CameraAccessException r) {
+
         }
     }
-
-    private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
-        @Override
-        public void onImageAvailable(ImageReader reader) {
-//            Image image = reader.acquireNextImage();
-//            LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight());
-            LogUtil.d("aa");
-        }
-    };
 
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
             mCameraDevice = camera;
-            startPreview();
-            LogUtil.d("mStateCallback----onOpened---");
+            SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
+            surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
+            Surface previewSurface = new Surface(surfaceTexture);
+            try {
+                mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+                mPreviewBuilder.addTarget(previewSurface);
+                mCameraDevice.createCaptureSession(Arrays.asList(previewSurface), mStateCallBack, mCameraHandler);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void onDisconnected(CameraDevice camera) {
-            LogUtil.d("mStateCallback----onDisconnected---");
             mCameraDevice.close();
         }
 
         @Override
         public void onError(CameraDevice camera, int error) {
-            LogUtil.d("mStateCallback----onError---" + error);
             mCameraDevice.close();
         }
     };
-
-    private void startPreview() {
-        SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
-        surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
-        Surface previewSurface = new Surface(surfaceTexture);
-        try {
-            mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            mPreviewBuilder.addTarget(previewSurface);
-//            mPreviewBuilder.addTarget(mImageReader.getSurface());
-            mCameraDevice.createCaptureSession(Arrays.asList(previewSurface), mStateCallBack, mCameraHandler);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
-    }
 
     private CameraCaptureSession.StateCallback mStateCallBack = new CameraCaptureSession.StateCallback() {
         @Override
         public void onConfigured(CameraCaptureSession session) {
             CaptureRequest request = mPreviewBuilder.build();
             try {
-//                session.capture(request, mSessionCaptureCallback, mCameraHandler);
-                //返回结果
-                session.setRepeatingRequest(request, mSessionCaptureCallback, mCameraHandler);
+                session.setRepeatingRequest(request, null, mCameraHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
             }
@@ -172,20 +141,6 @@ public class Camera2Provider {
 
         @Override
         public void onConfigureFailed(CameraCaptureSession session) {
-
-        }
-    };
-
-    //CameraCaptureSession.CaptureCallback监听拍照过程
-    private CameraCaptureSession.CaptureCallback mSessionCaptureCallback = new CameraCaptureSession.CaptureCallback() {
-
-        @Override
-        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
-//            LogUtil.d("这里接受到数据" + result.toString());
-        }
-
-        @Override
-        public void onCaptureProgressed(CameraCaptureSession session, CaptureRequest request, CaptureResult partialResult) {
 
         }
     };
