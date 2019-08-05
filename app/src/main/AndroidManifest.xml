@@ -21,6 +21,8 @@
         </activity>
         <activity android:name="com.yocn.meida.view.activity.PurePreviewActivity">
         </activity>
+        <activity android:name="com.yocn.meida.view.activity.PreviewDataActivity">
+        </activity>
     </application>
 
 </manifest>

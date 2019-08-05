@@ -133,11 +133,13 @@ public class Camera2Provider {
         @Override
         public void onDisconnected(CameraDevice camera) {
             LogUtil.d("mStateCallback----onDisconnected---");
+            mCameraDevice.close();
         }
 
         @Override
         public void onError(CameraDevice camera, int error) {
             LogUtil.d("mStateCallback----onError---" + error);
+            mCameraDevice.close();
         }
     };
 
