@@ -17,6 +17,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
@@ -44,11 +45,17 @@ public class Camera2Provider {
 
     public Camera2Provider(Activity mContext) {
         this.mContext = mContext;
+        //创建了一个Thread来供Camera运行使用，使用HandlerThread而不使用Thread是因为HandlerThread给我们创建了Looper，不用我们自己创建了。
         HandlerThread handlerThread = new HandlerThread("camera");
         handlerThread.start();
         mCameraHandler = new Handler(handlerThread.getLooper());
     }
 
+    /**
+     * 设置预览view
+     *
+     * @param textureView 需要预览的TextureView
+     */
     public void initTexture(TextureView textureView) {
         mTextureView = textureView;
         textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
@@ -74,6 +81,12 @@ public class Camera2Provider {
         });
     }
 
+    /**
+     * surface ready的时候开启Camera
+     *
+     * @param width  surface的宽
+     * @param height surface的高
+     */
     private void openCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -87,7 +100,6 @@ public class Camera2Provider {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
                         previewSize = CameraUtil.getOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height);
-                        LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }
                 }
@@ -102,6 +114,9 @@ public class Camera2Provider {
         }
     }
 
+    /**
+     * 状态回调
+     */
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
@@ -134,6 +149,9 @@ public class Camera2Provider {
         public void onConfigured(CameraCaptureSession session) {
             CaptureRequest request = mPreviewBuilder.build();
             try {
+                //获取一个Image，one-shot
+//                session.capture(request, null, mCameraHandler);
+                //开启获取Image，repeat模式
                 session.setRepeatingRequest(request, null, mCameraHandler);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
@@ -146,6 +164,9 @@ public class Camera2Provider {
         }
     };
 
+    /**
+     * 记得关掉Camera
+     */
     public void closeCamera() {
         mCameraDevice.close();
     }
