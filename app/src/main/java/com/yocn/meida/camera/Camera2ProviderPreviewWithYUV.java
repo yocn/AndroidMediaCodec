@@ -6,7 +6,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
+import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -28,8 +30,13 @@ import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
 import com.yocn.meida.util.YuvToRGB;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
 
 /**
  * @Author yocn
@@ -124,24 +131,28 @@ public class Camera2ProviderPreviewWithYUV {
     }
 
     int index = 0;
+    boolean check = true;
     private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
 
             Image image = reader.acquireNextImage();
-            LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
-            ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
-            byte[] bytes = new byte[byteBuffer.remaining()];
-            byteBuffer.get(bytes);
+            if (index++ % 10 == 0) {
+                check = false;
+                byte[] i420bytes = CameraUtil.getDataFromImage(image, COLOR_FormatI420);
+                byte[] i420RorateBytes = BitmapUtil.rotateYUV420Degree90(i420bytes, image.getWidth(), image.getHeight());
+                byte[] nv21bytes = BitmapUtil.I420Tonv21(i420RorateBytes, image.getHeight(), image.getWidth());
+                //TODO check YUV数据是否正常
+//                BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
 
-//            YuvToRGB.I420ToRGB()
-            int[] ints = YuvToRGB.I420ToRGB(bytes, image.getWidth(), image.getHeight());
-            byte[] tar = BitmapUtil.convertColorToByte(ints);
+                Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, image.getHeight(), image.getWidth());
 
-            Bitmap temp = BitmapFactory.decodeByteArray(tar, 0, tar.length);
-            Bitmap newBitmap = BitmapUtil.rotateBitmap(temp, 90);
-            mOnGetBitmapInterface.getABitmap(newBitmap);
+                LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
+                if (mOnGetBitmapInterface != null) {
+                    mOnGetBitmapInterface.getABitmap(bitmap);
+                }
 
+            }
             image.close();
         }
     };

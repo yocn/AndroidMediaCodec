@@ -40,7 +40,20 @@ public class PreviewYUVDataActivity extends Activity {
     private void initData() {
         mCamera2Provider = new Camera2ProviderPreviewWithYUV(this);
         mCamera2Provider.initTexture(mPreviewView);
+        mCamera2Provider.setmOnGetBitmapInterface(onGetBitmapInterface);
     }
+
+    private Camera2ProviderPreviewWithYUV.OnGetBitmapInterface onGetBitmapInterface = new Camera2ProviderPreviewWithYUV.OnGetBitmapInterface() {
+        @Override
+        public void getABitmap(final Bitmap bitmap) {
+            mShowIv.post(new Runnable() {
+                @Override
+                public void run() {
+                    mShowIv.setImageBitmap(bitmap);
+                }
+            });
+        }
+    };
 
     @Override
     protected void onDestroy() {

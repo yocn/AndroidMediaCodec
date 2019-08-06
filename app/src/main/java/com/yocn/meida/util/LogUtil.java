@@ -13,4 +13,16 @@ public class LogUtil {
     public static void d(String msg) {
         Log.d(TAG, msg);
     }
+
+    public static void v(String msg) {
+        Log.d(TAG, msg);
+    }
+
+    public static void v(String... msg) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String s : msg) {
+            stringBuilder.append(s);
+        }
+        Log.d(TAG, stringBuilder.toString());
+    }
 }
