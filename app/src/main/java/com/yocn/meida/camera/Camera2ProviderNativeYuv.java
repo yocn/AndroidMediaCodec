@@ -4,11 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
-import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -28,12 +25,7 @@ import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
-import com.yocn.meida.util.YuvToRGB;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
@@ -41,12 +33,9 @@ import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
 /**
  * @Author yocn
  * @Date 2019/8/2 10:58 AM
- * @ClassName Camera2ProviderPreviewWithYUV
- * Camera2 两路预览：
- * 1、使用TextureView预览，直接输出。
- * 2、使用ImageReader获取数据，输出格式为ImageFormat.YUV_420_888，java端转化为NV21，再使用YuvImage生成Bitmap实现预览。
+ * @ClassName Camera1
  */
-public class Camera2ProviderPreviewWithYUV {
+public class Camera2ProviderNativeYuv {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
@@ -65,7 +54,7 @@ public class Camera2ProviderPreviewWithYUV {
         this.mOnGetBitmapInterface = mOnGetBitmapInterface;
     }
 
-    public Camera2ProviderPreviewWithYUV(Activity mContext) {
+    public Camera2ProviderNativeYuv(Activity mContext) {
         this.mContext = mContext;
         HandlerThread handlerThread = new HandlerThread("camera");
         handlerThread.start();

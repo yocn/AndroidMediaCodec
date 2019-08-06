@@ -42,7 +42,10 @@ import java.util.Arrays;
 /**
  * @Author yocn
  * @Date 2019/8/2 10:58 AM
- * @ClassName Camera1
+ * @ClassName Camera2ProviderWithData
+ * Camera2 两路预览：
+ * 1、使用TextureView预览，直接输出。
+ * 2、使用ImageReader获取数据，输出格式为ImageFormat.JPEG，直接生成bitmap生成预览。
  */
 public class Camera2ProviderWithData {
     private Activity mContext;
@@ -137,17 +140,15 @@ public class Camera2ProviderWithData {
         public void onImageAvailable(ImageReader reader) {
             Image image = reader.acquireNextImage();
 
-            if (index++ % 2 == 0) {
-                LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
-                ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
-                byte[] bytes = new byte[byteBuffer.remaining()];
-                byteBuffer.get(bytes);
+            LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
+            ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
+            byte[] bytes = new byte[byteBuffer.remaining()];
+            byteBuffer.get(bytes);
 
-                Bitmap temp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                Bitmap newBitmap = BitmapUtil.rotateBitmap(temp, 90);
-                mOnGetBitmapInterface.getABitmap(newBitmap);
+            Bitmap temp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            Bitmap newBitmap = BitmapUtil.rotateBitmap(temp, 90);
+            mOnGetBitmapInterface.getABitmap(newBitmap);
 
-            }
             image.close();
         }
     };

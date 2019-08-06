@@ -30,7 +30,8 @@ import java.util.Arrays;
 /**
  * @Author yocn
  * @Date 2019/8/2 10:58 AM
- * @ClassName Camera1
+ * @ClassName Camera2
+ * 使用Camera2，最基本API，直接输出到TextureView进行预览
  */
 public class Camera2Provider {
     private Activity mContext;
