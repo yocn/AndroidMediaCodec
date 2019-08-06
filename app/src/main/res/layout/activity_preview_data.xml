@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextureView
         android:id="@+id/tv_camera"
         android:layout_width="match_parent"
@@ -17,4 +16,18 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:background="@color/half"/>
+
+    <FrameLayout
+        android:id="@+id/fl_back"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/bg_back">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back_normal"/>
+    </FrameLayout>
 </RelativeLayout>

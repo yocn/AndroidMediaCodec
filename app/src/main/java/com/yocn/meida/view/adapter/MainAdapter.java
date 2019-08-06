@@ -2,10 +2,12 @@ package com.yocn.meida.view.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yocn.media.R;
@@ -22,6 +24,13 @@ import java.util.List;
 public class MainAdapter extends RecyclerView.Adapter<MainAdapter.VH> {
 
     private Context mContext;
+    private int[] colors = {R.color.color1, R.color.color2, R.color.color3
+            , R.color.color4, R.color.color5, R.color.color6
+            , R.color.color7, R.color.color8, R.color.color9};
+
+    private int[] textColor = {R.color.write, R.color.black, R.color.write
+            , R.color.black, R.color.write, R.color.write
+            , R.color.write, R.color.write, R.color.write};
 
     public void setmContext(Context mContext) {
         this.mContext = mContext;
@@ -30,10 +39,12 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.VH> {
     //② 创建ViewHolder
     public static class VH extends RecyclerView.ViewHolder {
         public final TextView title;
+        final RelativeLayout all;
 
         public VH(View v) {
             super(v);
             title = v.findViewById(R.id.title);
+            all = v.findViewById(R.id.all);
         }
     }
 
@@ -47,6 +58,9 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.VH> {
     @Override
     public void onBindViewHolder(VH holder, final int position) {
         holder.title.setText(mDatas.get(position).getShow() + "");
+        holder.title.setTextColor(mContext.getResources().getColor(textColor[position % textColor.length]));
+        holder.all.setBackgroundResource(colors[position % colors.length]);
+        LogUtil.d("onBindViewHolder-" + position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

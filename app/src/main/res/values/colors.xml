@@ -4,5 +4,16 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="write">#FFFFFF</color>
+    <color name="black">#000000</color>
     <color name="half">#7a000000</color>
+
+    <color name="color1">#8FBC8F</color>
+    <color name="color2">#FAEBD7</color>
+    <color name="color3">#F08080</color>
+    <color name="color4">#7FFFD4</color>
+    <color name="color5">#F0FFFF</color>
+    <color name="color6">#F5F5DC</color>
+    <color name="color7">#6495ED</color>
+    <color name="color8">#ADFF2F</color>
+    <color name="color9">#FF69B4</color>
 </resources>

@@ -14,7 +14,7 @@ import com.yocn.meida.camera.Camera2Provider;
  * @Date 2019/8/4 9:46 AM
  * @ClassName PurePreviewActivity
  */
-public class PurePreviewActivity extends Activity {
+public class PurePreviewActivity extends BaseCameraActivity {
     TextureView mPreviewView;
     Camera2Provider mCamera2Provider;
 
@@ -28,11 +28,14 @@ public class PurePreviewActivity extends Activity {
         initData();
     }
 
-    private void initView(View root) {
-        mPreviewView = findViewById(R.id.tv_camera);
+    @Override
+    protected void initView(View root) {
+        super.initView(root);
+        mPreviewView = root.findViewById(R.id.tv_camera);
     }
 
-    private void initData() {
+    @Override
+    protected void initData() {
         mCamera2Provider = new Camera2Provider(this);
         mCamera2Provider.initTexture(mPreviewView);
     }

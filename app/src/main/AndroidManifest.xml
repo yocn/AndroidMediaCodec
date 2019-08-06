@@ -28,6 +28,8 @@
         </activity>
         <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity">
         </activity>
+        <activity android:name="com.yocn.meida.view.activity.PreviewNativeYUVActivity">
+        </activity>
     </application>
 
 </manifest>
