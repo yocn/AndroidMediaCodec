@@ -29,7 +29,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainAdapter.VH> {
             , R.color.color7, R.color.color8, R.color.color9};
 
     private int[] textColor = {R.color.write, R.color.black, R.color.write
-            , R.color.black, R.color.write, R.color.write
+            , R.color.black, R.color.black, R.color.black
             , R.color.write, R.color.write, R.color.write};
 
     public void setmContext(Context mContext) {

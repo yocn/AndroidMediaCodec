@@ -145,6 +145,7 @@ public class Camera2ProviderPreviewWithYUV {
                 byte[] nv21bytes = BitmapUtil.I420Tonv21(i420RorateBytes, image.getHeight(), image.getWidth());
                 //TODO check YUV数据是否正常
 //                BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
+//                BitmapUtil.dumpFile("mnt/sdcard/2.yuv", nv21bytes);
 
                 Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, image.getHeight(), image.getWidth());
 

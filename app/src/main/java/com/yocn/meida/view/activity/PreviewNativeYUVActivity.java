@@ -1,14 +1,13 @@
 package com.yocn.meida.view.activity;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
+import com.yocn.meida.camera.Camera2ProviderNativeYuv;
 import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV;
 
 /**
@@ -19,7 +18,7 @@ import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV;
 public class PreviewNativeYUVActivity extends BaseCameraActivity {
     TextureView mPreviewView;
     ImageView mShowIv;
-    Camera2ProviderPreviewWithYUV mCamera2Provider;
+    Camera2ProviderNativeYuv mCamera2Provider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +38,12 @@ public class PreviewNativeYUVActivity extends BaseCameraActivity {
 
     @Override
     protected void initData() {
-        mCamera2Provider = new Camera2ProviderPreviewWithYUV(this);
+        mCamera2Provider = new Camera2ProviderNativeYuv(this);
         mCamera2Provider.initTexture(mPreviewView);
         mCamera2Provider.setmOnGetBitmapInterface(onGetBitmapInterface);
     }
 
-    private Camera2ProviderPreviewWithYUV.OnGetBitmapInterface onGetBitmapInterface = new Camera2ProviderPreviewWithYUV.OnGetBitmapInterface() {
+    private Camera2ProviderNativeYuv.OnGetBitmapInterface onGetBitmapInterface = new Camera2ProviderNativeYuv.OnGetBitmapInterface() {
         @Override
         public void getABitmap(final Bitmap bitmap) {
             mShowIv.post(new Runnable() {

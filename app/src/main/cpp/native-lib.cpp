@@ -2,7 +2,7 @@
 #include <string>
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_media_yocn_com_myapplication_MainActivity_stringFromJNI(
+Java_com_yocn_meida_codec_jni_stringFromJNI(
         JNIEnv *env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
