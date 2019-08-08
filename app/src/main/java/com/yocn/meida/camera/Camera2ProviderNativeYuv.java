@@ -97,8 +97,33 @@ public class Camera2ProviderNativeYuv {
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 //使用后置摄像头
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
+
+                    Integer maxFormats = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC);
+                    LogUtil.d("maxFormats->" + maxFormats);
+
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
+
+                        int[] outputFormats = map.getOutputFormats();
+                        for (int format : outputFormats) {
+                            //小米8后置摄像头：
+                            //{32,256,34,35,36,37}
+                            //32|0x20|RAW_SENSOR
+                            //256|0x100|JPEG
+                            //34|0x22|PRIVATE
+                            //35|0x23|YUV_420_888
+                            //36|0x24|RAW_PRIVATE
+                            //37|0x25|RAW10
+
+                            //华为P20 后置摄像头 三个，原来华为P20有三个后置Camera...：
+                            //32|0x20|RAW_SENSOR
+                            //256|0x100|JPEG
+                            //34|0x22|PRIVATE
+                            //35|0x23|YUV_420_888
+                            //其中第0号Camera有
+                            //1144402265|0x44363159|DEPTH16
+                            LogUtil.d("支持的格式format->" + format + " " + " cameraId->" + cameraId);
+                        }
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
 
                         previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);

@@ -4,11 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
-import android.graphics.YuvImage;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -28,12 +25,7 @@ import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
-import com.yocn.meida.util.YuvToRGB;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
@@ -131,29 +123,24 @@ public class Camera2ProviderPreviewWithYUV {
         }
     }
 
-    int index = 0;
-    boolean check = true;
     private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
-
-            Image image = reader.acquireNextImage();
-            if (index++ % 10 == 0) {
-                check = false;
-                byte[] i420bytes = CameraUtil.getDataFromImage(image, COLOR_FormatI420);
-                byte[] i420RorateBytes = BitmapUtil.rotateYUV420Degree90(i420bytes, image.getWidth(), image.getHeight());
-                byte[] nv21bytes = BitmapUtil.I420Tonv21(i420RorateBytes, image.getHeight(), image.getWidth());
-                //TODO check YUV数据是否正常
+            Image image = reader.acquireLatestImage();
+            if (image == null) {
+                return;
+            }
+            int width = image.getWidth(), height = image.getHeight();
+            byte[] i420bytes = CameraUtil.getDataFromImage(image, COLOR_FormatI420);
+            byte[] i420RorateBytes = BitmapUtil.rotateYUV420Degree90(i420bytes, width, height);
+            byte[] nv21bytes = BitmapUtil.I420Tonv21(i420RorateBytes, height, width);
+            //TODO check YUV数据是否正常
 //                BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
-//                BitmapUtil.dumpFile("mnt/sdcard/2.yuv", nv21bytes);
 
-                Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, image.getHeight(), image.getWidth());
-
-                LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
-                if (mOnGetBitmapInterface != null) {
-                    mOnGetBitmapInterface.getABitmap(bitmap);
-                }
-
+            Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, height, width);
+            LogUtil.d("image->" + width + "|" + height);
+            if (mOnGetBitmapInterface != null) {
+                mOnGetBitmapInterface.getABitmap(bitmap);
             }
             image.close();
         }

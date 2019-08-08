@@ -138,9 +138,9 @@ public class Camera2ProviderWithData {
     private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
-            Image image = reader.acquireNextImage();
+            Image image = reader.acquireLatestImage();
 
-            LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
+            LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat() + " planes.length->" + image.getPlanes().length);
             ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[byteBuffer.remaining()];
             byteBuffer.get(bytes);
