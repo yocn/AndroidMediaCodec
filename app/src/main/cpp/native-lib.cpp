@@ -1,6 +1,6 @@
 #include <jni.h>
 #include <string>
-//#include "libyuv/include/libyuv.h"
+#include "libyuv/include/libyuv.h"
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_yocn_meida_codec_jni_stringFromJNI(

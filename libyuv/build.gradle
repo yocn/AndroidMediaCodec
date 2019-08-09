@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 27
+        minSdkVersion 26
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -22,24 +22,12 @@ android {
 
     sourceSets.main {
         jni.srcDirs = []//disable automatic ndk-build call 屏蔽gradle自动生成Android.mk
-        jniLibs.srcDirs = ['libs']//这个脚本的意思是把app下的libs文件夹，当成原本/src/main下的jniLibs文件夹，这样就可以加载so库了。
+        jniLibs.srcDirs = ['jniLibs']//这个脚本的意思是把app下的libs文件夹，当成原本/src/main下的jniLibs文件夹，这样就可以加载so库了。
     }
 
     externalNativeBuild {
         ndkBuild {
-            path "jni/Android.mk"
-        }
-    }
-
-    android.libraryVariants.all { variant ->
-        def debugOrRelease = variant.name
-        tasks.all {
-            print "--------" + it.name
-            if (it.name.equalsIgnoreCase("bundle${debugOrRelease.capitalize()}Aar")) {
-                it.doLast {
-//                    copyAarFiles(project.name, debugOrRelease)
-                }
-            }
+            path "src/main/jni/Android.mk"
         }
     }
 

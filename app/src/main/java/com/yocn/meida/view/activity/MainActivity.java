@@ -2,13 +2,16 @@ package com.yocn.meida.view.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.WindowManager;
 
+import com.yocn.libyuv.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
+import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.view.adapter.MainAdapter;
 
 import java.util.ArrayList;
@@ -37,6 +40,8 @@ public class MainActivity extends Activity {
     }
 
     private void initData() {
+        String ss = new YUVTransUtil().stringFromJNI();
+        LogUtil.d("ss->" + ss);
         List<JumpBean> list = new ArrayList<>();
         list.add(new JumpBean("", PurePreviewActivity.class));
         list.add(new JumpBean("TextureView预览", PurePreviewActivity.class));
@@ -44,23 +49,23 @@ public class MainActivity extends Activity {
         list.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
         list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("1", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("2", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("3", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("4", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("5", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
-//        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("2", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("3", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("4", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("5", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
         MainAdapter mMainAdapter = new MainAdapter(list);
         mMainAdapter.setmContext(this);
         int spanCount;
         if (list.size() < 6) {
             spanCount = 2;
-        } else if (list.size() < 18) {
+        } else if (list.size() < 24) {
             spanCount = 3;
         } else {
             spanCount = 4;
