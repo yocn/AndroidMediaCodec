@@ -18,7 +18,7 @@ import com.yocn.meida.util.LogUtil;
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewDataActivity
  */
-public class BaseCameraActivity extends Activity implements View.OnClickListener {
+public class BaseCameraActivity extends BaseActivity implements View.OnClickListener {
     FrameLayout mBack;
 
     @Override
@@ -27,12 +27,14 @@ public class BaseCameraActivity extends Activity implements View.OnClickListener
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
     }
 
+    @Override
     protected void initView(View root) {
         LogUtil.d("initView");
         mBack = root.findViewById(R.id.fl_back);
         mBack.setOnClickListener(this);
     }
 
+    @Override
     protected void initData() {
     }
 

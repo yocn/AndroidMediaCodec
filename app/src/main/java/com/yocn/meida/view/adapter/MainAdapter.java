@@ -84,17 +84,17 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (type == TYPE_CONTENT) {
             VH holder = (VH) viewholder;
             realPosition = position - 1;
-            holder.title.setText(mDatas.get(position).getShow() + "");
-            holder.title.setTextColor(mContext.getResources().getColor(textColor[realPosition % textColor.length]));
-            holder.all.setBackgroundResource(colors[realPosition % colors.length]);
-            LogUtil.d("onBindViewHolder-" + realPosition);
+            holder.title.setText(mDatas.get(position - 1).getShow() + "");
+            holder.title.setTextColor(mContext.getResources().getColor(textColor[(position - 1) % textColor.length]));
+            holder.all.setBackgroundResource(colors[(position - 1) % colors.length]);
+            LogUtil.d("onBindViewHolder-" + (position - 1));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //item 点击事件
-                    LogUtil.d("click-" + realPosition);
+                    LogUtil.d("realPosition    click-" + (position - 1) + "    " + mDatas.get((position - 1)).getToClass() + " position-》" + (position - 1));
                     if (mContext != null) {
-                        mContext.startActivity(new Intent(mContext, mDatas.get(realPosition).getToClass()));
+                        mContext.startActivity(new Intent(mContext, mDatas.get(position - 1).getToClass()));
                     }
                 }
             });

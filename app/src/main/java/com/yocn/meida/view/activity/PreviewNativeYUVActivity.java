@@ -8,8 +8,6 @@ import android.widget.ImageView;
 
 import com.yocn.media.R;
 import com.yocn.meida.camera.Camera2ProviderNativeYuv;
-import com.yocn.meida.codec.jni;
-import com.yocn.meida.util.LogUtil;
 
 /**
  * @Author yocn
@@ -28,9 +26,6 @@ public class PreviewNativeYUVActivity extends BaseCameraActivity {
         setContentView(rootView);
         initView(rootView);
         initData();
-//        new jni();
-        jni m = new jni();
-        LogUtil.d(m.stringFromJNI());
     }
 
     @Override

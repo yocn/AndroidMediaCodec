@@ -43,12 +43,12 @@ public class MainActivity extends Activity {
         String ss = new YUVTransUtil().stringFromJNI();
         LogUtil.d("ss->" + ss);
         List<JumpBean> list = new ArrayList<>();
-        list.add(new JumpBean("", PurePreviewActivity.class));
+//        list.add(new JumpBean("", PurePreviewActivity.class));
         list.add(new JumpBean("TextureView预览", PurePreviewActivity.class));
         list.add(new JumpBean("预览并获取数据", PreviewDataActivity.class));
         list.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
         list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("1", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("FormatTransportActivity", FormatTransportActivity.class));
         list.add(new JumpBean("2", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("3", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("4", PreviewNativeYUVActivity.class));

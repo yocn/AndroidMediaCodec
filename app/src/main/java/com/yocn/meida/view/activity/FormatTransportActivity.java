@@ -1,5 +1,6 @@
 package com.yocn.meida.view.activity;
 
+import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +22,7 @@ import java.nio.ByteBuffer;
  * @Date 2019/8/4 9:46 AM
  * @ClassName PurePreviewActivity
  */
-public class FormatTransportActivity extends BaseCameraActivity {
+public class FormatTransportActivity extends BaseActivity {
     ImageView mShowIV;
     Button mClickBtn;
 
@@ -102,7 +103,7 @@ public class FormatTransportActivity extends BaseCameraActivity {
 
 
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 
