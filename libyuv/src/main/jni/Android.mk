@@ -8,3 +8,5 @@ LOCAL_MODULE    := YUVTrans
 LOCAL_SRC_FILES := yuvInterface/YUVTrans.cpp
 
 include $(BUILD_SHARED_LIBRARY)
+
+include $(call all-makefiles-under,$(LOCAL_PATH))
