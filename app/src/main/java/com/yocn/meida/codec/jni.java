@@ -1,5 +1,7 @@
 package com.yocn.meida.codec;
 
+import com.yocn.meida.util.LogUtil;
+
 /**
  * @Author yocn
  * @Date 2019/8/2 11:03 AM
@@ -15,4 +17,8 @@ public class jni {
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+
+    public void test(){
+        LogUtil.d(stringFromJNI());
+    }
 }

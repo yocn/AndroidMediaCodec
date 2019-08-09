@@ -6,6 +6,7 @@
     <color name="write">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="half">#7a000000</color>
+    <color name="trans">#00000000</color>
 
     <color name="color1">#8FBC8F</color>
     <color name="color2">#FAEBD7</color>

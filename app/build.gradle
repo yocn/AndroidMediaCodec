@@ -8,10 +8,9 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        externalNativeBuild {
-            cmake {
-                cppFlags ""
-            }
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi-v7a' //'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
         }
     }
     buildTypes {
@@ -20,11 +19,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
+
+    sourceSets {
+        main {
+            jni.srcDirs = []
+            jniLibs.srcDir 'src/main/libs'
         }
     }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/cpp/Android.mk'
+        }
+    }
+
 }
 
 dependencies {
