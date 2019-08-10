@@ -7,7 +7,7 @@ package com.yocn.libyuv;
  */
 public class YUVTransUtil {
     static {
-        System.loadLibrary("myuv");
+        System.loadLibrary("myYuv");
     }
 
     /**

@@ -48,8 +48,11 @@ LOCAL_SRC_FILES := \
     source/scale_neon64.cc      \
     source/video_common.cc
 
-#common_CFLAGS := -Wall -fexceptionss
-#common_CFLAGS := -Wall
+#[armeabi-v7a] Compile++ thumb: yuv_static <= compare.cc
+#   clang++: error: unknown argument: '-fexceptionss'
+#   make: *** [/Users/yocn/AndroidStudioProjects/AndroidMediaCodec/libyuv/build/intermediates/ndkBuild/debug/obj/local/armeabi-v7a/objs-debug/yuv_static/source/compare.o] Error 1
+# 不注释掉下面的会报错
+# common_CFLAGS := -Wall -fexceptionss
 
 LOCAL_CFLAGS += $(common_CFLAGS)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include

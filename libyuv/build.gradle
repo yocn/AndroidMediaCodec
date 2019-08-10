@@ -33,12 +33,6 @@ android {
 
 }
 
-task CopyToJniLibs(type: Copy, dependsOn: 'ndkBuild', description: 'copy the native libs to jniLibs') {
-    from fileTree(dir: file(buildDir.absolutePath + '/libs'), include: '**/*.so')
-    print "-------" + buildDir.absolutePath
-    into file('libs')
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
