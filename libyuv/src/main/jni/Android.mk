@@ -10,7 +10,7 @@ LOCAL_MODULE := myYuv
 LOCAL_C_INCLUDES := $(GLOBAL_C_INCLUDES)
 # jni调用libyuv
 LOCAL_SRC_FILES := YUVTrans.cpp
-# 引用Android JNI Log
+# 引用Android JNI Log 使用#include <android/log.h> 必须添加，否则会报error: undefined reference to '__android_log_print'
 LOCAL_LDLIBS    := -llog
 
 # 引用静态库libyuv_static.a

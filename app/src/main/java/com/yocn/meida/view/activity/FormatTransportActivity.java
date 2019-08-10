@@ -59,16 +59,16 @@ public class FormatTransportActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    private int w = 480, h = 640;
-
     YUVTransUtil mYUVTransUtil = new YUVTransUtil();
 
     private void test() {
         Bitmap image = null;
+//        int w = 480, h = 640;
+        int w = 1920, h = 1080;
         AssetManager am = getResources().getAssets();
         try {
             //读取assert 的文图
-            InputStream is = am.open("test.jpg");
+            InputStream is = am.open("show.jpeg");
             image = BitmapFactory.decodeStream(is);
 
             //将位图资源转为二进制数据，数据大小为w*h*4

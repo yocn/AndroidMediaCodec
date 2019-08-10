@@ -6,8 +6,9 @@
 
     <ImageView
         android:id="@+id/iv_show"
-        android:layout_width="480dp"
-        android:layout_height="640dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
 
     <Button
         android:id="@+id/btn_click"
@@ -15,6 +16,6 @@
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Click!"/>
+        android:text="Show Me!"/>
 
 </RelativeLayout>
