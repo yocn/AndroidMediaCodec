@@ -1,6 +1,9 @@
 #include <jni.h>
 #include <string>
 #include "libyuv/include/libyuv.h"
+#include <android/log.h>
+
+#define LOGV(...)   __android_log_print((int)ANDROID_LOG_INFO, "SOUNDTOUCH", __VA_ARGS__)
 
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_yocn_libyuv_YUVTransUtil_stringFromJNI(
@@ -8,16 +11,6 @@ Java_com_yocn_libyuv_YUVTransUtil_stringFromJNI(
         jobject /* this */) {
     std::string hello = "Hello from C++";
     return env->NewStringUTF(hello.c_str());
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_com_yocn_libyuv_YUVTransUtil_RotateI420(JNIEnv *env, jobject type, jbyteArray input_,
-                                             jbyteArray output_, jint in_width, jint in_height,
-                                             jint rotation) {
-    jbyte *srcData = env->GetByteArrayElements(input_, NULL);
-    jbyte *dstData = env->GetByteArrayElements(output_, NULL);
-
-//        libyuv::I420ToARGB()
 }
 
 /**
@@ -45,17 +38,20 @@ Java_com_yocn_libyuv_YUVTransUtil_ARGBToI420(JNIEnv *env, jobject thiz,
     uint8_t *uBuffer = (uint8_t *) env->GetByteArrayElements(dst_u, NULL);
     uint8_t *vBuffer = (uint8_t *) env->GetByteArrayElements(dst_v, NULL);
 
+    LOGV("ARGBToI420  1");
+
     libyuv::ARGBToI420(rgbBuffer, src_stride_argb, yBuffer, dst_stride_y, uBuffer, dst_stride_u,
                        vBuffer, dst_stride_v, width, height);
 
-    env->ReleaseByteArrayElements(src_argb, (jbyte *) rgbBuffer, NULL);
-    env->ReleaseByteArrayElements(src_argb, (jbyte *) yBuffer, NULL);
-    env->ReleaseByteArrayElements(src_argb, (jbyte *) uBuffer, NULL);
-    env->ReleaseByteArrayElements(src_argb, (jbyte *) vBuffer, NULL);
+    LOGV("ARGBToI420  2");
+//    env->ReleaseByteArrayElements(src_argb, (jbyte *) rgbBuffer, NULL);
+//    env->ReleaseByteArrayElements(src_argb, (jbyte *) yBuffer, NULL);
+//    env->ReleaseByteArrayElements(src_argb, (jbyte *) uBuffer, NULL);
+//    env->ReleaseByteArrayElements(src_argb, (jbyte *) vBuffer, NULL);
 
 }
-
-void Java_com_yocn_libyuv_YUVTransUtil_convertToArgb(JNIEnv *env, jobject thiz,
+extern "C" JNIEXPORT void JNICALL
+Java_com_yocn_libyuv_YUVTransUtil_convertToArgb(JNIEnv *env, jobject thiz,
                                                 jbyteArray src_frame, int src_size,
                                                 jbyteArray dst_argb, int dst_stride_argb,
                                                 int crop_x, int crop_y,
@@ -67,9 +63,12 @@ void Java_com_yocn_libyuv_YUVTransUtil_convertToArgb(JNIEnv *env, jobject thiz,
     uint8_t *yuvFrame = (uint8_t *) env->GetByteArrayElements(src_frame, 0);
     uint8_t *rgbBuffer = (uint8_t *) env->GetByteArrayElements(dst_argb, 0);
 
+    LOGV("convertToArgb  1");
     libyuv::ConvertToARGB(yuvFrame, src_size, rgbBuffer, dst_stride_argb, crop_x, crop_y, src_width,
                           src_height, crop_width, crop_height, libyuv::kRotate0,
                           libyuv::FOURCC_IYUV);
-    env->ReleaseByteArrayElements(src_frame, (jbyte *) yuvFrame, 0);
-    env->ReleaseByteArrayElements(dst_argb, (jbyte *) rgbBuffer, 0);
+
+    LOGV("convertToArgb  2");
+//    env->ReleaseByteArrayElements(src_frame, (jbyte *) yuvFrame, 0);
+//    env->ReleaseByteArrayElements(dst_argb, (jbyte *) rgbBuffer, 0);
 }
