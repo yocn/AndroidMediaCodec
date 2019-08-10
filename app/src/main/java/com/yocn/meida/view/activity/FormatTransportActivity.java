@@ -77,9 +77,12 @@ public class FormatTransportActivity extends BaseActivity {
             image.copyPixelsToBuffer(buf);
             byte[] byteArray = buf.array();
 
-            byte[] ybuffer = new byte[w * h];//用于保存y分量数据
-            byte[] ubuffer = new byte[w * h * 1 / 4];//用于保存u分量数据
-            byte[] vbuffer = new byte[w * h * 1 / 4];//用于保存v分量数据
+            //用于保存y分量数据
+            byte[] ybuffer = new byte[w * h];
+            //用于保存u分量数据
+            byte[] ubuffer = new byte[w * h * 1 / 4];
+            //用于保存v分量数据
+            byte[] vbuffer = new byte[w * h * 1 / 4];
             //将位图数据argb转换为yuv I420 转换后的数据分别保存在 ybuffer、ubuffer和vbuffer里面
             mYUVTransUtil.ARGBToI420(byteArray, w * 4, ybuffer, w, ubuffer, (w + 1) / 2, vbuffer, (w + 1) / 2, w, h);
 
