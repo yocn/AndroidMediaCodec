@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.yocn.libyuv.YUVTransUtil;
 import com.yocn.media.R;
+import com.yocn.meida.util.LogUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,6 +74,7 @@ public class FormatTransportActivity extends BaseActivity {
 
             //将位图资源转为二进制数据，数据大小为w*h*4
             int bytes = image.getByteCount();
+            LogUtil.d("image 的 bytes size->" + bytes);
             ByteBuffer buf = ByteBuffer.allocate(bytes);
             image.copyPixelsToBuffer(buf);
             byte[] byteArray = buf.array();
@@ -96,7 +98,6 @@ public class FormatTransportActivity extends BaseActivity {
             byte[] rgbbuffer = new byte[w * h * 4];
             //将上面的yuv I420 还原成argb数据
             mYUVTransUtil.convertToArgb(frameBuffer, w * h * 3 / 2, rgbbuffer, w * 4, 0, 0, w, h, w, h, 0, 0);
-
             //还原成位图
             Bitmap stitchBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             stitchBmp.copyPixelsFromBuffer(ByteBuffer.wrap(rgbbuffer));

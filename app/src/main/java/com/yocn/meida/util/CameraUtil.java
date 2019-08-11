@@ -5,6 +5,8 @@ import android.graphics.Rect;
 import android.media.Image;
 import android.util.Size;
 
+import com.yocn.meida.codec.YUVData;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +60,40 @@ public class CameraUtil {
             default:
         }
         return false;
+    }
+
+    public static YUVData getYUV(Image image) {
+        YUVData data = new YUVData();
+        int w = image.getWidth(), h = image.getHeight();
+        int i420Size = w * h * 3 / 2;
+        Image.Plane[] planes = image.getPlanes();
+        //
+        byte[] i420bytes = new byte[i420Size];
+        byte[] ySrcBytes = new byte[w * h];
+        byte[] uSrcBytes = new byte[w * h / 4];
+        byte[] vSrcBytes = new byte[w * h / 4];
+
+        //y分量
+        planes[0].getBuffer().get(ySrcBytes);
+        System.arraycopy(ySrcBytes, 0, i420bytes, 0, w * h);
+        //uv分量
+        int pixelStride = planes[1].getPixelStride();
+        if (pixelStride == 1) {
+            //YYYYYYYYUUVV
+            planes[1].getBuffer().get(uSrcBytes);
+            planes[2].getBuffer().get(vSrcBytes);
+        } else {
+            //YYYYYYYYUVUV
+            byte[] uvBytes =  new byte[w * h / 2];
+        }
+
+        LogUtil.d("-----------------wh->" + w + "/" + h);
+//        System.arraycopy(uSrcBytes, 0, i420bytes1, w * h, w * h / 4);
+//        System.arraycopy(vSrcBytes, 0, i420bytes1, w * h * 5 / 4, w * h / 4);
+//        BitmapUtil.dumpFile("mnt/sdcard/2.yuv", i420bytes1);
+
+
+        return data;
     }
 
     public static byte[] getDataFromImage(Image image, int colorFormat) {

@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
         list.add(new JumpBean("TextureView预览", PurePreviewActivity.class));
         list.add(new JumpBean("预览并获取数据", PreviewDataActivity.class));
         list.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
+        list.add(new JumpBean("Yuv数据获取 方式2", PreviewYUVDataActivity2.class));
         list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("libyuv做ARGB和I420转换", FormatTransportActivity.class));
         list.add(new JumpBean("2", PreviewNativeYUVActivity.class));

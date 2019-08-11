@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -22,23 +21,22 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
-import com.yocn.libyuv.YUVTransUtil;
 import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
 
 /**
  * @Author yocn
  * @Date 2019/8/2 10:58 AM
- * @ClassName Camera1
+ * @ClassName Camera2ProviderPreviewWithYUV
+ * Camera2 两路预览：
+ * 1、使用TextureView预览，直接输出。
+ * 2、使用ImageReader获取数据，输出格式为ImageFormat.YUV_420_888，java端转化为NV21，再使用YuvImage生成Bitmap实现预览。
  */
-public class Camera2ProviderNativeYuv {
+public class Camera2ProviderPreviewWithYUV2 {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
@@ -57,7 +55,7 @@ public class Camera2ProviderNativeYuv {
         this.mOnGetBitmapInterface = mOnGetBitmapInterface;
     }
 
-    public Camera2ProviderNativeYuv(Activity mContext) {
+    public Camera2ProviderPreviewWithYUV2(Activity mContext) {
         this.mContext = mContext;
         HandlerThread handlerThread = new HandlerThread("camera");
         handlerThread.start();
@@ -100,36 +98,16 @@ public class Camera2ProviderNativeYuv {
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 //使用后置摄像头
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
-
-                    Integer maxFormats = characteristics.get(CameraCharacteristics.REQUEST_MAX_NUM_OUTPUT_PROC);
-                    LogUtil.d("maxFormats->" + maxFormats);
-
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
-
-                        int[] outputFormats = map.getOutputFormats();
-                        for (int format : outputFormats) {
-                            //小米8后置摄像头：
-                            //{32,256,34,35,36,37}
-                            //32|0x20|RAW_SENSOR
-                            //256|0x100|JPEG
-                            //34|0x22|PRIVATE
-                            //35|0x23|YUV_420_888
-                            //36|0x24|RAW_PRIVATE
-                            //37|0x25|RAW10
-
-                            //华为P20 后置摄像头 三个，原来华为P20有三个后置Camera...：
-                            //32|0x20|RAW_SENSOR
-                            //256|0x100|JPEG
-                            //34|0x22|PRIVATE
-                            //35|0x23|YUV_420_888
-                            //其中第0号Camera有
-                            //1144402265|0x44363159|DEPTH16
-                            LogUtil.d("支持的格式format->" + format + " " + " cameraId->" + cameraId);
-                        }
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
-
+                        StringBuilder sizes = new StringBuilder();
+                        for (Size size : sizeMap) {
+                            sizes.append(size.getWidth()).append(" | ").append(size.getHeight()).append("     ");
+                        }
+                        LogUtil.d("size->" + sizes.toString());
                         previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
+//                        previewSize = new Size(176, 144);
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }
@@ -149,7 +127,6 @@ public class Camera2ProviderNativeYuv {
     }
 
     int index = 0;
-    boolean check = true;
     private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
@@ -157,71 +134,78 @@ public class Camera2ProviderNativeYuv {
             if (image == null) {
                 return;
             }
-            if (index++ % 100 == 10) {
-
+//            if ((index++ % 100) == 10) {
                 try {
-                    Bitmap bitmap = getBitmapFromI420(image);
-                    LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
+                    int width = image.getWidth(), height = image.getHeight();
+                    int w = width, h = height;
+                    int i420Size = w * h * 3 / 2;
+                    int picel1 = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
+                    int picel2 = ImageFormat.getBitsPerPixel(ImageFormat.YUV_420_888);
+//                    LogUtil.d("wh->" + w + "|" + h + "   picel1  " + picel1 + "|" + picel2);
+
+                    Image.Plane[] planes = image.getPlanes();
+                    //remaining0 = rowStride*(h-1)+w => 27632= 192*143+176
+                    int remaining0 = planes[0].getBuffer().remaining();
+                    int remaining1 = planes[1].getBuffer().remaining();
+                    //remaining2 = rowStride*(h/2-1)+w-1 =>  13807=  192*71+176-1
+                    int remaining2 = planes[2].getBuffer().remaining();
+                    //获取pixelStride，可能跟width相等，可能不相等
+                    int pixelStride = planes[2].getPixelStride();
+                    int rowOffest = planes[2].getRowStride();
+                    byte[] nv21 = new byte[i420Size];
+                    byte[] yRawSrcBytes = new byte[remaining0];
+                    byte[] uRawSrcBytes = new byte[remaining1];
+                    byte[] vRawSrcBytes = new byte[remaining2];
+                    planes[0].getBuffer().get(yRawSrcBytes);
+                    planes[1].getBuffer().get(uRawSrcBytes);
+                    planes[2].getBuffer().get(vRawSrcBytes);
+//                    BitmapUtil.dumpFile("mnt/sdcard/y1.yuv", yRawSrcBytes);
+//                    BitmapUtil.dumpFile("mnt/sdcard/u1.yuv", uRawSrcBytes);
+//                    BitmapUtil.dumpFile("mnt/sdcard/v1.yuv", vRawSrcBytes);
+//                    LogUtil.d("image->" + width + " | " + height
+//                            + " getPixelStride->" + planes[0].getPixelStride() + " | " + planes[1].getPixelStride() + " | " + planes[2].getPixelStride() + "\n"
+//                            + " remaining0 raw->" + remaining0 + " | " + remaining1 + " | " + remaining2 + "\n"
+//                            + " remaining->" + planes[0].getBuffer().remaining() + " | " + planes[1].getBuffer().remaining() + " | " + planes[2].getBuffer().remaining() + "\n"
+//                            + " getRowStride->" + planes[0].getRowStride() + " | " + planes[1].getRowStride() + " | " + planes[2].getRowStride()
+//                    );
+                    if (pixelStride == width) {
+                        //两者相等，说明每个YUV块紧密相连，可以直接拷贝
+                        System.arraycopy(yRawSrcBytes, 0, nv21, 0, rowOffest * h);
+                        System.arraycopy(vRawSrcBytes, 0, nv21, rowOffest * h, rowOffest * h / 2 - 1);
+                    } else {
+                        byte[] ySrcBytes = new byte[w * h];
+                        byte[] uSrcBytes = new byte[w * h / 2 - 1];
+                        byte[] vSrcBytes = new byte[w * h / 2 - 1];
+                        for (int row = 0; row < h; row++) {
+//                            LogUtil.d("rowOffest->" + rowOffest + " row->" + row + " raw->" + (rowOffest * row)
+//                                    + " tar->" + (w * row) + " yRawSrcBytes->" + yRawSrcBytes.length);
+                            System.arraycopy(yRawSrcBytes, rowOffest * row, ySrcBytes, w * row, w);
+
+                            if (row % 2 == 0) {
+                                if (row == h - 2) {
+                                    System.arraycopy(vRawSrcBytes, rowOffest * row / 2, vSrcBytes, w * row / 2, w - 1);
+                                } else {
+                                    System.arraycopy(vRawSrcBytes, rowOffest * row / 2, vSrcBytes, w * row / 2, w);
+                                }
+//                                LogUtil.d("rowOffest->" + (rowOffest * row / 2) + " back->" + (w * row / 2));
+                            }
+                        }
+                        System.arraycopy(ySrcBytes, 0, nv21, 0, w * h);
+                        System.arraycopy(vSrcBytes, 0, nv21, w * h, w * h / 2 - 1);
+                    }
+                    Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21, width, height);
+
                     if (mOnGetBitmapInterface != null) {
                         mOnGetBitmapInterface.getABitmap(bitmap);
                     }
                 } catch (Exception e) {
-                    LogUtil.d("e----->" + index);
                     e.printStackTrace();
+                    LogUtil.d(e.toString());
                 }
-
-            }
+//            }
             image.close();
         }
     };
-
-    YUVTransUtil mYUVTransUtil = new YUVTransUtil();
-
-
-    private Bitmap getBitmapFromI420(Image image) {
-        int w = image.getWidth(), h = image.getHeight();
-        int i420Size = w * h * 3 / 2;
-        int argbSize = w * h * 4;
-
-        Image.Plane[] planes = image.getPlanes();
-
-        byte[] ySrcBytes = new byte[w * h];
-        byte[] uSrcBytes = new byte[w * h / 4];
-        byte[] vSrcBytes = new byte[w * h / 4];
-        planes[0].getBuffer().get(ySrcBytes);
-        planes[1].getBuffer().get(uSrcBytes);
-        planes[2].getBuffer().get(vSrcBytes);
-        LogUtil.d("-----------------wh->" + w + "/" + h);
-        byte[] i420bytes1 = new byte[i420Size];
-        System.arraycopy(ySrcBytes, 0, i420bytes1, 0, w * h);
-        System.arraycopy(uSrcBytes, 0, i420bytes1, w * h, w * h / 4);
-        System.arraycopy(vSrcBytes, 0, i420bytes1, w * h * 5 / 4, w * h / 4);
-        BitmapUtil.dumpFile("mnt/sdcard/2.yuv", i420bytes1);
-
-        byte[] yBytes = new byte[ySrcBytes.length];
-        byte[] uBytes = new byte[uSrcBytes.length];
-        byte[] vBytes = new byte[vSrcBytes.length];
-
-        mYUVTransUtil.rotateYUV420(ySrcBytes, uSrcBytes, vSrcBytes, yBytes, uBytes, vBytes, w, h, 90);
-
-        byte[] i420bytes = new byte[i420Size];
-        System.arraycopy(yBytes, 0, i420bytes, 0, w * h);
-        System.arraycopy(uBytes, 0, i420bytes, w * h, w * h / 4);
-        System.arraycopy(vBytes, 0, i420bytes, w * h * 5 / 4, w * h / 4);
-
-
-        byte[] argbBytes = new byte[argbSize];
-
-        BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
-//        byte[] i420bytes = CameraUtil.getDataFromImage(image, COLOR_FormatI420);
-        LogUtil.d("-----------------h->" + h + " w->" + w);
-
-//        mYUVTransUtil.convertToArgb(i420bytes, i420Size, argbBytes, w * 4, 0, 0, w, h, w, h, 0, 0);
-        mYUVTransUtil.convertToArgb(i420bytes, i420Size, argbBytes, h * 4, 0, 0, h, w, h, w, 0, 0);
-        Bitmap bitmap = Bitmap.createBitmap(h, w, Bitmap.Config.ARGB_8888);
-        bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
-        return bitmap;
-    }
 
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override

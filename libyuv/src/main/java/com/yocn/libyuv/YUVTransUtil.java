@@ -29,4 +29,12 @@ public class YUVTransUtil {
                                      int crop_width, int crop_height,
                                      int rotation,
                                      int format);
+
+    public native void rotateYUV420(byte[] src_y,
+                                    byte[] src_u,
+                                    byte[] src_v,
+                                    byte[] dst_y,
+                                    byte[] dst_u,
+                                    byte[] dst_v,
+                                    int width, int height, int rotate);
 }
