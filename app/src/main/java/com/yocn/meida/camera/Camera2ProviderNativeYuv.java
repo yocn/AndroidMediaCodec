@@ -156,11 +156,8 @@ public class Camera2ProviderNativeYuv {
             if (image == null) {
                 return;
             }
-//            if (index++ % 100 == 10) {
-
             try {
                 Bitmap bitmap = getBitmapFromI420(image);
-                LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
                 if (mOnGetBitmapInterface != null) {
                     mOnGetBitmapInterface.getABitmap(bitmap);
                 }
@@ -168,8 +165,6 @@ public class Camera2ProviderNativeYuv {
                 LogUtil.d("e----->" + index);
                 e.printStackTrace();
             }
-
-//            }
             image.close();
         }
     };
@@ -189,11 +184,13 @@ public class Camera2ProviderNativeYuv {
         planes[2].getBuffer().get(vRawSrcBytes);
 
         byte[] argbBytes = new byte[w * h * 4];
+        byte[] argbRotateBytes = new byte[w * h * 4];
 
         YUVTransUtil.getInstance().NV21ToArgb(yRawSrcBytes, planes[0].getRowStride(), vRawSrcBytes, planes[2].getRowStride(),
-                argbBytes, w*4, w, h);
-        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
+                argbBytes, w * 4, w, h);
+        YUVTransUtil.getInstance().ARGBRotate(argbBytes, w * 4, argbRotateBytes, h * 4, w, h, 90);
+        Bitmap bitmap = Bitmap.createBitmap(h, w, Bitmap.Config.ARGB_8888);
+        bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbRotateBytes));
         return bitmap;
     }
 

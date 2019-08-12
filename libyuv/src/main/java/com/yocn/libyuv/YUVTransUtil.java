@@ -31,25 +31,29 @@ public class YUVTransUtil {
                                   byte[] dst_v, int dst_stride_v,
                                   int width, int height);
 
-    public native void convertToArgb(byte[] src_frame, int src_size,
-                                     byte[] dst_argb, int dst_stride_argb,
-                                     int crop_x, int crop_y,
-                                     int src_width, int src_height,
-                                     int crop_width, int crop_height,
-                                     int rotation,
-                                     int format);
+    public native void I420ToArgb(byte[] src_frame, int src_size,
+                                  byte[] dst_argb, int dst_stride_argb,
+                                  int crop_x, int crop_y,
+                                  int src_width, int src_height,
+                                  int crop_width, int crop_height,
+                                  int rotation,
+                                  int format);
 
-    public native void rotateYUV420(byte[] src_y,
-                                    byte[] src_u,
-                                    byte[] src_v,
-                                    byte[] dst_y,
-                                    byte[] dst_u,
-                                    byte[] dst_v,
-                                    int width, int height, int rotate);
+    public native void rotateI420(byte[] src_y,
+                                  byte[] src_u,
+                                  byte[] src_v,
+                                  byte[] dst_y,
+                                  byte[] dst_u,
+                                  byte[] dst_v,
+                                  int width, int height, int rotate);
 
     public native void NV21ToArgb(byte[] src_y, int src_stride_y,
                                   byte[] src_vu, int src_stride_vu,
                                   byte[] dst_argb, int dst_stride_argb,
                                   int width, int height);
+
+    public native void ARGBRotate(byte[] src_argb, int src_stride_argb,
+                                  byte[] dst_argb, int dst_stride_argb,
+                                  int width, int height, int rotate);
 
 }

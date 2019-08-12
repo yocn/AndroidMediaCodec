@@ -97,7 +97,7 @@ public class FormatTransportActivity extends BaseActivity {
             //用于保存将yuv数据转成argb数据
             byte[] rgbbuffer = new byte[w * h * 4];
             //将上面的yuv I420 还原成argb数据
-            mYUVTransUtil.convertToArgb(frameBuffer, w * h * 3 / 2, rgbbuffer, w * 4, 0, 0, w, h, w, h, 0, 0);
+            mYUVTransUtil.I420ToArgb(frameBuffer, w * h * 3 / 2, rgbbuffer, w * 4, 0, 0, w, h, w, h, 0, 0);
             //还原成位图
             Bitmap stitchBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             stitchBmp.copyPixelsFromBuffer(ByteBuffer.wrap(rgbbuffer));
