@@ -135,30 +135,43 @@ public class Camera2ProviderPreviewWithYUV2 {
                 return;
             }
 //            if ((index++ % 100) == 10) {
-                try {
-                    int width = image.getWidth(), height = image.getHeight();
-                    int w = width, h = height;
-                    int i420Size = w * h * 3 / 2;
-                    int picel1 = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
-                    int picel2 = ImageFormat.getBitsPerPixel(ImageFormat.YUV_420_888);
+            Bitmap bitmap = getBitmapFromImage(image);
+            try {
+                if (mOnGetBitmapInterface != null) {
+                    mOnGetBitmapInterface.getABitmap(bitmap);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                LogUtil.d(e.toString());
+            }
+//            }
+            image.close();
+        }
+    };
+
+    public Bitmap getBitmapFromImage(Image image) {
+        int w = image.getWidth(), h = image.getHeight();
+        int i420Size = w * h * 3 / 2;
+        int picel1 = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
+        int picel2 = ImageFormat.getBitsPerPixel(ImageFormat.YUV_420_888);
 //                    LogUtil.d("wh->" + w + "|" + h + "   picel1  " + picel1 + "|" + picel2);
 
-                    Image.Plane[] planes = image.getPlanes();
-                    //remaining0 = rowStride*(h-1)+w => 27632= 192*143+176
-                    int remaining0 = planes[0].getBuffer().remaining();
-                    int remaining1 = planes[1].getBuffer().remaining();
-                    //remaining2 = rowStride*(h/2-1)+w-1 =>  13807=  192*71+176-1
-                    int remaining2 = planes[2].getBuffer().remaining();
-                    //获取pixelStride，可能跟width相等，可能不相等
-                    int pixelStride = planes[2].getPixelStride();
-                    int rowOffest = planes[2].getRowStride();
-                    byte[] nv21 = new byte[i420Size];
-                    byte[] yRawSrcBytes = new byte[remaining0];
-                    byte[] uRawSrcBytes = new byte[remaining1];
-                    byte[] vRawSrcBytes = new byte[remaining2];
-                    planes[0].getBuffer().get(yRawSrcBytes);
-                    planes[1].getBuffer().get(uRawSrcBytes);
-                    planes[2].getBuffer().get(vRawSrcBytes);
+        Image.Plane[] planes = image.getPlanes();
+        //remaining0 = rowStride*(h-1)+w => 27632= 192*143+176
+        int remaining0 = planes[0].getBuffer().remaining();
+        int remaining1 = planes[1].getBuffer().remaining();
+        //remaining2 = rowStride*(h/2-1)+w-1 =>  13807=  192*71+176-1
+        int remaining2 = planes[2].getBuffer().remaining();
+        //获取pixelStride，可能跟width相等，可能不相等
+        int pixelStride = planes[2].getPixelStride();
+        int rowOffest = planes[2].getRowStride();
+        byte[] nv21 = new byte[i420Size];
+        byte[] yRawSrcBytes = new byte[remaining0];
+        byte[] uRawSrcBytes = new byte[remaining1];
+        byte[] vRawSrcBytes = new byte[remaining2];
+        planes[0].getBuffer().get(yRawSrcBytes);
+        planes[1].getBuffer().get(uRawSrcBytes);
+        planes[2].getBuffer().get(vRawSrcBytes);
 //                    BitmapUtil.dumpFile("mnt/sdcard/y1.yuv", yRawSrcBytes);
 //                    BitmapUtil.dumpFile("mnt/sdcard/u1.yuv", uRawSrcBytes);
 //                    BitmapUtil.dumpFile("mnt/sdcard/v1.yuv", vRawSrcBytes);
@@ -168,44 +181,37 @@ public class Camera2ProviderPreviewWithYUV2 {
 //                            + " remaining->" + planes[0].getBuffer().remaining() + " | " + planes[1].getBuffer().remaining() + " | " + planes[2].getBuffer().remaining() + "\n"
 //                            + " getRowStride->" + planes[0].getRowStride() + " | " + planes[1].getRowStride() + " | " + planes[2].getRowStride()
 //                    );
-                    if (pixelStride == width) {
-                        //两者相等，说明每个YUV块紧密相连，可以直接拷贝
-                        System.arraycopy(yRawSrcBytes, 0, nv21, 0, rowOffest * h);
-                        System.arraycopy(vRawSrcBytes, 0, nv21, rowOffest * h, rowOffest * h / 2 - 1);
-                    } else {
-                        byte[] ySrcBytes = new byte[w * h];
-                        byte[] uSrcBytes = new byte[w * h / 2 - 1];
-                        byte[] vSrcBytes = new byte[w * h / 2 - 1];
-                        for (int row = 0; row < h; row++) {
+        if (pixelStride == w) {
+            //两者相等，说明每个YUV块紧密相连，可以直接拷贝
+            System.arraycopy(yRawSrcBytes, 0, nv21, 0, rowOffest * h);
+            System.arraycopy(vRawSrcBytes, 0, nv21, rowOffest * h, rowOffest * h / 2 - 1);
+        } else {
+            byte[] ySrcBytes = new byte[w * h];
+            byte[] uSrcBytes = new byte[w * h / 2 - 1];
+            byte[] vSrcBytes = new byte[w * h / 2 - 1];
+            for (int row = 0; row < h; row++) {
 //                            LogUtil.d("rowOffest->" + rowOffest + " row->" + row + " raw->" + (rowOffest * row)
 //                                    + " tar->" + (w * row) + " yRawSrcBytes->" + yRawSrcBytes.length);
-                            System.arraycopy(yRawSrcBytes, rowOffest * row, ySrcBytes, w * row, w);
+                //源数组每隔 rowOffest 个bytes 拷贝 w 个bytes到目标数组
+                System.arraycopy(yRawSrcBytes, rowOffest * row, ySrcBytes, w * row, w);
 
-                            if (row % 2 == 0) {
-                                if (row == h - 2) {
-                                    System.arraycopy(vRawSrcBytes, rowOffest * row / 2, vSrcBytes, w * row / 2, w - 1);
-                                } else {
-                                    System.arraycopy(vRawSrcBytes, rowOffest * row / 2, vSrcBytes, w * row / 2, w);
-                                }
+                //y执行两次，uv执行一次
+                if (row % 2 == 0) {
+                    //最后一行需要减一
+                    if (row == h - 2) {
+                        System.arraycopy(vRawSrcBytes, rowOffest * row / 2, vSrcBytes, w * row / 2, w - 1);
+                    } else {
+                        System.arraycopy(vRawSrcBytes, rowOffest * row / 2, vSrcBytes, w * row / 2, w);
+                    }
 //                                LogUtil.d("rowOffest->" + (rowOffest * row / 2) + " back->" + (w * row / 2));
-                            }
-                        }
-                        System.arraycopy(ySrcBytes, 0, nv21, 0, w * h);
-                        System.arraycopy(vSrcBytes, 0, nv21, w * h, w * h / 2 - 1);
-                    }
-                    Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21, width, height);
-
-                    if (mOnGetBitmapInterface != null) {
-                        mOnGetBitmapInterface.getABitmap(bitmap);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    LogUtil.d(e.toString());
                 }
-//            }
-            image.close();
+            }
+            System.arraycopy(ySrcBytes, 0, nv21, 0, w * h);
+            System.arraycopy(vSrcBytes, 0, nv21, w * h, w * h / 2 - 1);
         }
-    };
+        Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21, w, h);
+        return bitmap;
+    }
 
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override

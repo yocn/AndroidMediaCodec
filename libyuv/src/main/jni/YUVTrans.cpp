@@ -38,12 +38,9 @@ Java_com_yocn_libyuv_YUVTransUtil_ARGBToI420(JNIEnv *env, jobject thiz,
     uint8_t *uBuffer = (uint8_t *) env->GetByteArrayElements(dst_u, NULL);
     uint8_t *vBuffer = (uint8_t *) env->GetByteArrayElements(dst_v, NULL);
 
-    LOGV("ARGBToI420  1");
-
     libyuv::ARGBToI420(rgbBuffer, src_stride_argb, yBuffer, dst_stride_y, uBuffer, dst_stride_u,
                        vBuffer, dst_stride_v, width, height);
 
-    LOGV("ARGBToI420  2");
 //    env->ReleaseByteArrayElements(src_argb, (jbyte *) rgbBuffer, NULL);
 //    env->ReleaseByteArrayElements(src_argb, (jbyte *) yBuffer, NULL);
 //    env->ReleaseByteArrayElements(src_argb, (jbyte *) uBuffer, NULL);
@@ -159,6 +156,40 @@ Java_com_yocn_libyuv_YUVTransUtil_convertToArgb(JNIEnv *env, jobject thiz,
 
 
     LOGV("convertToArgb  2");
+//    env->ReleaseByteArrayElements(src_frame, (jbyte *) yuvFrame, 0);
+//    env->ReleaseByteArrayElements(dst_argb, (jbyte *) rgbBuffer, 0);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_yocn_libyuv_YUVTransUtil_NV21ToArgb(JNIEnv *env, jobject thiz,
+                                             jbyteArray src_y, int src_stride_y,
+                                             jbyteArray src_vu, int src_stride_vu,
+                                             jbyteArray dst_argb, int dst_stride_argb,
+                                             int width,
+                                             int height) {
+
+    uint8_t *srcY = (uint8_t *) env->GetByteArrayElements(src_y, 0);
+    uint8_t *srcUv = (uint8_t *) env->GetByteArrayElements(src_vu, 0);
+    uint8_t *dstARGB = (uint8_t *) env->GetByteArrayElements(dst_argb, 0);
+
+    LOGV("NV21ToArgb  1");
+    /**
+     * int NV21ToARGB(const uint8_t* src_y,
+               int src_stride_y,
+               const uint8_t* src_vu,
+               int src_stride_vu,
+               uint8_t* dst_argb,
+               int dst_stride_argb,
+               int width,
+               int height);
+     */
+    libyuv::NV21ToARGB(srcY, src_stride_y,
+                       srcUv, src_stride_vu,
+                       dstARGB, dst_stride_argb,
+                       width, height
+    );
+
+    LOGV("NV21ToArgb  2");
 //    env->ReleaseByteArrayElements(src_frame, (jbyte *) yuvFrame, 0);
 //    env->ReleaseByteArrayElements(dst_argb, (jbyte *) rgbBuffer, 0);
 }

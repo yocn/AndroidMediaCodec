@@ -10,6 +10,15 @@ public class YUVTransUtil {
         System.loadLibrary("myYuv");
     }
 
+    static YUVTransUtil mYUVTransUtil;
+
+    public static YUVTransUtil getInstance() {
+        if (mYUVTransUtil == null) {
+            mYUVTransUtil = new YUVTransUtil();
+        }
+        return mYUVTransUtil;
+    }
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
@@ -37,4 +46,10 @@ public class YUVTransUtil {
                                     byte[] dst_u,
                                     byte[] dst_v,
                                     int width, int height, int rotate);
+
+    public native void NV21ToArgb(byte[] src_y, int src_stride_y,
+                                  byte[] src_vu, int src_stride_vu,
+                                  byte[] dst_argb, int dst_stride_argb,
+                                  int width, int height);
+
 }

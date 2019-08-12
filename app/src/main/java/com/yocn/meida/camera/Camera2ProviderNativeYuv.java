@@ -149,7 +149,6 @@ public class Camera2ProviderNativeYuv {
     }
 
     int index = 0;
-    boolean check = true;
     private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
         @Override
         public void onImageAvailable(ImageReader reader) {
@@ -157,68 +156,43 @@ public class Camera2ProviderNativeYuv {
             if (image == null) {
                 return;
             }
-            if (index++ % 100 == 10) {
+//            if (index++ % 100 == 10) {
 
-                try {
-                    Bitmap bitmap = getBitmapFromI420(image);
-                    LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
-                    if (mOnGetBitmapInterface != null) {
-                        mOnGetBitmapInterface.getABitmap(bitmap);
-                    }
-                } catch (Exception e) {
-                    LogUtil.d("e----->" + index);
-                    e.printStackTrace();
+            try {
+                Bitmap bitmap = getBitmapFromI420(image);
+                LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat());
+                if (mOnGetBitmapInterface != null) {
+                    mOnGetBitmapInterface.getABitmap(bitmap);
                 }
-
+            } catch (Exception e) {
+                LogUtil.d("e----->" + index);
+                e.printStackTrace();
             }
+
+//            }
             image.close();
         }
     };
 
-    YUVTransUtil mYUVTransUtil = new YUVTransUtil();
-
-
     private Bitmap getBitmapFromI420(Image image) {
         int w = image.getWidth(), h = image.getHeight();
         int i420Size = w * h * 3 / 2;
-        int argbSize = w * h * 4;
-
         Image.Plane[] planes = image.getPlanes();
+        //remaining0 = rowStride*(h-1)+w => 27632= 192*143+176
+        int remaining0 = planes[0].getBuffer().remaining();
+        //remaining2 = rowStride*(h/2-1)+w-1 =>  13807=  192*71+176-1
+        int remaining2 = planes[2].getBuffer().remaining();
+        //获取pixelStride，可能跟width相等，可能不相等
+        byte[] yRawSrcBytes = new byte[remaining0];
+        byte[] vRawSrcBytes = new byte[remaining2];
+        planes[0].getBuffer().get(yRawSrcBytes);
+        planes[2].getBuffer().get(vRawSrcBytes);
 
-        byte[] ySrcBytes = new byte[w * h];
-        byte[] uSrcBytes = new byte[w * h / 4];
-        byte[] vSrcBytes = new byte[w * h / 4];
-        planes[0].getBuffer().get(ySrcBytes);
-        planes[1].getBuffer().get(uSrcBytes);
-        planes[2].getBuffer().get(vSrcBytes);
-        LogUtil.d("-----------------wh->" + w + "/" + h);
-        byte[] i420bytes1 = new byte[i420Size];
-        System.arraycopy(ySrcBytes, 0, i420bytes1, 0, w * h);
-        System.arraycopy(uSrcBytes, 0, i420bytes1, w * h, w * h / 4);
-        System.arraycopy(vSrcBytes, 0, i420bytes1, w * h * 5 / 4, w * h / 4);
-        BitmapUtil.dumpFile("mnt/sdcard/2.yuv", i420bytes1);
+        byte[] argbBytes = new byte[w * h * 4];
 
-        byte[] yBytes = new byte[ySrcBytes.length];
-        byte[] uBytes = new byte[uSrcBytes.length];
-        byte[] vBytes = new byte[vSrcBytes.length];
-
-        mYUVTransUtil.rotateYUV420(ySrcBytes, uSrcBytes, vSrcBytes, yBytes, uBytes, vBytes, w, h, 90);
-
-        byte[] i420bytes = new byte[i420Size];
-        System.arraycopy(yBytes, 0, i420bytes, 0, w * h);
-        System.arraycopy(uBytes, 0, i420bytes, w * h, w * h / 4);
-        System.arraycopy(vBytes, 0, i420bytes, w * h * 5 / 4, w * h / 4);
-
-
-        byte[] argbBytes = new byte[argbSize];
-
-        BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
-//        byte[] i420bytes = CameraUtil.getDataFromImage(image, COLOR_FormatI420);
-        LogUtil.d("-----------------h->" + h + " w->" + w);
-
-//        mYUVTransUtil.convertToArgb(i420bytes, i420Size, argbBytes, w * 4, 0, 0, w, h, w, h, 0, 0);
-        mYUVTransUtil.convertToArgb(i420bytes, i420Size, argbBytes, h * 4, 0, 0, h, w, h, w, 0, 0);
-        Bitmap bitmap = Bitmap.createBitmap(h, w, Bitmap.Config.ARGB_8888);
+        YUVTransUtil.getInstance().NV21ToArgb(yRawSrcBytes, planes[0].getRowStride(), vRawSrcBytes, planes[2].getRowStride(),
+                argbBytes, w*4, w, h);
+        Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
         return bitmap;
     }
