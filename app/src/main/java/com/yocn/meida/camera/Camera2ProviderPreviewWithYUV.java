@@ -38,14 +38,13 @@ import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
  * 1、使用TextureView预览，直接输出。
  * 2、使用ImageReader获取数据，输出格式为ImageFormat.YUV_420_888，java端转化为NV21，再使用YuvImage生成Bitmap实现预览。
  */
-public class Camera2ProviderPreviewWithYUV {
+public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
     private TextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
-    private Size previewSize;
     private ImageReader mImageReader;
     private OnGetBitmapInterface mOnGetBitmapInterface;
 
@@ -103,8 +102,6 @@ public class Camera2ProviderPreviewWithYUV {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
-
-                        previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }

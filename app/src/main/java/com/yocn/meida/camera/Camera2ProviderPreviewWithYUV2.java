@@ -37,14 +37,13 @@ import java.util.Arrays;
  * 1、使用TextureView预览，直接输出。
  * 2、使用ImageReader获取数据，输出格式为ImageFormat.YUV_420_888，java端转化为NV21，再使用YuvImage生成Bitmap实现预览。
  */
-public class Camera2ProviderPreviewWithYUV2 {
+public class Camera2ProviderPreviewWithYUV2 extends BaseCameraProvider {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
     private TextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
-    private Size previewSize;
     private ImageReader mImageReader;
     private OnGetBitmapInterface mOnGetBitmapInterface;
 
@@ -107,9 +106,6 @@ public class Camera2ProviderPreviewWithYUV2 {
                             sizes.append(size.getWidth()).append(" | ").append(size.getHeight()).append("     ");
                         }
                         LogUtil.d("size->" + sizes.toString());
-                        previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
-//                        previewSize = new Size(176, 144);
-                        previewSize = new Size(480,640);
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }

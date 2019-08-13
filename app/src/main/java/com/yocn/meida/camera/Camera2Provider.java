@@ -34,14 +34,13 @@ import java.util.Arrays;
  * @ClassName Camera2
  * 使用Camera2，最基本API，直接输出到TextureView进行预览
  */
-public class Camera2Provider {
+public class Camera2Provider extends BaseCameraProvider{
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
     private TextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
-    private Size previewSize;
 
     public Camera2Provider(Activity mContext) {
         this.mContext = mContext;
@@ -99,7 +98,6 @@ public class Camera2Provider {
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
-                        previewSize = CameraUtil.getOptimalSize(map.getOutputSizes(SurfaceTexture.class), width, height);
                         mCameraId = cameraId;
                     }
                 }

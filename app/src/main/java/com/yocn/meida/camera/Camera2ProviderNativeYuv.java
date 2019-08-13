@@ -38,14 +38,13 @@ import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
  * @Date 2019/8/2 10:58 AM
  * @ClassName Camera1
  */
-public class Camera2ProviderNativeYuv {
+public class Camera2ProviderNativeYuv extends BaseCameraProvider {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
     private TextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
-    private Size previewSize;
     private ImageReader mImageReader;
     private OnGetBitmapInterface mOnGetBitmapInterface;
 
@@ -128,9 +127,6 @@ public class Camera2ProviderNativeYuv {
                             LogUtil.d("支持的格式format->" + format + " " + " cameraId->" + cameraId);
                         }
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
-
-//                        previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
-                        previewSize = new Size(480,640);
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }

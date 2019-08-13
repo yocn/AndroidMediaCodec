@@ -1,16 +1,21 @@
 package com.yocn.meida.view.activity;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 
 import com.yocn.libyuv.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
+import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.view.adapter.MainAdapter;
 
@@ -22,13 +27,21 @@ import java.util.List;
  */
 public class MainActivity extends Activity {
     RecyclerView mRecyclerView;
+    RelativeLayout mTopRL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//        getWindow().setBackgroundDrawableResource(R.color.write);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.TRANSPARENT);
+        window.setNavigationBarColor(Color.TRANSPARENT);
         View rootView = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(rootView);
         initView(rootView);
@@ -37,7 +50,10 @@ public class MainActivity extends Activity {
 
     private void initView(View root) {
         mRecyclerView = root.findViewById(R.id.rv_main);
+        mTopRL = root.findViewById(R.id.rl_top);
     }
+
+    private int currentY;
 
     private void initData() {
         String ss = new YUVTransUtil().stringFromJNI();
@@ -54,6 +70,9 @@ public class MainActivity extends Activity {
         list.add(new JumpBean("3", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("4", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("5", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
@@ -80,8 +99,39 @@ public class MainActivity extends Activity {
                                             }
         );
 
+        final int min = DisplayUtil.dip2px(this, 120);
+        final int max = DisplayUtil.dip2px(this, 160);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setAdapter(mMainAdapter);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                currentY += dy;
+//                LogUtil.d("currentY->" + currentY + " dy->" + dy + " show->" + show);
+                if (currentY < min) {
+                    mTopRL.setVisibility(View.GONE);
+                    DisplayUtil.setAndroidNativeLightStatusBar(MainActivity.this, false);
+                } else {
+                    mTopRL.setVisibility(View.VISIBLE);
+                    DisplayUtil.setAndroidNativeLightStatusBar(MainActivity.this, true);
+                    if (currentY < max) {
+                        int percent = (currentY - min) * 100 / (max - min);
+                        String color = DisplayUtil.getColor(percent);
+                        mTopRL.setBackgroundColor(Color.parseColor(color));
+//                        LogUtil.d("color->" + color + " percent->" + percent);
+                    }else{
+                        mTopRL.setBackgroundResource(R.color.gray);
+                    }
+
+                }
+            }
+        });
     }
 
 }

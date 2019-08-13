@@ -47,15 +47,13 @@ import java.util.Arrays;
  * 1、使用TextureView预览，直接输出。
  * 2、使用ImageReader获取数据，输出格式为ImageFormat.JPEG，直接生成bitmap生成预览。
  */
-public class Camera2ProviderWithData {
+public class Camera2ProviderWithData extends BaseCameraProvider {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
-    private Handler mMainHandler;
     private CameraDevice mCameraDevice;
     private TextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
-    private Size previewSize;
     private ImageReader mImageReader;
     private OnGetBitmapInterface mOnGetBitmapInterface;
 
@@ -72,7 +70,6 @@ public class Camera2ProviderWithData {
         HandlerThread handlerThread = new HandlerThread("camera");
         handlerThread.start();
         mCameraHandler = new Handler(handlerThread.getLooper());
-        mMainHandler = new Handler(mContext.getMainLooper());
     }
 
     public void initTexture(TextureView textureView) {
@@ -114,8 +111,6 @@ public class Camera2ProviderWithData {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
-
-                        previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }
