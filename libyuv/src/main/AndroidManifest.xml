@@ -1,8 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.yocn.libyuv">
-
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="17"/>
+<manifest
+    package="com.yocn.libyuv">
 
 </manifest>
