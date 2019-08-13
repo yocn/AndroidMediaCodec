@@ -126,7 +126,7 @@ Java_com_yocn_libyuv_YUVTransUtil_NV21ToArgb(JNIEnv *env, jobject thiz,
     uint8_t *dstARGB = (uint8_t *) env->GetByteArrayElements(dst_argb, 0);
 
     LOGV("NV21ToArgb");
-    libyuv::NV21ToARGB(srcY, src_stride_y,
+    libyuv::NV12ToARGB(srcY, src_stride_y,
                        srcUv, src_stride_vu,
                        dstARGB, dst_stride_argb,
                        width, height

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -108,6 +109,7 @@ public class Camera2ProviderPreviewWithYUV2 {
                         LogUtil.d("size->" + sizes.toString());
                         previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
 //                        previewSize = new Size(176, 144);
+                        previewSize = new Size(480,640);
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }
@@ -150,11 +152,11 @@ public class Camera2ProviderPreviewWithYUV2 {
     };
 
     public Bitmap getBitmapFromImage(Image image) {
+        long time1 = System.currentTimeMillis();
         int w = image.getWidth(), h = image.getHeight();
         int i420Size = w * h * 3 / 2;
         int picel1 = ImageFormat.getBitsPerPixel(ImageFormat.NV21);
         int picel2 = ImageFormat.getBitsPerPixel(ImageFormat.YUV_420_888);
-//                    LogUtil.d("wh->" + w + "|" + h + "   picel1  " + picel1 + "|" + picel2);
 
         Image.Plane[] planes = image.getPlanes();
         //remaining0 = rowStride*(h-1)+w => 27632= 192*143+176
@@ -172,15 +174,6 @@ public class Camera2ProviderPreviewWithYUV2 {
         planes[0].getBuffer().get(yRawSrcBytes);
         planes[1].getBuffer().get(uRawSrcBytes);
         planes[2].getBuffer().get(vRawSrcBytes);
-//                    BitmapUtil.dumpFile("mnt/sdcard/y1.yuv", yRawSrcBytes);
-//                    BitmapUtil.dumpFile("mnt/sdcard/u1.yuv", uRawSrcBytes);
-//                    BitmapUtil.dumpFile("mnt/sdcard/v1.yuv", vRawSrcBytes);
-//                    LogUtil.d("image->" + width + " | " + height
-//                            + " getPixelStride->" + planes[0].getPixelStride() + " | " + planes[1].getPixelStride() + " | " + planes[2].getPixelStride() + "\n"
-//                            + " remaining0 raw->" + remaining0 + " | " + remaining1 + " | " + remaining2 + "\n"
-//                            + " remaining->" + planes[0].getBuffer().remaining() + " | " + planes[1].getBuffer().remaining() + " | " + planes[2].getBuffer().remaining() + "\n"
-//                            + " getRowStride->" + planes[0].getRowStride() + " | " + planes[1].getRowStride() + " | " + planes[2].getRowStride()
-//                    );
         if (pixelStride == w) {
             //两者相等，说明每个YUV块紧密相连，可以直接拷贝
             System.arraycopy(yRawSrcBytes, 0, nv21, 0, rowOffest * h);
@@ -190,8 +183,6 @@ public class Camera2ProviderPreviewWithYUV2 {
             byte[] uSrcBytes = new byte[w * h / 2 - 1];
             byte[] vSrcBytes = new byte[w * h / 2 - 1];
             for (int row = 0; row < h; row++) {
-//                            LogUtil.d("rowOffest->" + rowOffest + " row->" + row + " raw->" + (rowOffest * row)
-//                                    + " tar->" + (w * row) + " yRawSrcBytes->" + yRawSrcBytes.length);
                 //源数组每隔 rowOffest 个bytes 拷贝 w 个bytes到目标数组
                 System.arraycopy(yRawSrcBytes, rowOffest * row, ySrcBytes, w * row, w);
 
@@ -203,14 +194,20 @@ public class Camera2ProviderPreviewWithYUV2 {
                     } else {
                         System.arraycopy(vRawSrcBytes, rowOffest * row / 2, vSrcBytes, w * row / 2, w);
                     }
-//                                LogUtil.d("rowOffest->" + (rowOffest * row / 2) + " back->" + (w * row / 2));
                 }
             }
             System.arraycopy(ySrcBytes, 0, nv21, 0, w * h);
             System.arraycopy(vSrcBytes, 0, nv21, w * h, w * h / 2 - 1);
         }
-        Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21, w, h);
-        return bitmap;
+        long time2 = System.currentTimeMillis();
+        Bitmap bm = BitmapUtil.getBitmapImageFromYUV(nv21, w, h);
+        long time3 = System.currentTimeMillis();
+        Matrix m = new Matrix();
+        m.setRotate(90, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+        Bitmap result = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), m, true);
+
+        LogUtil.d("1-2:" + (time2 - time1) + " 2-3:" + (time3 - time2));
+        return result;
     }
 
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {

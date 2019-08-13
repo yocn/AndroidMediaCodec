@@ -129,7 +129,8 @@ public class Camera2ProviderNativeYuv {
                         }
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
 
-                        previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
+//                        previewSize = CameraUtil.getOptimalSize(sizeMap, width, height);
+                        previewSize = new Size(480,640);
                         LogUtil.d("preview->" + previewSize.toString());
                         mCameraId = cameraId;
                     }
@@ -170,6 +171,7 @@ public class Camera2ProviderNativeYuv {
     };
 
     private Bitmap getBitmapFromI420(Image image) {
+        long time1 = System.currentTimeMillis();
         int w = image.getWidth(), h = image.getHeight();
         int i420Size = w * h * 3 / 2;
         Image.Plane[] planes = image.getPlanes();
@@ -186,11 +188,16 @@ public class Camera2ProviderNativeYuv {
         byte[] argbBytes = new byte[w * h * 4];
         byte[] argbRotateBytes = new byte[w * h * 4];
 
+        long time2 = System.currentTimeMillis();
         YUVTransUtil.getInstance().NV21ToArgb(yRawSrcBytes, planes[0].getRowStride(), vRawSrcBytes, planes[2].getRowStride(),
                 argbBytes, w * 4, w, h);
+        long time3 = System.currentTimeMillis();
         YUVTransUtil.getInstance().ARGBRotate(argbBytes, w * 4, argbRotateBytes, h * 4, w, h, 90);
+        long time4 = System.currentTimeMillis();
         Bitmap bitmap = Bitmap.createBitmap(h, w, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbRotateBytes));
+        long time5 = System.currentTimeMillis();
+        LogUtil.d("1-2:" + (time2 - time1) + " 2-3:" + (time3 - time2) + " 3-4:" + (time4 - time3) + " 4-5:" + (time5 - time4));
         return bitmap;
     }
 
