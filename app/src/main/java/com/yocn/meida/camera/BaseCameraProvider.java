@@ -8,5 +8,7 @@ import android.util.Size;
  * @ClassName BaseCameraProvider
  */
 public class BaseCameraProvider {
-    protected Size previewSize = new Size(408, 640);
+    public static Size previewSize = new Size(408, 640);
+    public static Size ScreenSize;
+    public static Size TextureViewSize;
 }

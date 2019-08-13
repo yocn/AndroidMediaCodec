@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Size;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,6 +16,7 @@ import android.widget.RelativeLayout;
 import com.yocn.libyuv.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
+import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.view.adapter.MainAdapter;
@@ -51,6 +53,12 @@ public class MainActivity extends Activity {
     private void initView(View root) {
         mRecyclerView = root.findViewById(R.id.rv_main);
         mTopRL = root.findViewById(R.id.rl_top);
+        mTopRL.post(() -> {
+            int height = getWindow().getDecorView().getMeasuredHeight();
+            int width = getWindow().getDecorView().getMeasuredWidth();
+            BaseCameraProvider.ScreenSize = new Size(width, height);
+            BaseCameraProvider.TextureViewSize = DisplayUtil.getTextureViewSize(BaseCameraProvider.previewSize);
+        });
     }
 
     private int currentY;
@@ -125,7 +133,7 @@ public class MainActivity extends Activity {
                         String color = DisplayUtil.getColor(percent);
                         mTopRL.setBackgroundColor(Color.parseColor(color));
 //                        LogUtil.d("color->" + color + " percent->" + percent);
-                    }else{
+                    } else {
                         mTopRL.setBackgroundResource(R.color.gray);
                     }
 

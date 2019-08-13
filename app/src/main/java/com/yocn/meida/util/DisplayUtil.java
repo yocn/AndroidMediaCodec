@@ -3,9 +3,12 @@ package com.yocn.meida.util;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.util.Size;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.yocn.meida.camera.BaseCameraProvider;
 
 /**
  * @Author yocn
@@ -63,5 +66,14 @@ public class DisplayUtil {
         }
 //            System.out.println(i + "%, " + hexStr.toUpperCase());
         return hexStr.toUpperCase();
+    }
+
+    public static Size getTextureViewSize(Size previewSize) {
+//      640/480=1920/x; -> x=1920*480/640;
+        int tWidth = BaseCameraProvider.ScreenSize.getHeight() * previewSize.getWidth() / previewSize.getHeight();
+        int tHeight = BaseCameraProvider.ScreenSize.getHeight();
+        LogUtil.d("BaseCameraProvider.ScreenSize.getHeight()：" + BaseCameraProvider.ScreenSize.getHeight() + " " + previewSize.getWidth() + "/" + previewSize.getHeight());
+        LogUtil.d("计算的宽高：" + tWidth + "/" + tHeight);
+        return new Size(tWidth, tHeight);
     }
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextureView
+    <com.yocn.meida.view.widget.MyTextureView
         android:id="@+id/tv_camera"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
@@ -14,7 +14,7 @@
         android:layout_width="100dp"
         android:layout_height="200dp"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
+        android:layout_marginTop="50dp"
         android:background="@color/half"/>
 
     <FrameLayout
