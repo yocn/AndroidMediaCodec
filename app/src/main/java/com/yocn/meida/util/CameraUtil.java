@@ -4,7 +4,9 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.media.Image;
 import android.util.Size;
+import android.view.TextureView;
 
+import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.codec.YUVData;
 
 import java.nio.ByteBuffer;
@@ -45,6 +47,11 @@ public class CameraUtil {
             });
         }
         return sizeMap[0];
+    }
+
+    public static void transTextureView(TextureView mPreviewView){
+        int minus = BaseCameraProvider.TextureViewSize.getWidth() - BaseCameraProvider.ScreenSize.getWidth();
+        mPreviewView.setTranslationX(-minus / 2);
     }
 
     public static final int COLOR_FormatI420 = 1;

@@ -38,6 +38,4 @@ public class MyTextureView extends TextureView {
         int realW = getMeasuredWidth();
         LogUtil.d("wh->" + realW + "/" + realH);
     }
-
-
 }

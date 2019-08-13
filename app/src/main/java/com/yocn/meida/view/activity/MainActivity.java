@@ -107,8 +107,8 @@ public class MainActivity extends Activity {
                                             }
         );
 
-        final int min = DisplayUtil.dip2px(this, 120);
-        final int max = DisplayUtil.dip2px(this, 160);
+        final int min = DisplayUtil.dip2px(this, 100);
+        final int max = DisplayUtil.dip2px(this, 140);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setAdapter(mMainAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

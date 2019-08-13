@@ -9,8 +9,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
+import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV;
 import com.yocn.meida.camera.Camera2ProviderWithData;
+import com.yocn.meida.util.CameraUtil;
 
 /**
  * @Author yocn
@@ -36,6 +38,7 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
     protected void initView(View root) {
         super.initView(root);
         mPreviewView = root.findViewById(R.id.tv_camera);
+        CameraUtil.transTextureView(mPreviewView);
         mShowIv = root.findViewById(R.id.iv_show);
     }
 
