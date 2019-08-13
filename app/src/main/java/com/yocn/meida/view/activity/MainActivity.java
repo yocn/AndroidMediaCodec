@@ -2,11 +2,7 @@ package com.yocn.meida.view.activity;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Size;
 import android.view.View;
 import android.view.Window;
@@ -23,6 +19,9 @@ import com.yocn.meida.view.adapter.MainAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * @author yocn
@@ -67,14 +66,14 @@ public class MainActivity extends Activity {
         String ss = new YUVTransUtil().stringFromJNI();
         LogUtil.d("ss->" + ss);
         List<JumpBean> list = new ArrayList<>();
-//        list.add(new JumpBean("", PurePreviewActivity.class));
-        list.add(new JumpBean("TextureView预览", PurePreviewActivity.class));
+//        list.add(new JumpBean("", PreviewPureActivity.class));
+        list.add(new JumpBean("TextureView预览", PreviewPureActivity.class));
         list.add(new JumpBean("预览并获取数据", PreviewDataActivity.class));
         list.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
         list.add(new JumpBean("Yuv数据获取 方式2", PreviewYUVDataActivity2.class));
         list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("libyuv做ARGB和I420转换", FormatTransportActivity.class));
-        list.add(new JumpBean("2", PreviewNativeYUVActivity.class));
+        list.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
         list.add(new JumpBean("3", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("4", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("5", PreviewNativeYUVActivity.class));
@@ -113,12 +112,12 @@ public class MainActivity extends Activity {
         mRecyclerView.setAdapter(mMainAdapter);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
             }
 
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 currentY += dy;
 //                LogUtil.d("currentY->" + currentY + " dy->" + dy + " show->" + show);

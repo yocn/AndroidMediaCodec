@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.yocn.meida.view.activity.PurePreviewActivity">
+        <activity android:name="com.yocn.meida.view.activity.PreviewPureActivity">
         </activity>
         <activity android:name="com.yocn.meida.view.activity.PreviewDataActivity">
         </activity>
@@ -33,6 +33,8 @@
         <activity android:name="com.yocn.meida.view.activity.PreviewNativeYUVActivity">
         </activity>
         <activity android:name="com.yocn.meida.view.activity.FormatTransportActivity">
+        </activity>
+        <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity">
         </activity>
     </application>
 

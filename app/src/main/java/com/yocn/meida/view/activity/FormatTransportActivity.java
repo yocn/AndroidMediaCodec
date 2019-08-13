@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 /**
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
- * @ClassName PurePreviewActivity
+ * @ClassName PreviewPureActivity
  */
 public class FormatTransportActivity extends BaseActivity {
     ImageView mShowIV;
