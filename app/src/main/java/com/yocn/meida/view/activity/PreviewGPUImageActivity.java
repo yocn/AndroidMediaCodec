@@ -46,14 +46,13 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
     @Override
     protected void initData() {
         mCamera2Provider = new Camera2ProviderPreviewWithGPUImage(this);
-        mCamera2Provider.setmOnGetBitmapInterface(new Camera2ProviderPreviewWithGPUImage.OnGetBitmapInterface() {
-            @Override
-            public void getABitmap(Bitmap bitmap, byte[] nv21, int w, int h) {
-                mShowIV.setImageBitmap(bitmap);
-                mPreviewView.updatePreviewFrame(nv21, w, h);
-            }
+        mCamera2Provider.setmOnGetBitmapInterface((bitmap, nv21, w, h) -> {
+            mShowIV.setImageBitmap(bitmap);
+            mPreviewView.updatePreviewFrame(nv21, w, h);
         });
         mCamera2Provider.initCamera();
+        mPreviewView.setRotation(90);
+        mPreviewView.setRenderMode(GPUImageView.RENDERMODE_CONTINUOUSLY);
     }
 
     @Override
