@@ -19,7 +19,7 @@ import com.yocn.meida.util.LogUtil;
  * @ClassName PreviewDataActivity
  */
 public class BaseCameraActivity extends BaseActivity implements View.OnClickListener {
-    FrameLayout mBack;
+    ImageView mBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class BaseCameraActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void initView(View root) {
         LogUtil.d("initView");
-        mBack = root.findViewById(R.id.fl_back);
+        mBack = root.findViewById(R.id.iv_back);
         mBack.setOnClickListener(this);
     }
 
@@ -46,7 +46,7 @@ public class BaseCameraActivity extends BaseActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.fl_back:
+            case R.id.iv_back:
                 LogUtil.d("finish");
                 finish();
                 break;

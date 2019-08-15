@@ -7,4 +7,14 @@
         <item name="android:windowBackground">@drawable/bg_window_drawable</item>
     </style>
 
+    <!--自定义seekbarstyle-->
+    <style name="CustomSeekbarStyle">
+        <item name="android:maxHeight">8dp</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">@color/colorAccent</item>
+        <item name="android:progressDrawable">@drawable/seekbar_progress_drawable</item>
+        <item name="android:minHeight">8dp</item>
+        <item name="android:thumb">@drawable/seekbar_thumb_drawable</item>
+    </style>
+
 </resources>

@@ -17,17 +17,32 @@
         android:layout_marginTop="50dp"
         android:background="@color/half"/>
 
-    <FrameLayout
-        android:id="@+id/fl_back"
+
+    <ImageView
+        android:id="@+id/iv_back"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="50dp"
-        android:background="@drawable/bg_back">
+        android:background="@drawable/bg_back"
+        android:src="@drawable/icon_back_normal"/>
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_back_normal"/>
-    </FrameLayout>
+    <Button
+        android:id="@+id/btn_select"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/half"
+        android:text="选择Filter"
+        android:textColor="@color/write"/>
+
+    <SeekBar
+        android:id="@+id/sk"
+        style="@style/CustomSeekbarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btn_select"
+        android:layout_margin="10dp"
+        android:padding="10dp"/>
 </RelativeLayout>
