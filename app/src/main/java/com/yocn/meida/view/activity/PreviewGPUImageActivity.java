@@ -1,11 +1,14 @@
 package com.yocn.meida.view.activity;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
@@ -13,9 +16,14 @@ import com.yocn.media.R;
 import com.yocn.meida.camera.Camera2Provider;
 import com.yocn.meida.camera.Camera2ProviderPreviewWithGPUImage;
 import com.yocn.meida.util.CameraUtil;
+import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.GPUImageFilterTools;
+import com.yocn.meida.view.adapter.GPUImageFilterAdapter;
 
 import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageView;
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageFilter;
@@ -32,6 +40,9 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
     GPUImageView mPreviewView;
     ImageView mShowIV;
     SeekBar mSeekBbar;
+    Button mSelectFilterBtn;
+    GPUImageFilterAdapter mGPUImageFilterAdapter;
+    RecyclerView mRecyclerView;
     Camera2ProviderPreviewWithGPUImage mCamera2Provider;
 
     @Override
@@ -50,20 +61,37 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
         mPreviewView = root.findViewById(R.id.tv_camera);
         mShowIV = root.findViewById(R.id.iv_show);
         mSeekBbar = findViewById(R.id.sk);
-        root.findViewById(R.id.btn_select).setOnClickListener(this);
+        mRecyclerView = root.findViewById(R.id.rv_gpuimage);
+        mSelectFilterBtn = root.findViewById(R.id.btn_select);
+        mSelectFilterBtn.setOnClickListener(this);
         mSeekBbar.setOnSeekBarChangeListener(onSeekBarChangeListener);
     }
 
     @Override
     protected void initData() {
+        endY = -DisplayUtil.dip2px(this, 290);
         mCamera2Provider = new Camera2ProviderPreviewWithGPUImage(this);
         mCamera2Provider.setmOnGetBitmapInterface((bitmap, nv21, w, h) -> {
-            mShowIV.setImageBitmap(bitmap);
-            mPreviewView.updatePreviewFrame(nv21, w, h);
+            mShowIV.post(() -> {
+                mShowIV.setImageBitmap(bitmap);
+                mPreviewView.updatePreviewFrame(nv21, w, h);
+            });
         });
         mCamera2Provider.initCamera();
         mPreviewView.setRotation(Rotation.ROTATION_90);
         mPreviewView.setRenderMode(GPUImageView.RENDERMODE_CONTINUOUSLY);
+        GPUImageFilterTools.FilterList list = GPUImageFilterTools.INSTANCE.getFilters();
+        mGPUImageFilterAdapter = new GPUImageFilterAdapter(list.getNames());
+        mGPUImageFilterAdapter.setmContext(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(RecyclerView.VERTICAL);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(mGPUImageFilterAdapter);
+        mGPUImageFilterAdapter.setSelectListener(position -> {
+            GPUImageFilter filter = GPUImageFilterTools.INSTANCE.createFilterForType(PreviewGPUImageActivity.this, list.getFilters().get(position));
+            switchFilter(filter);
+        });
+        initAnim();
     }
 
     @Override
@@ -88,16 +116,34 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.btn_select:
-                GPUImageFilterTools.INSTANCE.showDialog(this, new Function1<GPUImageFilter, Unit>() {
-                    @Override
-                    public Unit invoke(GPUImageFilter gpuImageFilter) {
-                        switchFilter(gpuImageFilter);
-                        return null;
-                    }
-                });
+                exeAnim();
                 break;
             default:
         }
+    }
+
+    boolean isShow = false;
+    ObjectAnimator translationYDown;
+    ObjectAnimator translationYUp;
+    int startY = 0, endY = 0;
+    int duration = 200;
+
+    private void initAnim() {
+        translationYUp = ObjectAnimator.ofFloat(mRecyclerView, "translationY", endY, startY);
+        translationYUp.setDuration(duration);
+        translationYDown = ObjectAnimator.ofFloat(mRecyclerView, "translationY", startY, endY);
+        translationYDown.setDuration(duration);
+    }
+
+    private void exeAnim() {
+        if (isShow) {
+            mSelectFilterBtn.setText("打开选择Filter面板");
+            translationYUp.start();
+        } else {
+            mSelectFilterBtn.setText("关闭选择Filter面板");
+            translationYDown.start();
+        }
+        isShow = !isShow;
     }
 
     SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -118,7 +164,6 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
     };
 
     GPUImageFilterTools.FilterAdjuster mFilterAdjuster;
-
 
     private void switchFilter(GPUImageFilter filter) {
         mPreviewView.setFilter(filter);

@@ -34,15 +34,24 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@color/half"
-        android:text="选择Filter"
+        android:text="打开选择Filter面板"
         android:textColor="@color/write"/>
 
     <SeekBar
         android:id="@+id/sk"
         style="@style/CustomSeekbarStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_above="@id/btn_select"
         android:layout_margin="10dp"
         android:padding="10dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_gpuimage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="-200dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/half"/>
+
 </RelativeLayout>
