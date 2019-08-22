@@ -9,7 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
-import com.yocn.libyuv.YUVTransUtil;
+import com.yocn.libnative.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.camera.BaseCameraProvider;

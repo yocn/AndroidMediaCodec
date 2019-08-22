@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -22,16 +21,12 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
-import com.yocn.libyuv.YUVTransUtil;
-import com.yocn.meida.util.BitmapUtil;
-import com.yocn.meida.util.CameraUtil;
+import com.yocn.libnative.YUVTransUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-
-import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
 
 /**
  * @Author yocn

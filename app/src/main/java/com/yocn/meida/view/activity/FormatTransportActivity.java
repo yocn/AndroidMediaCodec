@@ -1,6 +1,5 @@
 package com.yocn.meida.view.activity;
 
-import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.yocn.libyuv.YUVTransUtil;
+import com.yocn.libnative.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.util.LogUtil;
 

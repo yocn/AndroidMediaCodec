@@ -1,1 +1,1 @@
-include ':app', ':libyuv', ':GPUImage'
+include ':app', ':libNative', ':GPUImage'
