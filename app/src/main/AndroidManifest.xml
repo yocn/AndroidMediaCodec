@@ -36,6 +36,8 @@
         </activity>
         <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity">
         </activity>
+        <activity android:name="com.yocn.meida.view.activity.TestScrollActivity">
+        </activity>
     </application>
 
 </manifest>

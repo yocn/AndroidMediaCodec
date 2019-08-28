@@ -5,11 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/iv_bg"
+
+    <com.yocn.meida.view.widget.SquareRelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bg"/>
+        android:layout_height="match_parent">
+
+        <!--<VideoView-->
+        <!--android:id="@+id/vv"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"/>-->
+        <ImageView
+            android:id="@+id/iv_bg"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg"/>
+    </com.yocn.meida.view.widget.SquareRelativeLayout>
 
 </FrameLayout>
