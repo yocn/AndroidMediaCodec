@@ -31,11 +31,11 @@ public class SquareRelativeLayout extends RelativeLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//        //得到默认测量规则下测量到的宽度
-//        int measuredWidth = getMeasuredWidth();
-//        //得到默认测量规则下测量到的高度
-//        int measuredHeight = getMeasuredHeight();
-//        LogUtil.d("w/h->" + measuredWidth + "/" + measuredHeight);
+        //得到默认测量规则下测量到的宽度
+        int measuredWidth = getMeasuredWidth();
+        //得到默认测量规则下测量到的高度
+        int measuredHeight = getMeasuredHeight();
+        LogUtil.d("w/h->" + measuredWidth + "/" + measuredHeight);
 //        setMeasuredDimension(measuredWidth, measuredWidth);
         super.onMeasure(widthMeasureSpec, widthMeasureSpec);
     }

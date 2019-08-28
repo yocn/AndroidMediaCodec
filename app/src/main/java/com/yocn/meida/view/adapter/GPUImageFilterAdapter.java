@@ -87,7 +87,6 @@ public class GPUImageFilterAdapter extends RecyclerView.Adapter<RecyclerView.Vie
             holder.title.setText(mDatas.get(position));
             holder.title.setTextColor(mContext.getResources().getColor(textColor[(position) % textColor.length]));
             holder.all.setBackgroundResource(colors[(position) % colors.length]);
-            LogUtil.d("onBindViewHolder-" + (position));
             holder.itemView.setOnClickListener(v -> {
                 //item 点击事件
                 LogUtil.d("realPosition    click-" + (position) + "    " + mDatas.get((position)) + " position-》" + (position));

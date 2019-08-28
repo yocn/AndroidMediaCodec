@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
+import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.view.adapter.MainAdapter;
 
 import java.util.List;
@@ -53,13 +54,6 @@ public class DampingRecyclerView extends LinearLayout {
         MainAdapter mMainAdapter = new MainAdapter(data);
         mMainAdapter.setmContext(mContext);
         int spanCount = 2;
-//        if (data.size() < 6) {
-//            spanCount = 2;
-//        } else if (data.size() < 24) {
-//            spanCount = 3;
-//        } else {
-//            spanCount = 4;
-//        }
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, spanCount);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                                                 @Override
@@ -75,6 +69,10 @@ public class DampingRecyclerView extends LinearLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int mode = MeasureSpec.getMode(heightMeasureSpec);
+        int size = MeasureSpec.getSize(heightMeasureSpec);
+        LogUtil.d("UNSPECIFIED->" + MeasureSpec.UNSPECIFIED + " EXACTLY->" + MeasureSpec.EXACTLY + " AT_MOST->" + MeasureSpec.AT_MOST);
+        LogUtil.d("mode->" + mode + " size->" + size);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 

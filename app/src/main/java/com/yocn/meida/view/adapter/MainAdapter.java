@@ -120,7 +120,6 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.title.setText(mDatas.get(position - 1).getShow() + "");
             holder.title.setTextColor(mContext.getResources().getColor(textColor[(position - 1) % textColor.length]));
             holder.all.setBackgroundResource(colors[(position - 1) % colors.length]);
-            LogUtil.d("onBindViewHolder-" + (position - 1));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
