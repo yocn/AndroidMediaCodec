@@ -44,7 +44,8 @@ public class DampingRecyclerView extends LinearLayout {
     }
 
     private void initView() {
-        mRecyclerView = (RecyclerView) LayoutInflater.from(mContext).inflate(R.layout.view_recyclerview, null);
+//        mRecyclerView = (RecyclerView) LayoutInflater.from(mContext).inflate(R.layout.view_recyclerview, null);
+        mRecyclerView = (RecyclerView) LayoutInflater.from(mContext).inflate(R.layout.view_recyclerview, this, false);
         addView(mRecyclerView);
         initData();
     }
@@ -53,7 +54,7 @@ public class DampingRecyclerView extends LinearLayout {
         List<JumpBean> data = MainAdapter.getDataList();
         MainAdapter mMainAdapter = new MainAdapter(data);
         mMainAdapter.setmContext(mContext);
-        int spanCount = 2;
+        int spanCount = 3;
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(mContext, spanCount);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                                                 @Override
