@@ -135,12 +135,13 @@ public class Camera2ProviderWithData extends BaseCameraProvider {
         public void onImageAvailable(ImageReader reader) {
             Image image = reader.acquireLatestImage();
 
-            LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat() + " planes.length->" + image.getPlanes().length);
             ByteBuffer byteBuffer = image.getPlanes()[0].getBuffer();
             byte[] bytes = new byte[byteBuffer.remaining()];
             byteBuffer.get(bytes);
 
             Bitmap temp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            LogUtil.d("image->" + image.getWidth() + "|" + image.getHeight() + " format->" + image.getFormat() +
+                    " planes.length->" + image.getPlanes().length + " bytes->" + bytes.length + " temp->" + temp.getByteCount());
             Bitmap newBitmap = BitmapUtil.rotateBitmap(temp, 90);
             mOnGetBitmapInterface.getABitmap(newBitmap);
 

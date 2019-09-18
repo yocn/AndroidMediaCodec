@@ -119,6 +119,16 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_X264Translater_initX264Encoder(JNIEnv *env, jobject thiz,
                                                        int width, int height, int fps, int bite) {
 
+    size_t yuv_size = static_cast<size_t>(width * height * 3 / 2);
+    x264_t *encoder;
+    x264_picture_t pic_in, pic_out;
+    int inf, outf;
+    //char数组，一个字节的数组
+    uint8_t *yuv_buffer;
+
+    x264_param_t m_param;
+    x264_param_default_preset(&m_param, "veryfast", "zerolatency");
+
 }
 
 
