@@ -9,7 +9,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
-import com.yocn.libnative.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.camera.BaseCameraProvider;
@@ -17,7 +16,6 @@ import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.view.adapter.MainAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -89,7 +87,7 @@ public class MainActivity extends Activity {
 
         final int min = DisplayUtil.dip2px(this, 100);
         final int max = DisplayUtil.dip2px(this, 140);
-        gridLayoutManager.scrollToPositionWithOffset(0, -200);
+//        gridLayoutManager.scrollToPositionWithOffset(0, -200);
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

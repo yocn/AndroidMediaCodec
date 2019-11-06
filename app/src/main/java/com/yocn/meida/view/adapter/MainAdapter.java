@@ -2,7 +2,6 @@ package com.yocn.meida.view.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.VideoView;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.util.LogUtil;
+import com.yocn.meida.view.activity.FormatTrans264Activity;
 import com.yocn.meida.view.activity.FormatTransportActivity;
 import com.yocn.meida.view.activity.PreviewDataActivity;
 import com.yocn.meida.view.activity.PreviewGPUImageActivity;
@@ -55,19 +55,8 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("libyuv做ARGB和I420转换", FormatTransportActivity.class));
         list.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
+        list.add(new JumpBean("x264转换", FormatTrans264Activity.class));
         list.add(new JumpBean("TestScrollActivity", TestScrollActivity.class));
-        list.add(new JumpBean("4", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("5", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("6", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("7", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("8", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("9", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("10", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("11", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("12", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("13", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("14", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("15", PreviewNativeYUVActivity.class));
         return list;
     }
 

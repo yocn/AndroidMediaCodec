@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.yocn.media">
-
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.yocn.media">
 
     <application
         android:allowBackup="true"
@@ -18,27 +13,25 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name="com.yocn.meida.view.activity.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.yocn.meida.view.activity.PreviewPureActivity">
-        </activity>
-        <activity android:name="com.yocn.meida.view.activity.PreviewDataActivity">
-        </activity>
-        <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity">
-        </activity>
-        <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity2">
-        </activity>
-        <activity android:name="com.yocn.meida.view.activity.PreviewNativeYUVActivity">
-        </activity>
-        <activity android:name="com.yocn.meida.view.activity.FormatTransportActivity">
-        </activity>
-        <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity">
-        </activity>
-        <activity android:name="com.yocn.meida.view.activity.TestScrollActivity">
-        </activity>
+        <activity android:name="com.yocn.meida.view.activity.PreviewPureActivity" />
+        <activity android:name="com.yocn.meida.view.activity.PreviewDataActivity" />
+        <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity" />
+        <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity2" />
+        <activity android:name="com.yocn.meida.view.activity.PreviewNativeYUVActivity" />
+        <activity android:name="com.yocn.meida.view.activity.FormatTransportActivity" />
+        <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity" />
+        <activity android:name="com.yocn.meida.view.activity.TestScrollActivity" />
+        <activity android:name="com.yocn.meida.view.activity.FormatTrans264Activity" />
     </application>
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>

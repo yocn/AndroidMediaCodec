@@ -1,16 +1,11 @@
 package com.yocn.meida.view.activity;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
-import com.yocn.meida.camera.Camera2ProviderWithData;
 import com.yocn.meida.util.LogUtil;
 
 /**

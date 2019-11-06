@@ -1,7 +1,6 @@
 package com.yocn.meida.view.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.yocn.media.R;
-import com.yocn.meida.JumpBean;
 import com.yocn.meida.util.LogUtil;
 
 import java.util.List;

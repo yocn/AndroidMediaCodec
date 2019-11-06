@@ -23,7 +23,6 @@ import android.view.Surface;
 import android.view.TextureView;
 
 import com.yocn.meida.util.BitmapUtil;
-import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
 

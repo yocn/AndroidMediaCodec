@@ -19,8 +19,6 @@ import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Size;
-import android.view.Surface;
-import android.view.TextureView;
 
 import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.LogUtil;
