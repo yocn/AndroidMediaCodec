@@ -30,7 +30,7 @@ public class YUVFileWriter {
                         break;
                     case TYPE_WRITE:
                         byte[] frameData = (byte[]) msg.obj;
-                        LogUtil.d("写入：" + frameData.length);
+                        LogUtil.d("写入：" + frameData.length + "   " + getSampleOfFrame(frameData));
                         FileUtils.writeToFile(frameData, savePath, true);
                         break;
                     case TYPE_END:
@@ -42,6 +42,19 @@ public class YUVFileWriter {
             }
         };
         mThread.Run();
+    }
+
+    private String getSampleOfFrame(byte[] frame) {
+        StringBuilder sb = new StringBuilder();
+        int length = frame.length;
+        for (int i = 0; i < 10; ++i) {
+            int index = i * length / 11;
+            if (index >= length) {
+                index--;
+            }
+            sb.append(frame[index]);
+        }
+        return sb.toString();
     }
 
     public void startWrite() {

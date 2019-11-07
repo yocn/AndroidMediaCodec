@@ -15,6 +15,7 @@ import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV;
 import com.yocn.meida.camera.Camera2ProviderWithData;
 import com.yocn.meida.util.CameraUtil;
+import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
 
 /**
@@ -58,6 +59,7 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
         mCamera2Provider.initTexture(mPreviewView);
         mCamera2Provider.setmOnGetBitmapInterface(onGetBitmapInterface);
         String path = Constant.getTestYuvFilePath();
+        FileUtils.deleteFile(path);
         LogUtil.d(path);
         mCamera2Provider.setSaveYUVPath(this, path);
     }
