@@ -1,11 +1,17 @@
 package com.yocn.meida.presenter;
 
 import android.content.Context;
-import android.os.Message;
+import android.graphics.Bitmap;
 
+import com.yocn.meida.base.Constant;
 import com.yocn.meida.util.BaseMessageLoop;
+import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * @Author yocn
@@ -35,26 +41,25 @@ public class YUVFilePlayer {
     private int format = FORMAT_420_888;
     private int fps = 25;
 
+    private boolean isThreadRunning = false;
+    private boolean isYuvPlaying = false;
+    private Thread mPlayThread;
+
+    RandomAccessFile mRandomAccessFile;
+    private OnGetBitmapInterface mOnGetBitmapInterface;
+
+    public interface OnGetBitmapInterface {
+        void getBitmap(Bitmap bitmap);
+    }
+
+    public void setBitmapInterface(OnGetBitmapInterface onGetBitmapInterface) {
+        mOnGetBitmapInterface = onGetBitmapInterface;
+    }
+
     public YUVFilePlayer(Context context) {
-        messageLoop = new BaseMessageLoop(context, "YUVFilePlayer") {
-            @Override
-            protected boolean recvHandleMessage(Message msg) {
-                switch (msg.what) {
-                    case STATUS_PLAY:
-                        mCurrentStatus = STATUS_PLAY;
-                        break;
-                    case STATUS_PAUSE:
-                        mCurrentStatus = STATUS_PAUSE;
-                        break;
-                    case STATUS_STOP:
-                        mCurrentStatus = STATUS_IDLE;
-                        break;
-                    default:
-                }
-                return false;
-            }
-        };
-        messageLoop.Run();
+        mPlayThread = new Thread(runnable);
+        isThreadRunning = true;
+        mPlayThread.start();
     }
 
     public YUVFilePlayer setFilePath(String path) {
@@ -86,19 +91,64 @@ public class YUVFilePlayer {
         return this;
     }
 
+    private Runnable runnable = () -> {
+        while (isThreadRunning) {
+            if (isYuvPlaying) {
+                LogUtil.d("isYuvPlaying:" + isYuvPlaying);
+                if (mRandomAccessFile == null) {
+                    return;
+                }
+                byte[] data = new byte[chunkSize];
+                try {
+                    long totalLength = mRandomAccessFile.length();
+                    LogUtil.d("mCurrentFrame:" + mCurrentFrame + " mTotalFrames->" + mTotalFrames + " totalLength:" + totalLength);
+                    mRandomAccessFile.seek(mCurrentFrame * chunkSize);
+                    mRandomAccessFile.read(data, 0, chunkSize);
+                    String path = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".yuv";
+                    FileUtils.writeToFile(data, path, false);
+
+                    byte[] nv21bytes = BitmapUtil.I420Tonv21(data, mWidth, mHeight);
+                    Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, mWidth, mHeight);
+                    if (mOnGetBitmapInterface != null) {
+                        mOnGetBitmapInterface.getBitmap(bitmap);
+                    }
+                    if (++mCurrentFrame >= mTotalFrames) {
+                        isYuvPlaying = false;
+                        mCurrentFrame = 0;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                Thread.sleep(1000 / fps);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
     public boolean isRunning() {
-        return mCurrentStatus == STATUS_PLAY;
+        return isYuvPlaying;
     }
 
     public void start() {
-        messageLoop.sendEmptyMessage(STATUS_PLAY);
+        try {
+            mRandomAccessFile = new RandomAccessFile(mYuvFilePath, "r");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            LogUtil.d("e->" + e.getMessage());
+        }
+        isYuvPlaying = true;
+        LogUtil.d("start:" + isYuvPlaying);
     }
 
     public void pause() {
-        messageLoop.sendEmptyMessage(STATUS_PAUSE);
+        LogUtil.d("pause");
+        isYuvPlaying = false;
     }
 
     public void stop() {
-        messageLoop.sendEmptyMessage(STATUS_STOP);
     }
 }

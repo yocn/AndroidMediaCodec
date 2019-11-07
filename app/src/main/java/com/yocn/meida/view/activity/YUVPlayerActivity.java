@@ -1,5 +1,6 @@
 package com.yocn.meida.view.activity;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -9,6 +10,11 @@ import android.widget.ImageView;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
 import com.yocn.meida.presenter.YUVFilePlayer;
+import com.yocn.meida.util.LogUtil;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 /**
  * @Author yocn
@@ -50,6 +56,8 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     protected void initData() {
         String yuvFilePath = Constant.getTestYuvFilePath();
         mYUVFilePlayer = new YUVFilePlayer(this).setFilePath(yuvFilePath).setWH(640, 480);
+        mYUVFilePlayer.setBitmapInterface(bitmap -> mShowIV.post(() -> mShowIV.setImageBitmap(bitmap)));
+
     }
 
     @Override
@@ -62,11 +70,11 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.iv_play:
                 if (mYUVFilePlayer.isRunning()) {
-                    mYUVFilePlayer.start();
-                    mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
-                } else {
                     mYUVFilePlayer.pause();
                     mPlayIV.setImageResource(R.drawable.mediacontroller_play);
+                } else {
+                    mYUVFilePlayer.start();
+                    mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
                 }
                 break;
             case R.id.iv_stop:
