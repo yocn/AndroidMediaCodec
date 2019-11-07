@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.yocn.meida.view.widget.MyTextureView
         android:id="@+id/tv_camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <ImageView
         android:id="@+id/iv_show"
@@ -15,7 +14,7 @@
         android:layout_height="200dp"
         android:layout_alignParentRight="true"
         android:layout_marginTop="50dp"
-        android:background="@color/half"/>
+        android:background="@color/half" />
 
     <ImageView
         android:id="@+id/iv_back"
@@ -24,5 +23,27 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/bg_back"
-        android:src="@drawable/icon_back_normal"/>
+        android:src="@drawable/icon_back_normal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_start"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="开始" />
+
+        <Button
+            android:id="@+id/btn_end"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="结束" />
+    </LinearLayout>
+
 </RelativeLayout>

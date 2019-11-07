@@ -35,6 +35,7 @@ import kotlin.jvm.functions.Function1;
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewPureActivity
+ * GPUImage预览
  */
 public class PreviewGPUImageActivity extends BaseCameraActivity {
     GPUImageView mPreviewView;

@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewPureActivity
+ * libyuv做ARGB和I420转换
  */
 public class FormatTransportActivity extends BaseActivity {
     ImageView mShowIV;

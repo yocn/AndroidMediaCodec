@@ -6,22 +6,28 @@ import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
+import com.yocn.meida.base.Constant;
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV;
 import com.yocn.meida.camera.Camera2ProviderWithData;
 import com.yocn.meida.util.CameraUtil;
+import com.yocn.meida.util.LogUtil;
 
 /**
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewPureActivity
+ * Yuv数据获取
  */
 public class PreviewYUVDataActivity extends BaseCameraActivity {
     TextureView mPreviewView;
     ImageView mShowIv;
+    Button mStartBtn;
+    Button mEndBtn;
     Camera2ProviderPreviewWithYUV mCamera2Provider;
 
     @Override
@@ -38,8 +44,12 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
     protected void initView(View root) {
         super.initView(root);
         mPreviewView = root.findViewById(R.id.tv_camera);
+        mStartBtn = root.findViewById(R.id.btn_start);
+        mEndBtn = root.findViewById(R.id.btn_end);
         CameraUtil.transTextureView(mPreviewView);
         mShowIv = root.findViewById(R.id.iv_show);
+        mStartBtn.setOnClickListener(this);
+        mEndBtn.setOnClickListener(this);
     }
 
     @Override
@@ -47,6 +57,9 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
         mCamera2Provider = new Camera2ProviderPreviewWithYUV(this);
         mCamera2Provider.initTexture(mPreviewView);
         mCamera2Provider.setmOnGetBitmapInterface(onGetBitmapInterface);
+        String path = Constant.getTestYuvFilePath();
+        LogUtil.d(path);
+        mCamera2Provider.setSaveYUVPath(this, path);
     }
 
     private Camera2ProviderPreviewWithYUV.OnGetBitmapInterface onGetBitmapInterface = new Camera2ProviderPreviewWithYUV.OnGetBitmapInterface() {
@@ -65,5 +78,18 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
     protected void onDestroy() {
         mCamera2Provider.closeCamera();
         super.onDestroy();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_start:
+                mCamera2Provider.shouldWriteYuvFile(true);
+                break;
+            case R.id.btn_end:
+                mCamera2Provider.shouldWriteYuvFile(false);
+                break;
+            default:
+        }
     }
 }

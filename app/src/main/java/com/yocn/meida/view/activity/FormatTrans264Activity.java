@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.yocn.libnative.EncodeX264;
 import com.yocn.libnative.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.util.LogUtil;
@@ -21,6 +22,7 @@ import java.nio.ByteBuffer;
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewPureActivity
+ * x264转换 未完成
  */
 public class FormatTrans264Activity extends BaseActivity {
     ImageView mShowIV;
@@ -34,6 +36,7 @@ public class FormatTrans264Activity extends BaseActivity {
         setContentView(rootView);
         initView(rootView);
         initData();
+        EncodeX264.getInstance().initX264Encoder(16,16,10,10);
     }
 
     @Override

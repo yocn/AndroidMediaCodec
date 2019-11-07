@@ -21,14 +21,13 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
+import com.yocn.meida.presenter.YUVFileWriter;
 import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
 
 import java.util.Arrays;
-
-import static com.yocn.meida.util.CameraUtil.COLOR_FormatI420;
 
 /**
  * @Author yocn
@@ -47,6 +46,8 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
     private CaptureRequest.Builder mPreviewBuilder;
     private ImageReader mImageReader;
     private OnGetBitmapInterface mOnGetBitmapInterface;
+    private YUVFileWriter mYUVFileWriter;
+    private boolean isWriteYuvFile = false;
 
     public interface OnGetBitmapInterface {
         public void getABitmap(Bitmap bitmap);
@@ -54,6 +55,20 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
 
     public void setmOnGetBitmapInterface(OnGetBitmapInterface mOnGetBitmapInterface) {
         this.mOnGetBitmapInterface = mOnGetBitmapInterface;
+    }
+
+    public void setSaveYUVPath(Context context, String yuvPath) {
+        mYUVFileWriter = new YUVFileWriter(context, yuvPath);
+    }
+
+    public void shouldWriteYuvFile(boolean onOff) {
+        isWriteYuvFile = onOff;
+        if(onOff){
+            mYUVFileWriter.startWrite();
+        }else{
+            mYUVFileWriter.endWrite();
+        }
+        LogUtil.d("on_Off->" + onOff);
     }
 
     public Camera2ProviderPreviewWithYUV(Activity mContext) {
@@ -128,14 +143,19 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
                 return;
             }
             int width = image.getWidth(), height = image.getHeight();
-            byte[] i420bytes = CameraUtil.getDataFromImage(image, COLOR_FormatI420);
+            byte[] i420bytes = CameraUtil.getDataFromImage(image, CameraUtil.COLOR_FormatI420);
+
+            if (isWriteYuvFile && mYUVFileWriter != null) {
+                mYUVFileWriter.write(i420bytes);
+            }
+
             byte[] i420RorateBytes = BitmapUtil.rotateYUV420Degree90(i420bytes, width, height);
             byte[] nv21bytes = BitmapUtil.I420Tonv21(i420RorateBytes, height, width);
             //TODO check YUV数据是否正常
 //                BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
 
             Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, height, width);
-            LogUtil.d("image->" + width + "|" + height);
+//            LogUtil.d("image->" + width + "|" + height);
             if (mOnGetBitmapInterface != null) {
                 mOnGetBitmapInterface.getABitmap(bitmap);
             }

@@ -16,6 +16,7 @@ import com.yocn.meida.util.CameraUtil;
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewDataActivity
+ * 预览并获取数据
  */
 public class PreviewDataActivity extends BaseCameraActivity {
     TextureView mPreviewView;

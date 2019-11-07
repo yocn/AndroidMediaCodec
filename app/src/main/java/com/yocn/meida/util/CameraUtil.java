@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class CameraUtil {
     private static final String TAG = "";
-    private static boolean VERBOSE = true;
+    private static boolean VERBOSE = false;
 
     //选择sizeMap中大于并且最接近width和height的size
     public static Size getOptimalSize(Size[] sizeMap, int width, int height) {

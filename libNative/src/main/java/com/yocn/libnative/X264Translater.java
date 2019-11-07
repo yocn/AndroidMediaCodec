@@ -19,7 +19,6 @@ public class X264Translater {
         return mX264Translater;
     }
 
-
-    public native void initX264Encoder(int width, int height, int fps, int bite);
+//    public native void initX264Encoder(int width, int height, int fps, int bite);
 
 }

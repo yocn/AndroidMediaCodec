@@ -2,10 +2,13 @@
 #include <string>
 #include <stdint.h>
 #include <inttypes.h>
-#include "x264/build/include/x264.h"
 #include <android/log.h>
+#include "x264/build/include/x264.h"
 
 #define LOGV(...)   __android_log_print((int)ANDROID_LOG_INFO, "SOUNDTOUCH", __VA_ARGS__)
+
+//initX264Encoder
+#define JNI_METHOD_NAME(name) Java_com_yocn_libnative_EncodeX264_ProtobufJni_##name
 
 //typedef struct _Encoder {
 //    x264_param_t *param;
@@ -21,8 +24,8 @@ typedef struct {
     x264_nal_t *nal;
 } Encoder;
 
-jlong Java_h264_com_H264Encoder_CompressBegin(JNIEnv *env, jobject thiz,
-                                              jint width, jint height) {
+extern "C" jlong Java_h264_com_H264Encoder_CompressBegin(JNIEnv *env, jobject thiz,
+                                                         jint width, jint height) {
     Encoder *en = (Encoder *) malloc(sizeof(Encoder));
     en->param = (x264_param_t *) malloc(sizeof(x264_param_t));
     en->picture = (x264_picture_t *) malloc(sizeof(x264_picture_t));
@@ -44,7 +47,7 @@ jlong Java_h264_com_H264Encoder_CompressBegin(JNIEnv *env, jobject thiz,
     return (jlong) en;
 }
 
-jint Java_h264_com_H264Encoder_CompressEnd(JNIEnv *env, jobject thiz, jlong handle) {
+extern "C" jint Java_h264_com_H264Encoder_CompressEnd(JNIEnv *env, jobject thiz, jlong handle) {
     Encoder *en = (Encoder *) handle;
     if (en->picture) {
         x264_picture_clean(en->picture);
@@ -62,8 +65,9 @@ jint Java_h264_com_H264Encoder_CompressEnd(JNIEnv *env, jobject thiz, jlong hand
     return 0;
 }
 
-jint Java_h264_com_H264Encoder_CompressBuffer(JNIEnv *env, jobject thiz, jlong handle, jint type,
-                                              jbyteArray in, jint insize, jbyteArray out) {
+extern "C" jint
+Java_h264_com_H264Encoder_CompressBuffer(JNIEnv *env, jobject thiz, jlong handle, jint type,
+                                         jbyteArray in, jint insize, jbyteArray out) {
     Encoder *en = (Encoder *) handle;
     x264_picture_t pic_out;
     int i_data = 0;
@@ -116,9 +120,19 @@ jint Java_h264_com_H264Encoder_CompressBuffer(JNIEnv *env, jobject thiz, jlong h
 
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_yocn_libnative_X264Translater_initX264Encoder(JNIEnv *env, jobject thiz,
-                                                       int width, int height, int fps, int bite) {
+JNI_METHOD_NAME(initX264Encoder)(JNIEnv *env, jobject thiz, jint width, jint height) {
 
+    ///
+    //http://blog.chinaunix.net/uid-24922718-id-4581569.html
+    /**
+     * x264_param_default()：设置参数集结构体x264_param_t的缺省值。
+     * x264_picture_alloc()：为图像结构体x264_picture_t分配内存。
+     * x264_encoder_open()：打开编码器。
+     * x264_encoder_encode()：编码一帧图像。
+     * x264_encoder_close()：关闭编码器。
+     * x264_picture_clean()：释放x264_picture_alloc()申请的资源。
+     * 原文链接：https://blog.csdn.net/leixiaohua1020/article/details/42078645
+     */
     size_t yuv_size = static_cast<size_t>(width * height * 3 / 2);
     x264_t *encoder;
     x264_picture_t pic_in, pic_out;
@@ -128,6 +142,28 @@ Java_com_yocn_libnative_X264Translater_initX264Encoder(JNIEnv *env, jobject thiz
 
     x264_param_t m_param;
     x264_param_default_preset(&m_param, "veryfast", "zerolatency");
+    m_param.i_threads = 1;
+    m_param.i_width = width;
+    m_param.i_height = height;
+    m_param.i_fps_num = 25;
+    m_param.i_bframe = 10;
+    m_param.i_fps_den = 1;
+    m_param.i_keyint_max = 25;
+    m_param.b_intra_refresh = 1;
+    m_param.b_annexb = 1;
+
+    x264_param_apply_profile(&m_param, "high422");
+    encoder = x264_encoder_open(&m_param);
+
+    x264_encoder_parameters(encoder, &m_param);
+    x264_picture_alloc(&pic_in, X264_CSP_I420, width, height);
+    yuv_buffer = static_cast<uint8_t *>(malloc(yuv_size));
+
+    pic_in.img.plane[0] = yuv_buffer;
+    pic_in.img.plane[1] = pic_in.img.plane[0] + width * height;
+    pic_in.img.plane[2] = pic_in.img.plane[1] + width * height / 4;
+
+
 
 }
 

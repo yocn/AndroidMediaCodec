@@ -32,6 +32,7 @@ import java.util.Arrays;
  * @Author yocn
  * @Date 2019/8/2 10:58 AM
  * @ClassName Camera1
+ * libyuv做rgb跟yuv的转换
  */
 public class Camera2ProviderNativeYuv extends BaseCameraProvider {
     private Activity mContext;
