@@ -1,4 +1,5 @@
-# Android Camera2从入门到放弃
+Android Camera2从入门到放弃
+=======
 
 1.Camera使用TextureView预览
 -------  
