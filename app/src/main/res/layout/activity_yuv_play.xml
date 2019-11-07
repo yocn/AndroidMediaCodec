@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/iv_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/half">
+
+        <LinearLayout
+            android:id="@+id/ll_wh"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_w"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="width"
+                android:maxEms="1"
+                android:maxLines="1" />
+
+            <EditText
+                android:id="@+id/et_h"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:hint="height"
+                android:maxEms="1"
+                android:maxLines="1" />
+
+            <EditText
+                android:id="@+id/et_fps"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:hint="fps"
+                android:maxEms="1"
+                android:maxLines="1" />
+
+            <ImageView
+                android:id="@+id/iv_play"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/mediacontroller_play" />
+
+            <ImageView
+                android:id="@+id/iv_stop"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/objectbox_stop" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_format"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@+id/ll_wh"
+            android:gravity="center"
+            android:text="YUV420"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

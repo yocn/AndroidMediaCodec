@@ -28,6 +28,9 @@
         <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity" />
         <activity android:name="com.yocn.meida.view.activity.TestScrollActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTrans264Activity" />
+        <activity
+            android:name="com.yocn.meida.view.activity.YUVPlayerActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
     </application>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

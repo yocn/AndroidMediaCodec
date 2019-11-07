@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
+import com.yocn.meida.base.DataProvider;
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.LogUtil;
@@ -62,7 +63,7 @@ public class MainActivity extends Activity {
     private int currentY;
 
     private void initData() {
-        List<JumpBean> data = MainAdapter.getDataList();
+        List<JumpBean> data = DataProvider.getDataList();
         MainAdapter mMainAdapter = new MainAdapter(data);
         mMainAdapter.setmContext(this);
         int spanCount;

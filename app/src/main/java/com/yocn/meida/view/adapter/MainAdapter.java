@@ -46,20 +46,6 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             , R.color.black, R.color.black, R.color.black
             , R.color.write, R.color.black, R.color.write};
 
-    public static List<JumpBean> getDataList() {
-        List<JumpBean> list = new ArrayList<>();
-        list.add(new JumpBean("TextureView预览", PreviewPureActivity.class));
-        list.add(new JumpBean("预览并获取数据", PreviewDataActivity.class));
-        list.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
-        list.add(new JumpBean("Yuv数据获取 方式2", PreviewYUVDataActivity2.class));
-        list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("libyuv做ARGB和I420转换", FormatTransportActivity.class));
-        list.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
-        list.add(new JumpBean("x264转换", FormatTrans264Activity.class));
-        list.add(new JumpBean("TestScrollActivity", TestScrollActivity.class));
-        return list;
-    }
-
     public void setmContext(Context mContext) {
         this.mContext = mContext;
     }

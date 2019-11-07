@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
+import com.yocn.meida.base.DataProvider;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.view.adapter.MainAdapter;
 
@@ -51,7 +52,7 @@ public class DampingRecyclerView extends LinearLayout {
     }
 
     private void initData() {
-        List<JumpBean> data = MainAdapter.getDataList();
+        List<JumpBean> data = DataProvider.getDataList();
         MainAdapter mMainAdapter = new MainAdapter(data);
         mMainAdapter.setmContext(mContext);
         int spanCount = 3;
