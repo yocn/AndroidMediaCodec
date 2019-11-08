@@ -6,19 +6,58 @@
     <ImageView
         android:id="@+id/iv_show"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" />
+        android:layout_height="match_parent" />
 
     <RelativeLayout
+        android:id="@+id/rl_panel"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="200dp"
+        android:layout_marginBottom="-170dp"
         android:layout_alignParentBottom="true"
         android:background="@color/half">
+
+        <LinearLayout
+            android:id="@+id/ll_panel"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/iv_array"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:rotation="180"
+                android:src="@drawable/down" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_oper"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/ll_wh"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="循环"
+                android:textColor="@color/write" />
+
+            <Spinner
+                android:id="@+id/spinner_rotate"
+                android:layout_width="86dp"
+                android:layout_height="wrap_content"
+                android:entries="@array/rotate" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_wh"
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_below="@+id/ll_panel"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -66,14 +105,14 @@
                 android:src="@drawable/objectbox_stop" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_format"
+
+        <Spinner
+            android:id="@+id/spinner_format"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_below="@+id/ll_wh"
-            android:gravity="center"
-            android:text="YUV420"
-            android:textSize="20sp" />
+            android:layout_below="@+id/ll_oper"
+            android:entries="@array/format"
+            android:gravity="center" />
 
     </RelativeLayout>
 

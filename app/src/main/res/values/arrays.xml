@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="rotate">
+        <item>0</item>
+        <item>90</item>
+        <item>180</item>
+        <item>270</item>
+    </string-array>
+
+    <string-array name="format">
+        <item>YUV_I420</item>
+        <item>NV21</item>
+        <item>NV12</item>
+    </string-array>
+</resources>

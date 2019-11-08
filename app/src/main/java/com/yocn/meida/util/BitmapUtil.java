@@ -8,9 +8,11 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.io.File;
 
 /**
  * @Author yocn
@@ -114,6 +116,27 @@ public class BitmapUtil {
         }
 
         return ret;
+    }
+
+    public static void saveBitmap(String path, Bitmap bitmap) {
+        //获取文件
+        File file = new File(path);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

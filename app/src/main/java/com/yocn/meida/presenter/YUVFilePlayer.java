@@ -3,6 +3,7 @@ package com.yocn.meida.presenter;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.yocn.libnative.YUVTransUtil;
 import com.yocn.meida.base.Constant;
 import com.yocn.meida.util.BaseMessageLoop;
 import com.yocn.meida.util.BitmapUtil;
@@ -12,6 +13,7 @@ import com.yocn.meida.util.LogUtil;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 /**
  * @Author yocn
@@ -25,6 +27,11 @@ public class YUVFilePlayer {
     private final int STATUS_PLAY = 1;
     private final int STATUS_PAUSE = 2;
     private final int STATUS_STOP = 3;
+
+    public static final int ROTATE_0 = 0;
+    public static final int ROTATE_90 = 90;
+    public static final int ROTATE_180 = 180;
+    public static final int ROTATE_270 = 270;
 
     private int mCurrentStatus = STATUS_IDLE;
 
@@ -40,10 +47,14 @@ public class YUVFilePlayer {
     private int mCurrentFrame;
     private int format = FORMAT_420_888;
     private int fps = 25;
+    private boolean looping = true;
+    private int rotate = ROTATE_90;
 
     private boolean isThreadRunning = false;
     private boolean isYuvPlaying = false;
     private Thread mPlayThread;
+
+    private long mTotalProcessTimes = 0;
 
     RandomAccessFile mRandomAccessFile;
     private OnGetBitmapInterface mOnGetBitmapInterface;
@@ -93,6 +104,7 @@ public class YUVFilePlayer {
 
     private Runnable runnable = () -> {
         while (isThreadRunning) {
+            long timeBegin = System.currentTimeMillis();
             if (isYuvPlaying) {
                 LogUtil.d("isYuvPlaying:" + isYuvPlaying);
                 if (mRandomAccessFile == null) {
@@ -100,29 +112,56 @@ public class YUVFilePlayer {
                 }
                 byte[] data = new byte[chunkSize];
                 try {
-                    long totalLength = mRandomAccessFile.length();
-                    LogUtil.d("mCurrentFrame:" + mCurrentFrame + " mTotalFrames->" + mTotalFrames + " totalLength:" + totalLength);
                     mRandomAccessFile.seek(mCurrentFrame * chunkSize);
                     mRandomAccessFile.read(data, 0, chunkSize);
-                    String path = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".yuv";
-                    FileUtils.writeToFile(data, path, false);
 
-                    byte[] nv21bytes = BitmapUtil.I420Tonv21(data, mWidth, mHeight);
-                    Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, mWidth, mHeight);
+                    byte[] argbBytes = new byte[mWidth * mHeight * 4];
+                    Bitmap bitmap;
+                    YUVTransUtil.getInstance().I420ToArgb(data, chunkSize, argbBytes,
+                            mWidth * 4, 0, 0, mWidth, mHeight, mWidth, mHeight, 0, 0);
+                    if (rotate == ROTATE_0) {
+                        bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
+                        bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
+                    } else {
+                        bitmap = Bitmap.createBitmap(mHeight, mWidth, Bitmap.Config.ARGB_8888);
+                        byte[] argbRotateBytes = new byte[mWidth * mHeight * 4];
+                        YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mHeight * 4, mWidth, mHeight, 90);
+                        bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbRotateBytes));
+                    }
+
+//                    byte[] nv21bytes = BitmapUtil.I420Tonv21(data, mWidth, mHeight);
+//                    Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, mWidth, mHeight);
+
+//                    String path = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".yuv";
+//                    FileUtils.writeToFile(data, path, false);
+//                    String bitmapPath = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".png";
+//                    BitmapUtil.saveBitmap(bitmapPath, bitmap);
+
                     if (mOnGetBitmapInterface != null) {
                         mOnGetBitmapInterface.getBitmap(bitmap);
                     }
                     if (++mCurrentFrame >= mTotalFrames) {
-                        isYuvPlaying = false;
+                        //如果需要循环播放就不停止
+                        isYuvPlaying = looping;
                         mCurrentFrame = 0;
+                        mTotalProcessTimes = 0;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
+            long timeEnd = System.currentTimeMillis();
+            int peocessTime = (int) (timeEnd - timeBegin);
+            mTotalProcessTimes += peocessTime;
+            int averageTime = mCurrentFrame == 0 ? 0 : (int) (mTotalProcessTimes / mCurrentFrame);
+
+            int sleep = 1000 / fps;
+            LogUtil.d(" 平均处理时间->" + averageTime + "当前处理时间：" + peocessTime);
+            //如果处理时间超过了实际fps时间，就不sleep直接处理下一帧。
+            sleep = peocessTime > sleep ? 0 : (sleep - peocessTime);
             try {
-                Thread.sleep(1000 / fps);
+                Thread.sleep(sleep);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -131,6 +170,10 @@ public class YUVFilePlayer {
 
     public boolean isRunning() {
         return isYuvPlaying;
+    }
+
+    public void setRotate(int rotate) {
+        this.rotate = rotate;
     }
 
     public void start() {
@@ -150,5 +193,7 @@ public class YUVFilePlayer {
     }
 
     public void stop() {
+        isYuvPlaying = false;
+        mCurrentFrame = 0;
     }
 }
