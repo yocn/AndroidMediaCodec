@@ -5,11 +5,14 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
 import com.yocn.meida.presenter.YUVFilePlayer;
@@ -26,18 +29,22 @@ import java.io.RandomAccessFile;
  * @ClassName YUVPlayerActivity
  * 播放yuv文件
  */
-public class YUVPlayerActivity extends BaseActivity implements View.OnClickListener {
+public class YUVPlayerActivity extends BaseActivity implements View.OnClickListener, MaterialSpinner.OnItemSelectedListener<String> {
     ImageView mArrayIV;
     ImageView mShowIV;
     ImageView mPlayIV;
+    ImageView mLoopIV;
     ImageView mStopIV;
     EditText mWidthET;
     EditText mHeigtET;
     YUVFilePlayer mYUVFilePlayer;
     private LinearLayout mPanelLL;
     private RelativeLayout mPanelRL;
+    MaterialSpinner mRotateSpinner;
+    MaterialSpinner mFormatSpinner;
 
     boolean isShow = false;
+    boolean isLoop = true;
     ObjectAnimator translationYDown;
     ObjectAnimator translationYUp;
     int startY = 0, endY = 0;
@@ -51,6 +58,7 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         setContentView(rootView);
         initView(rootView);
         initData();
+//        exeAnim();
     }
 
     @Override
@@ -60,6 +68,7 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         mPanelLL = root.findViewById(R.id.ll_panel);
         mArrayIV = root.findViewById(R.id.iv_array);
         mShowIV = root.findViewById(R.id.iv_show);
+        mLoopIV = root.findViewById(R.id.iv_looping);
         mPlayIV = root.findViewById(R.id.iv_play);
         mStopIV = root.findViewById(R.id.iv_stop);
         mWidthET = root.findViewById(R.id.et_w);
@@ -67,6 +76,11 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         mPlayIV.setOnClickListener(this);
         mStopIV.setOnClickListener(this);
         mPanelLL.setOnClickListener(this);
+        mRotateSpinner = root.findViewById(R.id.spinner_rotate);
+        mFormatSpinner = root.findViewById(R.id.spinner_format);
+        mRotateSpinner.setItems("0", "90", "180", "270");
+        mFormatSpinner.setItems("0", "90", "180", "270");
+        mLoopIV.setOnClickListener(this);
     }
 
     @Override
@@ -119,6 +133,22 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.ll_panel:
                 exeAnim();
+                break;
+            case R.id.iv_looping:
+                isLoop = !isLoop;
+                mLoopIV.setImageResource(isLoop ? R.drawable.icon_select_pre : R.drawable.icon_select_n);
+                break;
+
+            default:
+        }
+    }
+
+    @Override
+    public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
+        switch (view.getId()) {
+            case R.id.spinner_rotate:
+                break;
+            case R.id.spinner_format:
                 break;
             default:
         }

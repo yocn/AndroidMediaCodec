@@ -12,8 +12,8 @@
         android:id="@+id/rl_panel"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginBottom="-170dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-170dp"
         android:background="@color/half">
 
         <LinearLayout
@@ -39,14 +39,21 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <CheckBox
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="循环"
+                android:layout_margin="10dp"
+                android:text="循环:"
                 android:textColor="@color/write" />
 
-            <Spinner
+            <ImageView
+                android:id="@+id/iv_looping"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:src="@drawable/icon_select_pre" />
+
+            <com.jaredrummler.materialspinner.MaterialSpinner
                 android:id="@+id/spinner_rotate"
                 android:layout_width="86dp"
                 android:layout_height="wrap_content"
@@ -105,8 +112,7 @@
                 android:src="@drawable/objectbox_stop" />
         </LinearLayout>
 
-
-        <Spinner
+        <com.jaredrummler.materialspinner.MaterialSpinner
             android:id="@+id/spinner_format"
             android:layout_width="match_parent"
             android:layout_height="50dp"

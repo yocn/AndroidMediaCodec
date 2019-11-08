@@ -176,6 +176,10 @@ public class YUVFilePlayer {
         this.rotate = rotate;
     }
 
+    public void setLooping(boolean looping){
+        this.looping = looping;
+    }
+
     public void start() {
         try {
             mRandomAccessFile = new RandomAccessFile(mYuvFilePath, "r");
