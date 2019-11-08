@@ -53,12 +53,12 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         View rootView = getLayoutInflater().inflate(R.layout.activity_yuv_play, null);
         setContentView(rootView);
         initView(rootView);
         initData();
-//        exeAnim();
+        exeAnim();
     }
 
     @Override
@@ -137,8 +137,8 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
             case R.id.iv_looping:
                 isLoop = !isLoop;
                 mLoopIV.setImageResource(isLoop ? R.drawable.icon_select_pre : R.drawable.icon_select_n);
+                mYUVFilePlayer.setLooping(isLoop);
                 break;
-
             default:
         }
     }
