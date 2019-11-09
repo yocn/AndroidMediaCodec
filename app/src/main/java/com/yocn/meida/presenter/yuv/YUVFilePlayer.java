@@ -1,12 +1,10 @@
-package com.yocn.meida.presenter;
+package com.yocn.meida.presenter.yuv;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.yocn.libnative.YUVTransUtil;
-import com.yocn.meida.base.Constant;
 import com.yocn.meida.util.BaseMessageLoop;
-import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
 
@@ -14,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author yocn
@@ -23,19 +23,18 @@ import java.nio.ByteBuffer;
 public class YUVFilePlayer {
     public static final int FORMAT_420_888 = 0;
 
-    private final int STATUS_IDLE = 0;
-    private final int STATUS_PLAY = 1;
-    private final int STATUS_PAUSE = 2;
-    private final int STATUS_STOP = 3;
+    public static final int STATUS_IDLE = 0;
+    public static final int STATUS_PLAY = 1;
+    public static final int STATUS_PAUSE = 2;
+    public static final int STATUS_STOP = 3;
 
     public static final int ROTATE_0 = 0;
     public static final int ROTATE_90 = 90;
     public static final int ROTATE_180 = 180;
     public static final int ROTATE_270 = 270;
 
-    private int mCurrentStatus = STATUS_IDLE;
-
-    private BaseMessageLoop messageLoop;
+    public static final List<Integer> mRotateTextList = new ArrayList<>();
+    public static final List<String> mFormatTextList = new ArrayList<>();
 
     private String mYuvFilePath;
     private int mWidth;
@@ -57,13 +56,28 @@ public class YUVFilePlayer {
     private long mTotalProcessTimes = 0;
 
     RandomAccessFile mRandomAccessFile;
-    private OnGetBitmapInterface mOnGetBitmapInterface;
+    private OnYuvPlayCallbackInterface mOnGetBitmapInterface;
 
-    public interface OnGetBitmapInterface {
-        void getBitmap(Bitmap bitmap);
+    static {
+        mRotateTextList.clear();
+        mRotateTextList.add(0);
+        mRotateTextList.add(90);
+        mRotateTextList.add(180);
+        mRotateTextList.add(270);
+
+        mFormatTextList.clear();
+        mFormatTextList.add("YUV_I420_888");
+        mFormatTextList.add("YUV_NV21");
+        mFormatTextList.add("YUV_NV12");
     }
 
-    public void setBitmapInterface(OnGetBitmapInterface onGetBitmapInterface) {
+    public interface OnYuvPlayCallbackInterface {
+        void getBitmap(Bitmap bitmap);
+
+        void playStatus(int status);
+    }
+
+    public void setYuvCallback(OnYuvPlayCallbackInterface onGetBitmapInterface) {
         mOnGetBitmapInterface = onGetBitmapInterface;
     }
 
@@ -145,6 +159,13 @@ public class YUVFilePlayer {
                         isYuvPlaying = looping;
                         mCurrentFrame = 0;
                         mTotalProcessTimes = 0;
+                        if (mOnGetBitmapInterface != null) {
+                            if (looping) {
+                                mOnGetBitmapInterface.playStatus(STATUS_PLAY);
+                            } else {
+                                mOnGetBitmapInterface.playStatus(STATUS_PAUSE);
+                            }
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -157,7 +178,9 @@ public class YUVFilePlayer {
             int averageTime = mCurrentFrame == 0 ? 0 : (int) (mTotalProcessTimes / mCurrentFrame);
 
             int sleep = 1000 / fps;
-            LogUtil.d(" 平均处理时间->" + averageTime + "当前处理时间：" + peocessTime);
+            if (isYuvPlaying) {
+                LogUtil.d(" 平均处理时间->" + averageTime + "当前处理时间：" + peocessTime);
+            }
             //如果处理时间超过了实际fps时间，就不sleep直接处理下一帧。
             sleep = peocessTime > sleep ? 0 : (sleep - peocessTime);
             try {
@@ -176,7 +199,7 @@ public class YUVFilePlayer {
         this.rotate = rotate;
     }
 
-    public void setLooping(boolean looping){
+    public void setLooping(boolean looping) {
         this.looping = looping;
     }
 

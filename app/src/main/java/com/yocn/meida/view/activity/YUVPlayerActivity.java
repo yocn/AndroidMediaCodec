@@ -4,24 +4,22 @@ import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListPopupWindow;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
-import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
-import com.yocn.meida.presenter.YUVFilePlayer;
+import com.yocn.meida.presenter.yuv.YUVFilePlayer;
 import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.LogUtil;
+import com.yocn.meida.view.widget.PopupWindowGenerater;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.util.List;
 
 /**
  * @Author yocn
@@ -29,7 +27,7 @@ import java.io.RandomAccessFile;
  * @ClassName YUVPlayerActivity
  * 播放yuv文件
  */
-public class YUVPlayerActivity extends BaseActivity implements View.OnClickListener, MaterialSpinner.OnItemSelectedListener<String> {
+public class YUVPlayerActivity extends BaseActivity implements View.OnClickListener {
     ImageView mArrayIV;
     ImageView mShowIV;
     ImageView mPlayIV;
@@ -37,11 +35,13 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     ImageView mStopIV;
     EditText mWidthET;
     EditText mHeigtET;
+    TextView mRotateTV;
+    TextView mFormatTV;
     YUVFilePlayer mYUVFilePlayer;
     private LinearLayout mPanelLL;
     private RelativeLayout mPanelRL;
-    MaterialSpinner mRotateSpinner;
-    MaterialSpinner mFormatSpinner;
+    PopupWindowGenerater mRotateOpoupWindow;
+    PopupWindowGenerater mFormatOpoupWindow;
 
     boolean isShow = false;
     boolean isLoop = true;
@@ -73,23 +73,45 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         mStopIV = root.findViewById(R.id.iv_stop);
         mWidthET = root.findViewById(R.id.et_w);
         mHeigtET = root.findViewById(R.id.et_h);
+        mRotateTV = root.findViewById(R.id.tv_rotate);
+        mFormatTV = root.findViewById(R.id.tv_format);
         mPlayIV.setOnClickListener(this);
         mStopIV.setOnClickListener(this);
         mPanelLL.setOnClickListener(this);
-        mRotateSpinner = root.findViewById(R.id.spinner_rotate);
-        mFormatSpinner = root.findViewById(R.id.spinner_format);
-        mRotateSpinner.setItems("0", "90", "180", "270");
-        mFormatSpinner.setItems("0", "90", "180", "270");
         mLoopIV.setOnClickListener(this);
+        mRotateTV.setOnClickListener(this);
+        mFormatTV.setOnClickListener(this);
     }
 
     @Override
     protected void initData() {
         endY = -DisplayUtil.dip2px(this, 170);
         initAnim();
+        mRotateOpoupWindow = new PopupWindowGenerater<Integer>().init(this).setItems(YUVFilePlayer.mRotateTextList)
+                .setAnchorView(mRotateTV).setOnItemClickListener(mRotateItemClickListener);
+        mFormatOpoupWindow = new PopupWindowGenerater<String>().init(this).setItems(YUVFilePlayer.mFormatTextList)
+                .setAnchorView(mFormatTV).setOnItemClickListener(mFormatItemClickListener);
         String yuvFilePath = Constant.getTestYuvFilePath();
         mYUVFilePlayer = new YUVFilePlayer(this).setFilePath(yuvFilePath).setWH(640, 480);
-        mYUVFilePlayer.setBitmapInterface(bitmap -> mShowIV.post(() -> mShowIV.setImageBitmap(bitmap)));
+        mYUVFilePlayer.setYuvCallback(new YUVFilePlayer.OnYuvPlayCallbackInterface() {
+            @Override
+            public void getBitmap(Bitmap bitmap) {
+                mShowIV.post(() -> mShowIV.setImageBitmap(bitmap));
+            }
+
+            @Override
+            public void playStatus(int status) {
+                switch (status) {
+                    case YUVFilePlayer.STATUS_PLAY:
+                        mPlayIV.setImageResource(R.drawable.mediacontroller_play);
+                        break;
+                    case YUVFilePlayer.STATUS_PAUSE:
+                        mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
+                        break;
+                    default:
+                }
+            }
+        });
     }
 
     @Override
@@ -139,18 +161,26 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
                 mLoopIV.setImageResource(isLoop ? R.drawable.icon_select_pre : R.drawable.icon_select_n);
                 mYUVFilePlayer.setLooping(isLoop);
                 break;
+            case R.id.tv_rotate:
+                mRotateOpoupWindow.show();
+                break;
+            case R.id.tv_format:
+                mFormatOpoupWindow.show();
+                break;
             default:
         }
     }
 
-    @Override
-    public void onItemSelected(MaterialSpinner view, int position, long id, String item) {
-        switch (view.getId()) {
-            case R.id.spinner_rotate:
-                break;
-            case R.id.spinner_format:
-                break;
-            default:
-        }
-    }
+    AdapterView.OnItemClickListener mRotateItemClickListener = (parent, view, position, id) -> {
+        int rotate = YUVFilePlayer.mRotateTextList.get(position);
+        LogUtil.d("rotate->" + rotate);
+        mYUVFilePlayer.setRotate(rotate);
+        mRotateOpoupWindow.dismiss();
+        mRotateTV.setText("" + rotate);
+    };
+
+    AdapterView.OnItemClickListener mFormatItemClickListener = (parent, view, position, id) -> {
+
+    };
+
 }

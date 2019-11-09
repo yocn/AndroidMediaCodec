@@ -54,11 +54,13 @@
                 android:layout_margin="10dp"
                 android:src="@drawable/icon_select_pre" />
 
-            <com.jaredrummler.materialspinner.MaterialSpinner
-                android:id="@+id/spinner_rotate"
+            <TextView
+                android:id="@+id/tv_rotate"
                 android:layout_width="86dp"
                 android:layout_height="wrap_content"
-                android:entries="@array/rotate" />
+                android:background="@color/write"
+                android:gravity="center"
+                android:text="0" />
         </LinearLayout>
 
         <LinearLayout
@@ -74,29 +76,38 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
+                android:backgroundTint="@color/write"
                 android:gravity="center"
                 android:hint="width"
                 android:maxEms="1"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textColor="@color/write"
+                android:textColorHint="@color/write" />
 
             <EditText
                 android:id="@+id/et_h"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
+                android:backgroundTint="@color/write"
                 android:gravity="center"
                 android:hint="height"
                 android:maxEms="1"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textColor="@color/write"
+                android:textColorHint="@color/write" />
 
             <EditText
                 android:id="@+id/et_fps"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:backgroundTint="@color/write"
                 android:gravity="center"
                 android:hint="fps"
                 android:maxEms="1"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textColor="@color/write"
+                android:textColorHint="@color/write" />
 
             <ImageView
                 android:id="@+id/iv_play"
@@ -113,13 +124,15 @@
                 android:src="@drawable/objectbox_stop" />
         </LinearLayout>
 
-        <com.jaredrummler.materialspinner.MaterialSpinner
-            android:id="@+id/spinner_format"
+        <TextView
+            android:id="@+id/tv_format"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_below="@+id/ll_oper"
-            android:entries="@array/format"
-            android:gravity="center" />
+            android:gravity="center"
+            android:text="YUV_I420_888"
+            android:textColor="@color/write"
+            android:textSize="20sp" />
 
     </RelativeLayout>
 

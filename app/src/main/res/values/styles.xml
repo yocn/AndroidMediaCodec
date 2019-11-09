@@ -1,10 +1,11 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Black.NoTitleBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 <!--        <item name="android:windowTranslucentStatus">true</item>-->
         <!-- Customize your theme here. -->
         <item name="android:windowBackground">@drawable/bg_window_drawable</item>
+<!--        <item name="listPopupWindowStyle">@style/listpopstyle</item>-->
     </style>
 
     <!--自定义seekbarstyle-->
@@ -15,6 +16,11 @@
         <item name="android:progressDrawable">@drawable/seekbar_progress_drawable</item>
         <item name="android:minHeight">8dp</item>
         <item name="android:thumb">@drawable/seekbar_thumb_drawable</item>
+    </style>
+
+    <style name="listpopstyle">
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupBackground">@color/write</item>
     </style>
 
 </resources>

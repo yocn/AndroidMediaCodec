@@ -21,7 +21,7 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
-import com.yocn.meida.presenter.YUVFileWriter;
+import com.yocn.meida.presenter.yuv.YUVFileWriter;
 import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.LogUtil;
