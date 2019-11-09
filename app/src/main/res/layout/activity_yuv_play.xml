@@ -59,8 +59,9 @@
                 android:layout_width="86dp"
                 android:layout_height="wrap_content"
                 android:background="@color/write"
+                android:drawableRight="@drawable/zhibo_icon_shouqi"
                 android:gravity="center"
-                android:text="0" />
+                android:text="旋转:0" />
         </LinearLayout>
 
         <LinearLayout
@@ -79,8 +80,10 @@
                 android:backgroundTint="@color/write"
                 android:gravity="center"
                 android:hint="width"
-                android:maxEms="1"
+                android:imeOptions="actionDone"
+                android:inputType="number"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/write"
                 android:textColorHint="@color/write" />
 
@@ -92,8 +95,10 @@
                 android:backgroundTint="@color/write"
                 android:gravity="center"
                 android:hint="height"
-                android:maxEms="1"
+                android:imeOptions="actionDone"
+                android:inputType="number"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/write"
                 android:textColorHint="@color/write" />
 
@@ -104,8 +109,10 @@
                 android:backgroundTint="@color/write"
                 android:gravity="center"
                 android:hint="fps"
-                android:maxEms="1"
+                android:imeOptions="actionDone"
+                android:inputType="number"
                 android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/write"
                 android:textColorHint="@color/write" />
 
@@ -126,9 +133,10 @@
 
         <TextView
             android:id="@+id/tv_format"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_below="@+id/ll_oper"
+            android:drawableRight="@drawable/zhibo_icon_shouqi"
             android:gravity="center"
             android:text="YUV_I420_888"
             android:textColor="@color/write"

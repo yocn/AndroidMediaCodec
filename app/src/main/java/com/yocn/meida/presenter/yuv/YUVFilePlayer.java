@@ -4,9 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.yocn.libnative.YUVTransUtil;
-import com.yocn.meida.util.BaseMessageLoop;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
+import com.yocn.meida.util.YUVUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,9 +45,9 @@ public class YUVFilePlayer {
 
     private int mCurrentFrame;
     private int format = FORMAT_420_888;
-    private int fps = 25;
+    private int fps = 40;
     private boolean looping = true;
-    private int rotate = ROTATE_90;
+    private int rotate = ROTATE_0;
 
     private boolean isThreadRunning = false;
     private boolean isYuvPlaying = false;
@@ -116,6 +116,7 @@ public class YUVFilePlayer {
         return this;
     }
 
+    private Bitmap bitmap;
     private Runnable runnable = () -> {
         while (isThreadRunning) {
             long timeBegin = System.currentTimeMillis();
@@ -130,18 +131,24 @@ public class YUVFilePlayer {
                     mRandomAccessFile.read(data, 0, chunkSize);
 
                     byte[] argbBytes = new byte[mWidth * mHeight * 4];
-                    Bitmap bitmap;
                     YUVTransUtil.getInstance().I420ToArgb(data, chunkSize, argbBytes,
                             mWidth * 4, 0, 0, mWidth, mHeight, mWidth, mHeight, 0, 0);
                     if (rotate == ROTATE_0) {
                         bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
                         bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
                     } else {
-                        bitmap = Bitmap.createBitmap(mHeight, mWidth, Bitmap.Config.ARGB_8888);
                         byte[] argbRotateBytes = new byte[mWidth * mHeight * 4];
-                        YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mHeight * 4, mWidth, mHeight, 90);
+                        if (rotate == ROTATE_180) {
+                            bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
+                            YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mWidth * 4, mWidth, mHeight, rotate);
+                        } else {
+                            bitmap = Bitmap.createBitmap(mHeight, mWidth, Bitmap.Config.ARGB_8888);
+                            YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mHeight * 4, mWidth, mHeight, rotate);
+                        }
                         bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbRotateBytes));
+                        argbRotateBytes = null;
                     }
+                    argbBytes = null;
 
 //                    byte[] nv21bytes = BitmapUtil.I420Tonv21(data, mWidth, mHeight);
 //                    Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, mWidth, mHeight);
@@ -177,6 +184,9 @@ public class YUVFilePlayer {
             mTotalProcessTimes += peocessTime;
             int averageTime = mCurrentFrame == 0 ? 0 : (int) (mTotalProcessTimes / mCurrentFrame);
 
+            if (fps == 0) {
+                fps = 1;
+            }
             int sleep = 1000 / fps;
             if (isYuvPlaying) {
                 LogUtil.d(" 平均处理时间->" + averageTime + "当前处理时间：" + peocessTime);
@@ -222,5 +232,13 @@ public class YUVFilePlayer {
     public void stop() {
         isYuvPlaying = false;
         mCurrentFrame = 0;
+        if (mOnGetBitmapInterface != null) {
+            Bitmap bitmap = YUVUtils.getFirstFrame(mYuvFilePath, mWidth, mHeight);
+            mOnGetBitmapInterface.getBitmap(bitmap);
+        }
+    }
+
+    public void release() {
+        isThreadRunning = false;
     }
 }

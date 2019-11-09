@@ -3,6 +3,8 @@ package com.yocn.meida.view.activity;
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -17,6 +19,8 @@ import com.yocn.meida.base.Constant;
 import com.yocn.meida.presenter.yuv.YUVFilePlayer;
 import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.LogUtil;
+import com.yocn.meida.util.StringUtils;
+import com.yocn.meida.view.widget.MTextWatcher;
 import com.yocn.meida.view.widget.PopupWindowGenerater;
 
 import java.util.List;
@@ -35,6 +39,7 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     ImageView mStopIV;
     EditText mWidthET;
     EditText mHeigtET;
+    EditText mFPSET;
     TextView mRotateTV;
     TextView mFormatTV;
     YUVFilePlayer mYUVFilePlayer;
@@ -73,6 +78,7 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         mStopIV = root.findViewById(R.id.iv_stop);
         mWidthET = root.findViewById(R.id.et_w);
         mHeigtET = root.findViewById(R.id.et_h);
+        mFPSET = root.findViewById(R.id.et_fps);
         mRotateTV = root.findViewById(R.id.tv_rotate);
         mFormatTV = root.findViewById(R.id.tv_format);
         mPlayIV.setOnClickListener(this);
@@ -81,6 +87,9 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         mLoopIV.setOnClickListener(this);
         mRotateTV.setOnClickListener(this);
         mFormatTV.setOnClickListener(this);
+        mFPSET.addTextChangedListener(mFpsTextWatcher);
+        mWidthET.addTextChangedListener(mFpsTextWatcher);
+        mHeigtET.addTextChangedListener(mFpsTextWatcher);
     }
 
     @Override
@@ -103,10 +112,10 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
             public void playStatus(int status) {
                 switch (status) {
                     case YUVFilePlayer.STATUS_PLAY:
-                        mPlayIV.setImageResource(R.drawable.mediacontroller_play);
+                        mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
                         break;
                     case YUVFilePlayer.STATUS_PAUSE:
-                        mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
+                        mPlayIV.setImageResource(R.drawable.mediacontroller_play);
                         break;
                     default:
                 }
@@ -117,6 +126,8 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mYUVFilePlayer.stop();
+        mYUVFilePlayer.release();
     }
 
     private void initAnim() {
@@ -171,16 +182,31 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         }
     }
 
+    MTextWatcher mFpsTextWatcher = new MTextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String num = s.toString();
+            LogUtil.d("onTextChanged:" + num);
+            if (!StringUtils.isEmpty(num)) {
+                mYUVFilePlayer.setFPS(Integer.parseInt(s.toString()));
+            }
+        }
+    };
+
     AdapterView.OnItemClickListener mRotateItemClickListener = (parent, view, position, id) -> {
         int rotate = YUVFilePlayer.mRotateTextList.get(position);
         LogUtil.d("rotate->" + rotate);
         mYUVFilePlayer.setRotate(rotate);
         mRotateOpoupWindow.dismiss();
-        mRotateTV.setText("" + rotate);
+        mRotateTV.setText("旋转:" + rotate);
     };
 
     AdapterView.OnItemClickListener mFormatItemClickListener = (parent, view, position, id) -> {
-
+        String format = YUVFilePlayer.mFormatTextList.get(position);
+        LogUtil.d("format->" + format);
+        mFormatOpoupWindow.dismiss();
+        mFormatTV.setText("格式:" + format);
     };
+
 
 }
