@@ -28,11 +28,11 @@ Java_com_yocn_libnative_YUVTransUtil_stringFromJNI(
 //
 extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_YUVTransUtil_ARGBToI420(JNIEnv *env, jobject thiz,
-                                             jbyteArray src_argb, int src_stride_argb,
-                                             jbyteArray dst_y, int dst_stride_y,
-                                             jbyteArray dst_u, int dst_stride_u,
-                                             jbyteArray dst_v, int dst_stride_v,
-                                             int width, int height) {
+                                                jbyteArray src_argb, int src_stride_argb,
+                                                jbyteArray dst_y, int dst_stride_y,
+                                                jbyteArray dst_u, int dst_stride_u,
+                                                jbyteArray dst_v, int dst_stride_v,
+                                                int width, int height) {
     uint8_t *rgbBuffer = (uint8_t *) env->GetByteArrayElements(src_argb, NULL);
     uint8_t *yBuffer = (uint8_t *) env->GetByteArrayElements(dst_y, NULL);
     uint8_t *uBuffer = (uint8_t *) env->GetByteArrayElements(dst_u, NULL);
@@ -45,13 +45,13 @@ Java_com_yocn_libnative_YUVTransUtil_ARGBToI420(JNIEnv *env, jobject thiz,
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_YUVTransUtil_rotateI420(JNIEnv *env, jobject thiz,
-                                             jbyteArray src_y,
-                                             jbyteArray src_u,
-                                             jbyteArray src_v,
-                                             jbyteArray dst_y,
-                                             jbyteArray dst_u,
-                                             jbyteArray dst_v,
-                                             int width, int height, int rotate
+                                                jbyteArray src_y,
+                                                jbyteArray src_u,
+                                                jbyteArray src_v,
+                                                jbyteArray dst_y,
+                                                jbyteArray dst_u,
+                                                jbyteArray dst_v,
+                                                int width, int height, int rotate
 ) {
 
     uint8_t *ySrc = (uint8_t *) env->GetByteArrayElements(src_y, 0);
@@ -81,15 +81,46 @@ Java_com_yocn_libnative_YUVTransUtil_rotateI420(JNIEnv *env, jobject thiz,
 
 }
 
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_yocn_libnative_YUVTransUtil_rotateI420Full(JNIEnv *env, jobject thiz,
+                                                jbyteArray src_yuv,
+                                                jbyteArray dst_yuv,
+                                                int width, int height, int rotate
+) {
+
+    uint8_t *yuvSrc = (uint8_t *) env->GetByteArrayElements(src_yuv, 0);
+    uint8_t *yuvDst = (uint8_t *) env->GetByteArrayElements(dst_yuv, 0);
+
+
+    libyuv::RotationMode rotateMode = libyuv::kRotate0;
+    if (rotate == 90) {
+        rotateMode = libyuv::kRotate90;
+    } else if (rotate == 180) {
+        rotateMode = libyuv::kRotate180;
+    } else if (rotate == 270) {
+        rotateMode = libyuv::kRotate270;
+    }
+    LOGV("convertToArgb  1");
+    libyuv::I420Rotate(yuvSrc, width,
+                       yuvSrc + width, width / 4,
+                       yuvSrc + width + width / 4, width / 4,
+                       yuvDst, width,
+                       yuvDst + width, width / 4,
+                       yuvDst + width + width / 4, width / 4,
+                       width, height, rotateMode);
+
+}
+
 extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_YUVTransUtil_I420ToArgb(JNIEnv *env, jobject thiz,
-                                             jbyteArray src_frame, int src_size,
-                                             jbyteArray dst_argb, int dst_stride_argb,
-                                             int crop_x, int crop_y,
-                                             int src_width, int src_height,
-                                             int crop_width, int crop_height,
-                                             int rotate,
-                                             int format) {
+                                                jbyteArray src_frame, int src_size,
+                                                jbyteArray dst_argb, int dst_stride_argb,
+                                                int crop_x, int crop_y,
+                                                int src_width, int src_height,
+                                                int crop_width, int crop_height,
+                                                int rotate,
+                                                int format) {
 
     libyuv::RotationMode rotateMode = libyuv::kRotate0;
     if (rotate == 90) {
@@ -113,13 +144,14 @@ Java_com_yocn_libnative_YUVTransUtil_I420ToArgb(JNIEnv *env, jobject thiz,
                           libyuv::FOURCC_IYUV);
 }
 
+//do not use
 extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_YUVTransUtil_NV21ToArgb(JNIEnv *env, jobject thiz,
-                                             jbyteArray src_y, int src_stride_y,
-                                             jbyteArray src_vu, int src_stride_vu,
-                                             jbyteArray dst_argb, int dst_stride_argb,
-                                             int width,
-                                             int height) {
+                                                jbyteArray src_y, int src_stride_y,
+                                                jbyteArray src_vu, int src_stride_vu,
+                                                jbyteArray dst_argb, int dst_stride_argb,
+                                                int width,
+                                                int height) {
 
     uint8_t *srcY = (uint8_t *) env->GetByteArrayElements(src_y, 0);
     uint8_t *srcUv = (uint8_t *) env->GetByteArrayElements(src_vu, 0);
@@ -135,13 +167,13 @@ Java_com_yocn_libnative_YUVTransUtil_NV21ToArgb(JNIEnv *env, jobject thiz,
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_YUVTransUtil_NV21ToI420(JNIEnv *env, jobject thiz,
-                                             jbyteArray src_y, int src_stride_y,
-                                             jbyteArray src_vu, int src_stride_vu,
-                                             jbyteArray dst_y, int dst_stride_y,
-                                             jbyteArray dst_u, int dst_stride_u,
-                                             jbyteArray dst_v, int dst_stride_v,
-                                             int width,
-                                             int height) {
+                                                jbyteArray src_y, int src_stride_y,
+                                                jbyteArray src_vu, int src_stride_vu,
+                                                jbyteArray dst_y, int dst_stride_y,
+                                                jbyteArray dst_u, int dst_stride_u,
+                                                jbyteArray dst_v, int dst_stride_v,
+                                                int width,
+                                                int height) {
 
     uint8_t *srcY = (uint8_t *) env->GetByteArrayElements(src_y, 0);
     uint8_t *srcUv = (uint8_t *) env->GetByteArrayElements(src_vu, 0);
@@ -158,13 +190,14 @@ Java_com_yocn_libnative_YUVTransUtil_NV21ToI420(JNIEnv *env, jobject thiz,
                        width, height
     );
 }
+
 //ARGBRotate
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_YUVTransUtil_ARGBRotate(JNIEnv *env, jobject thiz,
-                                             jbyteArray src_argb, int src_stride_argb,
-                                             jbyteArray dst_argb, int dst_stride_argb,
-                                             int width, int height, int rotate) {
+                                                jbyteArray src_argb, int src_stride_argb,
+                                                jbyteArray dst_argb, int dst_stride_argb,
+                                                int width, int height, int rotate) {
 
     uint8_t *srcARGB = (uint8_t *) env->GetByteArrayElements(src_argb, 0);
     uint8_t *dstARGB = (uint8_t *) env->GetByteArrayElements(dst_argb, 0);

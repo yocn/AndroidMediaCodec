@@ -47,6 +47,10 @@ public class YUVTransUtil {
                                   byte[] dst_v,
                                   int width, int height, int rotate);
 
+    public native void rotateI420Full(byte[] src_yuv,
+                                  byte[] dst_yuv,
+                                  int width, int height, int rotate);
+
     public native void NV21ToArgb(byte[] src_y, int src_stride_y,
                                   byte[] src_vu, int src_stride_vu,
                                   byte[] dst_argb, int dst_stride_argb,

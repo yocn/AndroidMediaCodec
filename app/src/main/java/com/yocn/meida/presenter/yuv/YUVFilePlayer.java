@@ -107,6 +107,10 @@ public class YUVFilePlayer {
         if (fileLength != 0) {
             mTotalFrames = (int) (fileLength / chunkSize);
         }
+
+        data = new byte[chunkSize];
+        argbRotateBytes = new byte[mWidth * mHeight * 4];
+        argbBytes = new byte[mWidth * mHeight * 4];
         LogUtil.d("chunkSize:" + chunkSize + " fileLength:" + fileLength + " mTotalFrames:" + mTotalFrames);
         return this;
     }
@@ -116,87 +120,85 @@ public class YUVFilePlayer {
         return this;
     }
 
+    byte[] data;
+    byte[] argbRotateBytes;
+    byte[] argbBytes;
+
     private Bitmap bitmap;
-    private Runnable runnable = () -> {
-        while (isThreadRunning) {
-            long timeBegin = System.currentTimeMillis();
-            if (isYuvPlaying) {
-                LogUtil.d("isYuvPlaying:" + isYuvPlaying);
-                if (mRandomAccessFile == null) {
-                    return;
-                }
-                byte[] data = new byte[chunkSize];
-                try {
-                    mRandomAccessFile.seek(mCurrentFrame * chunkSize);
-                    mRandomAccessFile.read(data, 0, chunkSize);
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            while (isThreadRunning) {
+                long timeBegin = System.currentTimeMillis();
+                if (isYuvPlaying) {
+                    LogUtil.d("isYuvPlaying:" + isYuvPlaying);
+                    if (mRandomAccessFile == null) {
+                        return;
+                    }
+                    try {
+                        mRandomAccessFile.seek(mCurrentFrame * chunkSize);
+                        mRandomAccessFile.read(data, 0, chunkSize);
 
-                    byte[] argbBytes = new byte[mWidth * mHeight * 4];
-                    YUVTransUtil.getInstance().I420ToArgb(data, chunkSize, argbBytes,
-                            mWidth * 4, 0, 0, mWidth, mHeight, mWidth, mHeight, 0, 0);
-                    if (rotate == ROTATE_0) {
-                        bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
-                        bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
-                    } else {
-                        byte[] argbRotateBytes = new byte[mWidth * mHeight * 4];
-                        if (rotate == ROTATE_180) {
+//                    byte[] rotateData = new byte[chunkSize];
+//                    YUVTransUtil.getInstance().rotateI420Full(data, rotateData, mWidth, mHeight, 180);
+
+                        YUVTransUtil.getInstance().I420ToArgb(data, chunkSize, argbBytes,
+                                mWidth * 4, 0, 0, mWidth, mHeight, mWidth, mHeight, 0, 0);
+
+                        if (rotate == ROTATE_0) {
                             bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
-                            YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mWidth * 4, mWidth, mHeight, rotate);
+                            bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbBytes));
                         } else {
-                            bitmap = Bitmap.createBitmap(mHeight, mWidth, Bitmap.Config.ARGB_8888);
-                            YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mHeight * 4, mWidth, mHeight, rotate);
-                        }
-                        bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbRotateBytes));
-                        argbRotateBytes = null;
-                    }
-                    argbBytes = null;
-
-//                    byte[] nv21bytes = BitmapUtil.I420Tonv21(data, mWidth, mHeight);
-//                    Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, mWidth, mHeight);
-
-//                    String path = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".yuv";
-//                    FileUtils.writeToFile(data, path, false);
-//                    String bitmapPath = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".png";
-//                    BitmapUtil.saveBitmap(bitmapPath, bitmap);
-
-                    if (mOnGetBitmapInterface != null) {
-                        mOnGetBitmapInterface.getBitmap(bitmap);
-                    }
-                    if (++mCurrentFrame >= mTotalFrames) {
-                        //如果需要循环播放就不停止
-                        isYuvPlaying = looping;
-                        mCurrentFrame = 0;
-                        mTotalProcessTimes = 0;
-                        if (mOnGetBitmapInterface != null) {
-                            if (looping) {
-                                mOnGetBitmapInterface.playStatus(STATUS_PLAY);
+                            if (rotate == ROTATE_180) {
+                                bitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
+                                YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mWidth * 4, mWidth, mHeight, rotate);
                             } else {
-                                mOnGetBitmapInterface.playStatus(STATUS_PAUSE);
+                                bitmap = Bitmap.createBitmap(mHeight, mWidth, Bitmap.Config.ARGB_8888);
+                                YUVTransUtil.getInstance().ARGBRotate(argbBytes, mWidth * 4, argbRotateBytes, mHeight * 4, mWidth, mHeight, rotate);
+                            }
+                            bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbRotateBytes));
+                        }
+
+                        if (mOnGetBitmapInterface != null) {
+                            mOnGetBitmapInterface.getBitmap(bitmap);
+                        }
+                        if (++mCurrentFrame >= mTotalFrames) {
+                            //如果需要循环播放就不停止
+                            isYuvPlaying = looping;
+                            mCurrentFrame = 0;
+                            mTotalProcessTimes = 0;
+                            if (mOnGetBitmapInterface != null) {
+                                if (looping) {
+                                    mOnGetBitmapInterface.playStatus(STATUS_PLAY);
+                                } else {
+                                    mOnGetBitmapInterface.playStatus(STATUS_PAUSE);
+                                }
                             }
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                } catch (IOException e) {
+                }
+
+                long timeEnd = System.currentTimeMillis();
+                int peocessTime = (int) (timeEnd - timeBegin);
+                mTotalProcessTimes += peocessTime;
+                int averageTime = mCurrentFrame == 0 ? 0 : (int) (mTotalProcessTimes / mCurrentFrame);
+
+                if (fps == 0) {
+                    fps = 1;
+                }
+                int sleep = 1000 / fps;
+                if (isYuvPlaying) {
+                    LogUtil.d(" 平均处理时间->" + averageTime + "当前处理时间：" + peocessTime);
+                }
+                //如果处理时间超过了实际fps时间，就不sleep直接处理下一帧。
+                sleep = peocessTime > sleep ? 0 : (sleep - peocessTime);
+                try {
+                    Thread.sleep(sleep);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
-
-            long timeEnd = System.currentTimeMillis();
-            int peocessTime = (int) (timeEnd - timeBegin);
-            mTotalProcessTimes += peocessTime;
-            int averageTime = mCurrentFrame == 0 ? 0 : (int) (mTotalProcessTimes / mCurrentFrame);
-
-            if (fps == 0) {
-                fps = 1;
-            }
-            int sleep = 1000 / fps;
-            if (isYuvPlaying) {
-                LogUtil.d(" 平均处理时间->" + averageTime + "当前处理时间：" + peocessTime);
-            }
-            //如果处理时间超过了实际fps时间，就不sleep直接处理下一帧。
-            sleep = peocessTime > sleep ? 0 : (sleep - peocessTime);
-            try {
-                Thread.sleep(sleep);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     };
