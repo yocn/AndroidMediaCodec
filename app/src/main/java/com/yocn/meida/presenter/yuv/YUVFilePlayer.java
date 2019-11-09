@@ -235,7 +235,7 @@ public class YUVFilePlayer {
         isYuvPlaying = false;
         mCurrentFrame = 0;
         if (mOnGetBitmapInterface != null) {
-            Bitmap bitmap = YUVUtils.getFirstFrame(mYuvFilePath, mWidth, mHeight);
+            Bitmap bitmap = YUVUtils.getFirstFrame(mYuvFilePath, mWidth, mHeight, rotate);
             mOnGetBitmapInterface.getBitmap(bitmap);
         }
     }
