@@ -102,6 +102,9 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         mYUVFilePlayer.setYuvCallback(new YUVFilePlayer.OnYuvPlayCallbackInterface() {
             @Override
             public void getBitmap(Bitmap bitmap) {
+                if (bitmap == null) {
+                    return;
+                }
                 mShowIV.post(() -> mShowIV.setImageBitmap(bitmap));
             }
 
@@ -112,6 +115,9 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
                         mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
                         break;
                     case YUVFilePlayer.STATUS_PAUSE:
+                    case YUVFilePlayer.STATUS_STOP:
+                    case YUVFilePlayer.STATUS_ERROR:
+
                         mPlayIV.setImageResource(R.drawable.mediacontroller_play);
                         break;
                     default:
@@ -171,11 +177,11 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.tv_rotate:
                 mRotateOpoupWindow.show();
-                setTVDrawable(mRotateTV,true);
+                setTVDrawable(mRotateTV, true);
                 break;
             case R.id.tv_format:
                 mFormatOpoupWindow.show();
-                setTVDrawable(mFormatTV,true);
+                setTVDrawable(mFormatTV, true);
                 break;
             default:
         }
@@ -208,11 +214,11 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     };
 
     PopupWindow.OnDismissListener mRotateDismissListener = () -> {
-        setTVDrawable(mRotateTV,false);
+        setTVDrawable(mRotateTV, false);
     };
 
     PopupWindow.OnDismissListener mFormatDismissListener = () -> {
-        setTVDrawable(mFormatTV,false);
+        setTVDrawable(mFormatTV, false);
     };
 
     private void setTVDrawable(TextView tv, boolean open) {

@@ -25,8 +25,8 @@ public class YUVUtils {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             LogUtil.d("e->" + e.getMessage());
+            return null;
         }
-        assert randomAccessFile == null;
         try {
             randomAccessFile.read(data, 0, chunkSize);
         } catch (IOException e) {

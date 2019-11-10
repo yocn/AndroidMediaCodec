@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.yocn.libnative.YUVTransUtil;
+import com.yocn.meida.base.Constant;
+import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.YUVUtils;
@@ -27,6 +29,7 @@ public class YUVFilePlayer {
     public static final int STATUS_PLAY = 1;
     public static final int STATUS_PAUSE = 2;
     public static final int STATUS_STOP = 3;
+    public static final int STATUS_ERROR = 4;
 
     public static final int ROTATE_0 = 0;
     public static final int ROTATE_90 = 90;
@@ -159,6 +162,11 @@ public class YUVFilePlayer {
                             bitmap.copyPixelsFromBuffer(ByteBuffer.wrap(argbRotateBytes));
                         }
 
+//                        String path = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".yuv";
+//                        FileUtils.writeToFile(data, path, false);
+//                        String bitmapPath = Constant.getCacheYuvDir() + "/" + mCurrentFrame + ".png";
+//                        BitmapUtil.saveBitmap(bitmapPath, bitmap);
+
                         if (mOnGetBitmapInterface != null) {
                             mOnGetBitmapInterface.getBitmap(bitmap);
                         }
@@ -220,6 +228,9 @@ public class YUVFilePlayer {
             mRandomAccessFile = new RandomAccessFile(mYuvFilePath, "r");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            if (mOnGetBitmapInterface != null) {
+                mOnGetBitmapInterface.playStatus(STATUS_ERROR);
+            }
             LogUtil.d("e->" + e.getMessage());
         }
         isYuvPlaying = true;
@@ -237,6 +248,9 @@ public class YUVFilePlayer {
         if (mOnGetBitmapInterface != null) {
             Bitmap bitmap = YUVUtils.getFirstFrame(mYuvFilePath, mWidth, mHeight, rotate);
             mOnGetBitmapInterface.getBitmap(bitmap);
+            if (mOnGetBitmapInterface != null) {
+                mOnGetBitmapInterface.playStatus(STATUS_STOP);
+            }
         }
     }
 

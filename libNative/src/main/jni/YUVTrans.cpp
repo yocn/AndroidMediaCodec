@@ -5,6 +5,8 @@
 
 #define LOGV(...)   __android_log_print((int)ANDROID_LOG_INFO, "SOUNDTOUCH", __VA_ARGS__)
 
+//https://segmentfault.com/a/1190000005658738
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_yocn_libnative_YUVTransUtil_stringFromJNI(
         JNIEnv *env,
@@ -40,6 +42,11 @@ Java_com_yocn_libnative_YUVTransUtil_ARGBToI420(JNIEnv *env, jobject thiz,
 
     libyuv::ARGBToI420(rgbBuffer, src_stride_argb, yBuffer, dst_stride_y, uBuffer, dst_stride_u,
                        vBuffer, dst_stride_v, width, height);
+
+    env->ReleaseByteArrayElements(src_argb, reinterpret_cast<jbyte *>(rgbBuffer), 0);
+    env->ReleaseByteArrayElements(dst_y, reinterpret_cast<jbyte *>(yBuffer), 0);
+    env->ReleaseByteArrayElements(dst_u, reinterpret_cast<jbyte *>(uBuffer), 0);
+    env->ReleaseByteArrayElements(dst_v, reinterpret_cast<jbyte *>(vBuffer), 0);
 
 }
 
@@ -78,15 +85,22 @@ Java_com_yocn_libnative_YUVTransUtil_rotateI420(JNIEnv *env, jobject thiz,
                        uDst, height >> 1,
                        vDst, height >> 1,
                        width, height, rotateMode);
+    env->ReleaseByteArrayElements(src_y, reinterpret_cast<jbyte *>(ySrc), 0);
+    env->ReleaseByteArrayElements(src_u, reinterpret_cast<jbyte *>(uSrc), 0);
+    env->ReleaseByteArrayElements(src_v, reinterpret_cast<jbyte *>(vSrc), 0);
+
+    env->ReleaseByteArrayElements(dst_y, reinterpret_cast<jbyte *>(yDst), 0);
+    env->ReleaseByteArrayElements(dst_u, reinterpret_cast<jbyte *>(uDst), 0);
+    env->ReleaseByteArrayElements(dst_v, reinterpret_cast<jbyte *>(vDst), 0);
 
 }
 
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_yocn_libnative_YUVTransUtil_rotateI420Full(JNIEnv *env, jobject thiz,
-                                                jbyteArray src_yuv,
-                                                jbyteArray dst_yuv,
-                                                int width, int height, int rotate
+                                                    jbyteArray src_yuv,
+                                                    jbyteArray dst_yuv,
+                                                    int width, int height, int rotate
 ) {
 
     uint8_t *yuvSrc = (uint8_t *) env->GetByteArrayElements(src_yuv, 0);
@@ -109,6 +123,8 @@ Java_com_yocn_libnative_YUVTransUtil_rotateI420Full(JNIEnv *env, jobject thiz,
                        yuvDst + width, width / 4,
                        yuvDst + width + width / 4, width / 4,
                        width, height, rotateMode);
+    env->ReleaseByteArrayElements(src_yuv, reinterpret_cast<jbyte *>(yuvSrc), 0);
+    env->ReleaseByteArrayElements(dst_yuv, reinterpret_cast<jbyte *>(yuvDst), 0);
 
 }
 
@@ -131,8 +147,8 @@ Java_com_yocn_libnative_YUVTransUtil_I420ToArgb(JNIEnv *env, jobject thiz,
         rotateMode = libyuv::kRotate270;
     }
 
-    uint8_t *yuvFrame = (uint8_t *) env->GetByteArrayElements(src_frame, 0);
-    uint8_t *rgbBuffer = (uint8_t *) env->GetByteArrayElements(dst_argb, 0);
+    auto yuvFrame = (uint8_t *) env->GetByteArrayElements(src_frame, 0);
+    auto *rgbBuffer = (uint8_t *) env->GetByteArrayElements(dst_argb, 0);
 
     LOGV("convertToArgb  1");
     libyuv::ConvertToARGB(yuvFrame, src_size, rgbBuffer, dst_stride_argb, crop_x, crop_y,
@@ -142,6 +158,10 @@ Java_com_yocn_libnative_YUVTransUtil_I420ToArgb(JNIEnv *env, jobject thiz,
                           crop_height,
                           rotateMode,
                           libyuv::FOURCC_IYUV);
+
+    env->ReleaseByteArrayElements(dst_argb, reinterpret_cast<jbyte *>(rgbBuffer), 0);
+    env->ReleaseByteArrayElements(src_frame, reinterpret_cast<jbyte *>(yuvFrame), 0);
+
 }
 
 //do not use
@@ -157,12 +177,17 @@ Java_com_yocn_libnative_YUVTransUtil_NV21ToArgb(JNIEnv *env, jobject thiz,
     uint8_t *srcUv = (uint8_t *) env->GetByteArrayElements(src_vu, 0);
     uint8_t *dstARGB = (uint8_t *) env->GetByteArrayElements(dst_argb, 0);
 
-    LOGV("NV21ToArgb");
+    LOGV("NV21ToArgb 123:%d,%d,%d  45:%d,%d", src_stride_y, src_stride_vu, dst_stride_argb, width,
+         height);
     libyuv::NV12ToARGB(srcY, src_stride_y,
                        srcUv, src_stride_vu,
                        dstARGB, dst_stride_argb,
                        width, height
     );
+
+    env->ReleaseByteArrayElements(src_y, reinterpret_cast<jbyte *>(srcY), 0);
+    env->ReleaseByteArrayElements(src_vu, reinterpret_cast<jbyte *>(srcUv), 0);
+    env->ReleaseByteArrayElements(dst_argb, reinterpret_cast<jbyte *>(dstARGB), 0);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -189,6 +214,12 @@ Java_com_yocn_libnative_YUVTransUtil_NV21ToI420(JNIEnv *env, jobject thiz,
                        dstV, dst_stride_v,
                        width, height
     );
+
+    env->ReleaseByteArrayElements(src_y, reinterpret_cast<jbyte *>(srcY), 0);
+    env->ReleaseByteArrayElements(src_vu, reinterpret_cast<jbyte *>(srcUv), 0);
+    env->ReleaseByteArrayElements(dst_y, reinterpret_cast<jbyte *>(dstY), 0);
+    env->ReleaseByteArrayElements(dst_u, reinterpret_cast<jbyte *>(dstU), 0);
+    env->ReleaseByteArrayElements(dst_v, reinterpret_cast<jbyte *>(dstV), 0);
 }
 
 //ARGBRotate
@@ -223,6 +254,9 @@ Java_com_yocn_libnative_YUVTransUtil_ARGBRotate(JNIEnv *env, jobject thiz,
      */
     libyuv::ARGBRotate(srcARGB, src_stride_argb, dstARGB, dst_stride_argb, width, height,
                        rotateMode);
+
+    env->ReleaseByteArrayElements(src_argb, reinterpret_cast<jbyte *>(srcARGB), 0);
+    env->ReleaseByteArrayElements(dst_argb, reinterpret_cast<jbyte *>(dstARGB), 0);
 }
 
 

@@ -183,6 +183,7 @@ public class Camera2ProviderNativeYuv extends BaseCameraProvider {
         long time2 = System.currentTimeMillis();
         YUVTransUtil.getInstance().NV21ToArgb(yRawSrcBytes, planes[0].getRowStride(), vRawSrcBytes, planes[2].getRowStride(),
                 argbBytes, w * 4, w, h);
+        LogUtil.d("");
         long time3 = System.currentTimeMillis();
         YUVTransUtil.getInstance().ARGBRotate(argbBytes, w * 4, argbRotateBytes, h * 4, w, h, 90);
         long time4 = System.currentTimeMillis();
