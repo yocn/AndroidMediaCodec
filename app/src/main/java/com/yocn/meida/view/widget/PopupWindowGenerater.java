@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListPopupWindow;
+import android.widget.PopupWindow;
 
 import com.yocn.media.R;
 
@@ -45,6 +46,11 @@ public class PopupWindowGenerater<T> {
 
     public PopupWindowGenerater setOnItemClickListener(AdapterView.OnItemClickListener listener) {
         listPopupWindow.setOnItemClickListener(listener);
+        return this;
+    }
+
+    public PopupWindowGenerater setOnDismissListener(PopupWindow.OnDismissListener listener) {
+        listPopupWindow.setOnDismissListener(listener);
         return this;
     }
 

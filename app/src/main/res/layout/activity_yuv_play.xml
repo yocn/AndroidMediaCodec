@@ -12,9 +12,9 @@
     <RelativeLayout
         android:id="@+id/rl_panel"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="150dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="-170dp"
+        android:layout_marginBottom="-120dp"
         android:background="@color/half">
 
         <LinearLayout
@@ -51,17 +51,29 @@
                 android:id="@+id/iv_looping"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginEnd="10dp"
                 android:src="@drawable/icon_select_pre" />
 
             <TextView
                 android:id="@+id/tv_rotate"
-                android:layout_width="86dp"
-                android:layout_height="wrap_content"
-                android:background="@color/write"
-                android:drawableRight="@drawable/zhibo_icon_shouqi"
-                android:gravity="center"
+                style="@style/text_popup"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_weight="2"
+                android:drawableRight="@drawable/tanchuang_icon_zhankai"
                 android:text="旋转:0" />
+
+            <TextView
+                android:id="@+id/tv_format"
+                style="@style/text_popup"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="3"
+                android:drawableRight="@drawable/tanchuang_icon_zhankai"
+                android:text="YUV_I420_888" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -131,16 +143,6 @@
                 android:src="@drawable/objectbox_stop" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_format"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_below="@+id/ll_oper"
-            android:drawableRight="@drawable/zhibo_icon_shouqi"
-            android:gravity="center"
-            android:text="YUV_I420_888"
-            android:textColor="@color/write"
-            android:textSize="20sp" />
 
     </RelativeLayout>
 

@@ -2,15 +2,14 @@ package com.yocn.meida.view.activity;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListPopupWindow;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -22,8 +21,6 @@ import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.StringUtils;
 import com.yocn.meida.view.widget.MTextWatcher;
 import com.yocn.meida.view.widget.PopupWindowGenerater;
-
-import java.util.List;
 
 /**
  * @Author yocn
@@ -94,12 +91,12 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     protected void initData() {
-        endY = -DisplayUtil.dip2px(this, 170);
+        endY = -DisplayUtil.dip2px(this, 120);
         initAnim();
         mRotateOpoupWindow = new PopupWindowGenerater<Integer>().init(this).setItems(YUVFilePlayer.mRotateTextList)
-                .setAnchorView(mRotateTV).setOnItemClickListener(mRotateItemClickListener);
+                .setAnchorView(mRotateTV).setOnItemClickListener(mRotateItemClickListener).setOnDismissListener(mRotateDismissListener);
         mFormatOpoupWindow = new PopupWindowGenerater<String>().init(this).setItems(YUVFilePlayer.mFormatTextList)
-                .setAnchorView(mFormatTV).setOnItemClickListener(mFormatItemClickListener);
+                .setAnchorView(mFormatTV).setOnItemClickListener(mFormatItemClickListener).setOnDismissListener(mFormatDismissListener);
         String yuvFilePath = Constant.getTestYuvFilePath();
         mYUVFilePlayer = new YUVFilePlayer(this).setFilePath(yuvFilePath).setWH(640, 480);
         mYUVFilePlayer.setYuvCallback(new YUVFilePlayer.OnYuvPlayCallbackInterface() {
@@ -174,9 +171,11 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.tv_rotate:
                 mRotateOpoupWindow.show();
+                setTVDrawable(mRotateTV,true);
                 break;
             case R.id.tv_format:
                 mFormatOpoupWindow.show();
+                setTVDrawable(mFormatTV,true);
                 break;
             default:
         }
@@ -205,8 +204,21 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         String format = YUVFilePlayer.mFormatTextList.get(position);
         LogUtil.d("format->" + format);
         mFormatOpoupWindow.dismiss();
-        mFormatTV.setText("格式:" + format);
+        mFormatTV.setText(format);
     };
 
+    PopupWindow.OnDismissListener mRotateDismissListener = () -> {
+        setTVDrawable(mRotateTV,false);
+    };
+
+    PopupWindow.OnDismissListener mFormatDismissListener = () -> {
+        setTVDrawable(mFormatTV,false);
+    };
+
+    private void setTVDrawable(TextView tv, boolean open) {
+        Drawable drawable = open ? getResources().getDrawable(R.drawable.tanchuang_icon_zhankai) : getResources().getDrawable(R.drawable.tanchuang_icon_shouqi);
+        drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+        tv.setCompoundDrawables(null, null, drawable, null);
+    }
 
 }

@@ -5,6 +5,7 @@
     <color name="colorAccent">#D81B60</color>
     <color name="write">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="gray_555555">#555555</color>
     <color name="half">#7a000000</color>
     <color name="trans">#00000000</color>
 
