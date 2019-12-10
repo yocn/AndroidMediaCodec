@@ -19,6 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.yocn.meida.view.activity.Camera1PreviewActivity" />
         <activity android:name="com.yocn.meida.view.activity.PreviewPureActivity" />
         <activity android:name="com.yocn.meida.view.activity.PreviewDataActivity" />
         <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity" />

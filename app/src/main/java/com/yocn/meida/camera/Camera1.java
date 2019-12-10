@@ -34,14 +34,37 @@ public class Camera1 {
                 mCameraInfo = info;
             }
         }
-        openCamera();
+        mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                openCamera();
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+                return false;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+            }
+        });
     }
 
-    public void openCamera() {
+    private void openCamera() {
         mCamera = Camera.open(mCameraId);
         Camera.Parameters parameters = mCamera.getParameters();
         List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
-        setPreviewSize(sizes.get(0).width, sizes.get(0).height);
+        int width = sizes.get(0).width;
+        int height = sizes.get(0).height;
+        LogUtil.d("w/h:" + width + "/" + height);
+        setPreviewSize(width, height);
         setPreviewSurface(mTextureView.getSurfaceTexture());
         startPreview();
     }
@@ -81,7 +104,7 @@ public class Camera1 {
     /**
      * 停止预览。
      */
-    private void stopPreview() {
+    public void stopPreview() {
         if (mCamera != null) {
             mCamera.stopPreview();
             LogUtil.d("stopPreview() called");

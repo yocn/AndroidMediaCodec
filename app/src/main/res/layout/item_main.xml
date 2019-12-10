@@ -26,14 +26,15 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_centerVertical="true"
-        android:background="@color/black" />
+        android:background="@color/half" />
 
-    <FrameLayout
+    <RelativeLayout
+        android:id="@+id/nsv_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/divider">
 
-        <TextView
+        <com.yocn.meida.view.widget.NestTextView
             android:id="@+id/tv_hint"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,7 +43,7 @@
             android:padding="2dp"
             android:textColor="@color/color5"
             android:textSize="12sp" />
-    </FrameLayout>
+    </RelativeLayout>
 
 
 </com.yocn.meida.view.widget.SquareRelativeLayout>

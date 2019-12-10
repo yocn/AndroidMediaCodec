@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -94,7 +95,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewholder, final int position) {
         int type = getItemViewType(position);
-        LogUtil.d("bind---" + position);
+//        LogUtil.d("bind---" + position);
         if (type == TYPE_CONTENT) {
             VH holder = (VH) viewholder;
             holder.title.setText(String.format("%s", mDatas.get(position - 1).getShow()));
@@ -129,7 +130,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LogUtil.d("create---");
+//        LogUtil.d("create---");
         RecyclerView.ViewHolder holder = null;
         //LayoutInflater.from指定写法
         if (viewType == TYPE_CONTENT) {

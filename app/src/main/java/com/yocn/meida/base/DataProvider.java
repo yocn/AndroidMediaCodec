@@ -1,6 +1,7 @@
 package com.yocn.meida.base;
 
 import com.yocn.meida.JumpBean;
+import com.yocn.meida.view.activity.Camera1PreviewActivity;
 import com.yocn.meida.view.activity.FormatTrans264Activity;
 import com.yocn.meida.view.activity.FormatTransportActivity;
 import com.yocn.meida.view.activity.PreviewDataActivity;
@@ -24,6 +25,7 @@ public class DataProvider {
 
     public static List<JumpBean> getDataList() {
         List<JumpBean> list = new ArrayList<>();
+        list.add(new JumpBean("Camera1预览", Camera1PreviewActivity.class));
         list.add(new JumpBean("TextureView预览", PreviewPureActivity.class));
         list.add(new JumpBean("预览并获取数据", PreviewDataActivity.class));
         list.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
