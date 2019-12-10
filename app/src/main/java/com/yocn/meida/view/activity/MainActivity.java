@@ -66,7 +66,7 @@ public class MainActivity extends Activity {
         List<JumpBean> data = DataProvider.getDataList();
         MainAdapter mMainAdapter = new MainAdapter(data);
         mMainAdapter.setmContext(this);
-        int spanCount;
+        int spanCount = 1;
         if (data.size() < 6) {
             spanCount = 2;
         } else if (data.size() < 24) {
@@ -85,6 +85,7 @@ public class MainActivity extends Activity {
 
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mRecyclerView.setAdapter(mMainAdapter);
+        mRecyclerView.setItemViewCacheSize(2);
 
         final int min = DisplayUtil.dip2px(this, 100);
         final int max = DisplayUtil.dip2px(this, 140);

@@ -22,6 +22,7 @@ public class PreviewDataActivity extends BaseCameraActivity {
     TextureView mPreviewView;
     ImageView mShowIv;
     Camera2ProviderWithData mCamera2Provider;
+    public static String DESC = "Camera2 两路预览：一路TextureView预览，一路获取JPEG输出Bitmap";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

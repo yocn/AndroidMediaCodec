@@ -31,6 +31,8 @@ public class FormatTransportActivity extends BaseActivity {
     ImageView mRawShowIV;
     Button mClickBtn;
     Button mClickBtn2;
+    public static String DESC = "图片转化测试";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -16,6 +16,7 @@ import com.yocn.media.R;
  */
 public class BaseActivity extends Activity {
     FrameLayout mBack;
+    public static String DESC = "hint";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -22,6 +22,7 @@ public class PreviewYUVDataActivity2 extends BaseCameraActivity {
     TextureView mPreviewView;
     ImageView mShowIv;
     Camera2ProviderPreviewWithYUV2 mCamera2Provider;
+    public static String DESC = "YUV输出格式I420，自己方法实现转化为NV21，再使用YuvImage生成Bitmap实现预览";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

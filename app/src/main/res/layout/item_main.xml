@@ -1,18 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.yocn.meida.view.widget.SquareRelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.yocn.meida.view.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/all"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/title"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:padding="10dp"
-        android:textColor="@color/write"
-        android:textSize="16sp"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/divider">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textColor="@color/write"
+            android:textSize="16sp" />
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_centerVertical="true"
+        android:background="@color/black" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/divider">
+
+        <TextView
+            android:id="@+id/tv_hint"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="2dp"
+            android:textColor="@color/color5"
+            android:textSize="12sp" />
+    </FrameLayout>
+
 
 </com.yocn.meida.view.widget.SquareRelativeLayout>

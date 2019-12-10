@@ -19,6 +19,7 @@ import com.yocn.meida.util.CameraUtil;
 public class PreviewPureActivity extends BaseCameraActivity {
     TextureView mPreviewView;
     Camera2Provider mCamera2Provider;
+    public static String DESC = "使用Camera2，最基本API，直接输出到TextureView进行预览";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

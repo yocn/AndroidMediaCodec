@@ -30,6 +30,8 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
     Button mStartBtn;
     Button mEndBtn;
     Camera2ProviderPreviewWithYUV mCamera2Provider;
+    public static String DESC = "Camera2 两路预览：YUV输出格式为ImageFormat.YUV_420_888，工具类转化为NV21，再使用YuvImage生成Bitmap实现预览";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

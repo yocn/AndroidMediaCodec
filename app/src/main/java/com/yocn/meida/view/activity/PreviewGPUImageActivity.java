@@ -45,6 +45,7 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
     GPUImageFilterAdapter mGPUImageFilterAdapter;
     RecyclerView mRecyclerView;
     Camera2ProviderPreviewWithGPUImage mCamera2Provider;
+    public static String DESC = "使用GPUImage框架实现预览和滤镜的实现";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

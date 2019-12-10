@@ -33,7 +33,7 @@ public class DataProvider {
         list.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
         list.add(new JumpBean("x264转换", FormatTrans264Activity.class));
         list.add(new JumpBean("播放YUV文件", YUVPlayerActivity.class));
-        list.add(new JumpBean("TestScrollActivity", TestScrollActivity.class));
+//        list.add(new JumpBean("TestScrollActivity", TestScrollActivity.class));
         return list;
     }
 }

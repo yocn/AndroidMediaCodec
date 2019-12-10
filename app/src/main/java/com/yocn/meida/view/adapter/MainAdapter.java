@@ -22,6 +22,7 @@ import com.yocn.meida.view.activity.PreviewYUVDataActivity;
 import com.yocn.meida.view.activity.PreviewYUVDataActivity2;
 import com.yocn.meida.view.activity.TestScrollActivity;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,12 +52,15 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public static class VH extends RecyclerView.ViewHolder {
-        public final TextView title;
+        final TextView title;
+        final TextView tv_hint;
         final RelativeLayout all;
+        int a = 1;
 
-        public VH(View v) {
+        VH(View v) {
             super(v);
             title = v.findViewById(R.id.title);
+            tv_hint = v.findViewById(R.id.tv_hint);
             all = v.findViewById(R.id.all);
         }
     }
@@ -64,7 +68,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class VHHeader extends RecyclerView.ViewHolder {
         VideoView videoView;
 
-        public VHHeader(View v) {
+        VHHeader(View v) {
             super(v);
 //            videoView = v.findViewById(R.id.vv);
 //            videoView.setVideoURI(Uri.parse("android.resource://com.yocn.media/" + R.raw.onboarding_bg));
@@ -90,19 +94,29 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewholder, final int position) {
         int type = getItemViewType(position);
+        LogUtil.d("bind---" + position);
         if (type == TYPE_CONTENT) {
             VH holder = (VH) viewholder;
-            holder.title.setText(mDatas.get(position - 1).getShow() + "");
+            holder.title.setText(String.format("%s", mDatas.get(position - 1).getShow()));
+            try {
+                Class clazz = mDatas.get((position - 1)).getToClass();
+                Field field = clazz.getField("DESC");
+                String ss = (String) field.get(clazz);
+                holder.tv_hint.setText(String.format("%s", ss));
+            } catch (Exception e) {
+                e.printStackTrace();
+                LogUtil.d("e--->" + e.toString());
+            }
+
+            holder.tv_hint.setTextColor(mContext.getResources().getColor(textColor[(position - 1) % textColor.length]));
             holder.title.setTextColor(mContext.getResources().getColor(textColor[(position - 1) % textColor.length]));
+//            holder.title.setTextColor(mDatas.get((position - 1)).getToClass());
             holder.all.setBackgroundResource(colors[(position - 1) % colors.length]);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //item 点击事件
-                    LogUtil.d("realPosition    click-" + (position - 1) + "    " + mDatas.get((position - 1)).getToClass() + " position-》" + (position - 1));
-                    if (mContext != null) {
-                        mContext.startActivity(new Intent(mContext, mDatas.get(position - 1).getToClass()));
-                    }
+            holder.itemView.setOnClickListener(v -> {
+                //item 点击事件
+                LogUtil.d("realPosition    click-" + (position - 1) + "    " + mDatas.get((position - 1)).getToClass() + " position-》" + (position - 1));
+                if (mContext != null) {
+                    mContext.startActivity(new Intent(mContext, mDatas.get(position - 1).getToClass()));
                 }
             });
         }
@@ -110,11 +124,12 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return mDatas.size();
+        return mDatas.size() + 1;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LogUtil.d("create---");
         RecyclerView.ViewHolder holder = null;
         //LayoutInflater.from指定写法
         if (viewType == TYPE_CONTENT) {

@@ -29,6 +29,7 @@ import com.yocn.meida.view.widget.PopupWindowGenerater;
  * 播放yuv文件
  */
 public class YUVPlayerActivity extends BaseActivity implements View.OnClickListener {
+    public static String DESC = "I420播放器，可以配置参数，自己选定文件";
     ImageView mArrayIV;
     ImageView mShowIV;
     ImageView mPlayIV;
@@ -51,6 +52,7 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     ObjectAnimator translationYUp;
     int startY = 0, endY = 0;
     int duration = 200;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

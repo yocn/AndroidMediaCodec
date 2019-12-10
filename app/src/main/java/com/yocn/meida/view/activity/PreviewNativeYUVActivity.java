@@ -20,6 +20,7 @@ public class PreviewNativeYUVActivity extends BaseCameraActivity {
     TextureView mPreviewView;
     ImageView mShowIv;
     Camera2ProviderNativeYuv mCamera2Provider;
+    public static String DESC = "libyuv做rgb跟yuv的转换|NV21ToArgb";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
