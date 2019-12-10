@@ -26,24 +26,24 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_centerVertical="true"
-        android:background="@color/half" />
+        android:background="@color/h_half" />
 
-    <RelativeLayout
+    <com.yocn.meida.view.widget.NestScrollView
         android:id="@+id/nsv_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/divider">
 
-        <com.yocn.meida.view.widget.NestTextView
+        <TextView
             android:id="@+id/tv_hint"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
             android:padding="2dp"
             android:textColor="@color/color5"
             android:textSize="12sp" />
-    </RelativeLayout>
+    </com.yocn.meida.view.widget.NestScrollView>
 
 
 </com.yocn.meida.view.widget.SquareRelativeLayout>
