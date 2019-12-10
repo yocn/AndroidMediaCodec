@@ -6,8 +6,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import com.yocn.media.R;
-import com.yocn.meida.camera.Camera1;
-import com.yocn.meida.camera.Camera2Provider;
+import com.yocn.meida.camera.Camera1Provider;
 import com.yocn.meida.util.CameraUtil;
 
 /**
@@ -17,7 +16,7 @@ import com.yocn.meida.util.CameraUtil;
  */
 public class Camera1PreviewActivity extends BaseCameraActivity {
     TextureView mPreviewView;
-    Camera1 mCamera2Provider;
+    Camera1Provider mCamera2Provider;
     public static String DESC = "使用Camera2，最基本API，直接输出到TextureView进行预览";
 
     @Override
@@ -39,7 +38,7 @@ public class Camera1PreviewActivity extends BaseCameraActivity {
 
     @Override
     protected void initData() {
-        mCamera2Provider = new Camera1();
+        mCamera2Provider = new Camera1Provider(this);
         mCamera2Provider.setTextureView(mPreviewView);
     }
 

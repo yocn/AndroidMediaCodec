@@ -1,7 +1,9 @@
 package com.yocn.meida.camera;
 
+import android.app.Activity;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.view.Surface;
 import android.view.TextureView;
 
 import com.yocn.meida.util.LogUtil;
@@ -12,15 +14,18 @@ import java.util.List;
 /**
  * @Author yocn
  * @Date 2019/8/2 10:58 AM
- * @ClassName Camera1
+ * @ClassName Camera1Provider
  */
-public class Camera1 {
+public class Camera1Provider {
     TextureView mTextureView;
     int mCameraId = 0;
     private Camera.CameraInfo mCameraInfo;
     Camera mCamera;
 
-    public Camera1() {
+    Activity mContext;
+
+    public Camera1Provider(Activity context) {
+        mContext = context;
     }
 
     public void setTextureView(TextureView textureView) {
@@ -94,9 +99,38 @@ public class Camera1 {
         }
     }
 
+    private int getCameraDisplayOrientation(Camera.CameraInfo cameraInfo) {
+        int rotation = mContext.getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+            default:
+        }
+        int result;
+        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (cameraInfo.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (cameraInfo.orientation - degrees + 360) % 360;
+        }
+        return result;
+    }
+
     private void startPreview() {
         if (mCamera != null) {
             mCamera.startPreview();
+            mCamera.setDisplayOrientation(getCameraDisplayOrientation(mCameraInfo));
             LogUtil.d("startPreview() called");
         }
     }
