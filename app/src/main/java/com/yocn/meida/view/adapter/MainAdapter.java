@@ -113,7 +113,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.title.setTextColor(mContext.getResources().getColor(textColor[(position - 1) % textColor.length]));
 //            holder.title.setTextColor(mDatas.get((position - 1)).getToClass());
             holder.all.setBackgroundResource(colors[(position - 1) % colors.length]);
-            holder.itemView.setOnClickListener(v -> {
+            holder.all.setOnClickListener(v -> {
                 //item 点击事件
                 LogUtil.d("realPosition    click-" + (position - 1) + "    " + mDatas.get((position - 1)).getToClass() + " position-》" + (position - 1));
                 if (mContext != null) {

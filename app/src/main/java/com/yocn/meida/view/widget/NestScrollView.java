@@ -1,6 +1,8 @@
 package com.yocn.meida.view.widget;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -64,17 +66,38 @@ public class NestScrollView extends ScrollView {
         super.onLayout(changed, l, t, r, b);
     }
 
+    boolean move = false;
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+        LogUtil.d("dispatchTouchEvent1111:" + event.toString());
         if (mHandle) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
+                    move = false;
                     getParent().requestDisallowInterceptTouchEvent(true);
                     LogUtil.d("dispatchTouchEvent:" + event.toString());
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    move = true;
                     break;
                 case MotionEvent.ACTION_UP:
                     getParent().requestDisallowInterceptTouchEvent(false);
                     LogUtil.d("dispatchTouchEvent:" + event.toString());
+                    if (!move) {
+                        boolean call = callOnClick();
+                        LogUtil.d("callOnClick:" + call);
+                        if (!call) {
+                            View parent = (View) getParent();
+                            parent.callOnClick();
+                        }
+                    }
                     break;
                 default:
             }
@@ -82,10 +105,4 @@ public class NestScrollView extends ScrollView {
         return super.dispatchTouchEvent(event);
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-//        LogUtil.d("onTouchEvent:" + event.toString());
-//        return true;
-        return super.onTouchEvent(event);
-    }
 }

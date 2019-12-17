@@ -17,6 +17,7 @@ import com.yocn.media.R;
 public class FormatTrans264Activity extends BaseActivity {
     ImageView mShowIV;
     Button mClickBtn;
+    public static String DESC = "TODO：";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -4,22 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <FrameLayout
+    <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/divider">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:padding="10dp"
-            android:textColor="@color/write"
-            android:textSize="16sp" />
-
-    </FrameLayout>
+        android:layout_above="@id/divider"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textColor="@color/write"
+        android:textSize="16sp" />
 
     <View
         android:id="@+id/divider"

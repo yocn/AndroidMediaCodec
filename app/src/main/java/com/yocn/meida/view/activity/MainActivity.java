@@ -67,13 +67,13 @@ public class MainActivity extends Activity {
         MainAdapter mMainAdapter = new MainAdapter(data);
         mMainAdapter.setmContext(this);
         int spanCount = 2;
-//        if (data.size() < 6) {
-//            spanCount = 2;
-//        } else if (data.size() < 24) {
-//            spanCount = 3;
-//        } else {
-//            spanCount = 4;
-//        }
+        if (data.size() < 6) {
+            spanCount = 2;
+        } else if (data.size() < 24) {
+            spanCount = 3;
+        } else {
+            spanCount = 4;
+        }
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                                                 @Override
