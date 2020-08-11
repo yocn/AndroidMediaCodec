@@ -50,7 +50,7 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         View rootView = getLayoutInflater().inflate(R.layout.activity_pure_gpuimage, null);
         setContentView(rootView);
         initView(rootView);

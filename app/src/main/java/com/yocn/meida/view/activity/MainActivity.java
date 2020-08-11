@@ -1,5 +1,6 @@
 package com.yocn.meida.view.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,13 +9,14 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.base.DataProvider;
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.util.DisplayUtil;
-import com.yocn.meida.util.LogUtil;
+import com.yocn.meida.util.PermissionsUtils;
 import com.yocn.meida.view.adapter.MainAdapter;
 
 import java.util.List;
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class MainActivity extends Activity {
     RecyclerView mRecyclerView;
     RelativeLayout mTopRL;
+    String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +41,7 @@ public class MainActivity extends Activity {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
                 | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.TRANSPARENT);
@@ -47,6 +50,7 @@ public class MainActivity extends Activity {
         setContentView(rootView);
         initView(rootView);
         initData();
+        requestPermission();
     }
 
     private void initView(View root) {
@@ -118,6 +122,27 @@ public class MainActivity extends Activity {
                 }
             }
         });
+    }
+
+    private void requestPermission() {
+        PermissionsUtils.IPermissionsResult permissionsResult = new PermissionsUtils.IPermissionsResult() {
+            @Override
+            public void passPermissons() {
+//                Toast.makeText(MainActivity.this, "权限通过，可以做其他事情!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void forbitPermissons() {
+                Toast.makeText(MainActivity.this, "need permission!", Toast.LENGTH_SHORT).show();
+            }
+        };
+        PermissionsUtils.getInstance().chekPermissions(this, permissions, permissionsResult);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        PermissionsUtils.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
 }

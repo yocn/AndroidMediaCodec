@@ -11,3 +11,8 @@
 /GPUImage/build
 /captures
 .externalNativeBuild
+.idea
+.idea/codeStyles/codeStyleConfig.xml
+.idea/gradle.xml
+.idea/misc.xml
+.idea/vcs.xml

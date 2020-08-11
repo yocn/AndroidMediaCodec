@@ -36,7 +36,6 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         View rootView = getLayoutInflater().inflate(R.layout.activity_preview_data, null);
         setContentView(rootView);
         initView(rootView);
