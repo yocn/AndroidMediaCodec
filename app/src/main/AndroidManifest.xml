@@ -9,10 +9,10 @@
 
     <application
         android:name="com.yocn.meida.base.BaseApplication"
-        android:allowBackup="true"
-        android:icon="@mipmap/trans"
+        android:allowBackup="false"
+        android:icon="@drawable/camera"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/trans"
+        android:roundIcon="@drawable/camera"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
