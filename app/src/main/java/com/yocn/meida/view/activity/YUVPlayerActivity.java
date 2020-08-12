@@ -67,7 +67,6 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     protected void initView(View root) {
-        super.initView(root);
         mPanelRL = root.findViewById(R.id.rl_panel);
         mPanelLL = root.findViewById(R.id.ll_panel);
         mArrayIV = root.findViewById(R.id.iv_array);

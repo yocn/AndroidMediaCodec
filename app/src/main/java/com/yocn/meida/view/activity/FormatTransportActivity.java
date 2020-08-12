@@ -45,7 +45,6 @@ public class FormatTransportActivity extends BaseActivity {
 
     @Override
     protected void initView(View root) {
-        super.initView(root);
         mShowIV = root.findViewById(R.id.iv_show);
         mRawShowIV = root.findViewById(R.id.iv_show_raw);
         mClickBtn = root.findViewById(R.id.btn_click);

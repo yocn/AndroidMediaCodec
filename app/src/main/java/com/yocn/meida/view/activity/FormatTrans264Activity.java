@@ -30,7 +30,6 @@ public class FormatTrans264Activity extends BaseActivity {
 
     @Override
     protected void initView(View root) {
-        super.initView(root);
         mShowIV = root.findViewById(R.id.iv_show);
         mClickBtn = root.findViewById(R.id.btn_click);
         mClickBtn.setOnClickListener(new View.OnClickListener() {

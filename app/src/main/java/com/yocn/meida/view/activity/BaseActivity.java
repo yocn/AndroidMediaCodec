@@ -8,16 +8,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.yocn.media.R;
-
 /**
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
  * @ClassName BaseActivity
  */
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
+    protected String TAG;
     FrameLayout mBack;
     public static String DESC = "hint";
+
+    {
+        TAG = this.getClass().getSimpleName();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +37,7 @@ public class BaseActivity extends Activity {
         super.onCreate(savedInstanceState);
     }
 
-    protected void initView(View root) {
-    }
+    abstract void initView(View root);
 
     protected void initData() {
     }

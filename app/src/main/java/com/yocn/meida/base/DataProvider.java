@@ -10,6 +10,7 @@ import com.yocn.meida.view.activity.PreviewNativeYUVActivity;
 import com.yocn.meida.view.activity.PreviewPureActivity;
 import com.yocn.meida.view.activity.PreviewYUVDataActivity;
 import com.yocn.meida.view.activity.PreviewYUVDataActivity2;
+import com.yocn.meida.view.activity.SimpleOpenGLESActivity;
 import com.yocn.meida.view.activity.TestScrollActivity;
 import com.yocn.meida.view.activity.YUVPlayerActivity;
 
@@ -35,6 +36,7 @@ public class DataProvider {
         list.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
         list.add(new JumpBean("x264转换", FormatTrans264Activity.class));
         list.add(new JumpBean("播放YUV文件", YUVPlayerActivity.class));
+        list.add(new JumpBean("OpenGLES", SimpleOpenGLESActivity.class));
 //        list.add(new JumpBean("TestScrollActivity", TestScrollActivity.class));
         return list;
     }
