@@ -41,7 +41,7 @@ public class NestScrollView extends ScrollView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         mWidth = MeasureSpec.getSize(widthMeasureSpec);
         mHeight = MeasureSpec.getSize(heightMeasureSpec);
-        LogUtil.d("mWidth:" + mWidth + "   " + mHeight + "    " + this);
+//        LogUtil.d("mWidth:" + mWidth + "   " + mHeight + "    " + this);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -50,7 +50,7 @@ public class NestScrollView extends ScrollView {
         View child = getChildAt(0);
         if (child != null) {
             mChildHeight = child.getMeasuredHeight();
-            LogUtil.d("childHeight:" + mChildHeight);
+//            LogUtil.d("childHeight:" + mChildHeight);
         }
 
         if (mChildHeight > mWidth / 2) {
