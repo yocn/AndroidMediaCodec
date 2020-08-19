@@ -12,21 +12,10 @@ import android.widget.VideoView;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.util.LogUtil;
-import com.yocn.meida.view.activity.FormatTrans264Activity;
-import com.yocn.meida.view.activity.FormatTransportActivity;
-import com.yocn.meida.view.activity.PreviewDataActivity;
-import com.yocn.meida.view.activity.PreviewGPUImageActivity;
-import com.yocn.meida.view.activity.PreviewNativeYUVActivity;
-import com.yocn.meida.view.activity.PreviewPureActivity;
-import com.yocn.meida.view.activity.PreviewYUVDataActivity;
-import com.yocn.meida.view.activity.PreviewYUVDataActivity2;
-import com.yocn.meida.view.activity.TestScrollActivity;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
