@@ -1,7 +1,10 @@
 package com.yocn.meida.gles.render;
 
+import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
+import android.util.Log;
 
 import com.yocn.meida.gles.GlUtil;
 
@@ -10,23 +13,28 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class SquareRender implements GLSurfaceView.Renderer {
+public class SquareTextureRender implements GLSurfaceView.Renderer {
     // 顶点着色器的脚本
     String vertexShaderCode =
-            " attribute vec4 vPosition;" +     // 应用程序传入顶点着色器的顶点位置
+            "attribute vec4 vPosition;" +     // 应用程序传入顶点着色器的顶点位置
+            "attribute vec2 aTexCoord;" +       //接收传入的顶点纹理位置
+            "varying vec2 vTextureCoord;" +
                     " void main() {" +
                     "     gl_Position = vPosition;" +  // 此次绘制此顶点位置
+                    "     vTextureCoord = aTexCoord;" +  // 设置texture的坐标
                     " }";
 
     // 片元着色器的脚本
     String fragmentShaderCode =
-            " precision mediump float;" +  // 设置工作精度
-                    " uniform vec4 vColor;" +       // 接收从顶点着色器过来的顶点颜色数据
+            " precision mediump float;" +  // 声明float类型的精度为中等(精度越高越耗资源)
+             "varying vec2 vTextureCoord;" +
+             "uniform sampler2D sTexture;" + //纹理采样器，代表一副纹理
                     " void main() {" +
-                    "     gl_FragColor = vColor;" +  // 给此片元的填充色
+                    "gl_FragColor = texture2D(sTexture, vTextureCoord);" + //进行纹理采样，第一个参数代表图片纹理，第二个参数代表纹理坐标点
                     " }";
 
-    private FloatBuffer vertexBuffer;  //顶点坐标数据要转化成FloatBuffer格式
+    private FloatBuffer vertexBuffer;
+    private FloatBuffer colorCoordsBuffer;
 
     // 数组中每3个值作为一个坐标点
     static final int COORDS_PER_VERTEX = 3;
@@ -36,6 +44,13 @@ public class SquareRender implements GLSurfaceView.Renderer {
             -0.8f, -0.8f, 0.0f, // bottom left
             0.8f, 0.8f, 0.0f,  // top right
             0.8f, -0.8f, 0.0f  // bottom right
+    };
+
+    static float colorCoords[] = {
+            0, 0,
+            0, 1,
+            1, 0,
+            1, 1,
     };
 
     //顶点个数，计算得出
@@ -49,10 +64,51 @@ public class SquareRender implements GLSurfaceView.Renderer {
     //这个可以理解为一个OpenGL程序句柄
     private int mProgram;
 
-    public SquareRender() {
+    private int mTextureId;
+    private Bitmap mBitmap;
+
+    public SquareTextureRender(Bitmap bitmap) {
+        this.mBitmap = bitmap;
         /* 1、数据转换，顶点坐标数据float类型转换成OpenGL格式FloatBuffer，int和short同理*/
         vertexBuffer = GlUtil.createFloatBuffer(squareCoords);
+        colorCoordsBuffer = GlUtil.createFloatBuffer(colorCoords);
     }
+
+    private void initTexture() {
+        int textures[] = new int[1]; //生成纹理id
+
+        GLES20.glGenTextures(  //创建纹理对象
+                1, //产生纹理id的数量
+                textures, //纹理id的数组
+                0  //偏移量
+        );
+        mTextureId = textures[0];
+
+        //绑定纹理id，将对象绑定到环境的纹理单元
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
+
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_NEAREST);//设置MIN 采样方式
+//        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+//                GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_LINEAR);//设置MAG采样方式
+//        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+//                GLES20.GL_TEXTURE_WRAP_S,GLES20.GL_CLAMP_TO_EDGE);//设置S轴拉伸方式
+//        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+//                GLES20.GL_TEXTURE_WRAP_T,GLES20.GL_CLAMP_TO_EDGE);//设置T轴拉伸方式
+
+        if (mBitmap == null){
+            Log.e("lxb", "initTexture: mBitmap == null");
+            return;
+        }
+        //加载图片
+        GLUtils.texImage2D( //实际加载纹理进显存
+                GLES20.GL_TEXTURE_2D, //纹理类型
+                0, //纹理的层次，0表示基本图像层，可以理解为直接贴图
+                mBitmap, //纹理图像
+                0 //纹理边框尺寸
+        );
+    }
+
 
     // gles相关的代码应该在gles的线层内调用，也就是这三个声明周期内调用。否则可能会报 call to OpenGL ES API with no current context (logged once per thread)
     @Override
@@ -74,6 +130,7 @@ public class SquareRender implements GLSurfaceView.Renderer {
 
         /* 4、链接程序*/
         GLES20.glLinkProgram(mProgram);
+        initTexture();
     }
 
     @Override
@@ -90,26 +147,27 @@ public class SquareRender implements GLSurfaceView.Renderer {
         // 获取顶点着色器的位置的句柄（这里可以理解为当前绘制的顶点位置）
         //当前绘制的顶点位置句柄
         int vPosition = GLES20.glGetAttribLocation(mProgram, "vPosition");
+        int aTexCoord = GLES20.glGetAttribLocation(mProgram, "aTexCoord");
 
         // 启用顶点属性
         GLES20.glEnableVertexAttribArray(vPosition);
+        GLES20.glEnableVertexAttribArray(aTexCoord);
 
         //准备三角形坐标数据
         GLES20.glVertexAttribPointer(vPosition, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
 
-        // 获取片段着色器的vColor属性
-        //片元着色器颜色句柄
-        int vColor = GLES20.glGetUniformLocation(mProgram, "vColor");
-
-        // 设置绘制三角形的颜色
-        GLES20.glUniform4fv(vColor, 1, mColor, 0);
+        //设置纹理坐标数据
+        GLES20.glVertexAttribPointer(aTexCoord, 2,
+                GLES20.GL_FLOAT, false,
+                2 * 4, colorCoordsBuffer);
 
         // 绘制三角形
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
 
         // 禁用顶点数组
         GLES20.glDisableVertexAttribArray(vPosition);
+        GLES20.glDisableVertexAttribArray(aTexCoord);
     }
 }

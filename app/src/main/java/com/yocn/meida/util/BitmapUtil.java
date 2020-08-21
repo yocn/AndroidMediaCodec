@@ -1,5 +1,7 @@
 package com.yocn.meida.util;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
@@ -8,11 +10,11 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.io.File;
 
 /**
  * @Author yocn
@@ -137,6 +139,18 @@ public class BitmapUtil {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static Bitmap getBitmapFromAssets(Context context, String path) {
+        Bitmap bitmap = null;
+        AssetManager am = context.getResources().getAssets();
+        try {
+            //读取assert 的文图
+            InputStream is = am.open(path);
+            bitmap = BitmapFactory.decodeStream(is);
+        } catch (Exception e) {
+        }
+        return bitmap;
     }
 
 }
