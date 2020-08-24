@@ -2,15 +2,17 @@
 <com.yocn.meida.view.widget.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/all"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/divider"
+        android:layout_height="0dp"
         android:layout_gravity="center"
+        android:layout_weight="1"
         android:gravity="center"
+        android:singleLine="true"
         android:padding="10dp"
         android:textColor="@color/write"
         android:textSize="16sp" />
@@ -19,14 +21,13 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_centerVertical="true"
         android:background="@color/h_half" />
 
     <com.yocn.meida.view.widget.NestScrollView
         android:id="@+id/nsv_item"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/divider">
+        android:layout_height="0dp"
+        android:layout_weight="2">
 
         <TextView
             android:id="@+id/tv_hint"

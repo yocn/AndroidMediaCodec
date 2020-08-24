@@ -8,6 +8,7 @@ import com.yocn.meida.view.activity.PreviewDataActivity;
 import com.yocn.meida.view.activity.PreviewGPUImageActivity;
 import com.yocn.meida.view.activity.PreviewNativeYUVActivity;
 import com.yocn.meida.view.activity.PreviewPureActivity;
+import com.yocn.meida.view.activity.PreviewWithOpenGLESActivity;
 import com.yocn.meida.view.activity.PreviewYUVDataActivity;
 import com.yocn.meida.view.activity.PreviewYUVDataActivity2;
 import com.yocn.meida.view.activity.SimpleOpenGLESActivity;
@@ -32,11 +33,12 @@ public class DataProvider {
         list.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
         list.add(new JumpBean("Yuv数据获取 方式2", PreviewYUVDataActivity2.class));
         list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
-        list.add(new JumpBean("libyuv做ARGB和I420转换", FormatTransportActivity.class));
+        list.add(new JumpBean("ARGB转I420-libyuv", FormatTransportActivity.class));
         list.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
         list.add(new JumpBean("x264转换", FormatTrans264Activity.class));
         list.add(new JumpBean("播放YUV文件", YUVPlayerActivity.class));
         list.add(new JumpBean("OpenGLES", SimpleOpenGLESActivity.class));
+        list.add(new JumpBean("Preview OpenGLES", PreviewWithOpenGLESActivity.class));
 //        list.add(new JumpBean("TestScrollActivity", TestScrollActivity.class));
         return list;
     }

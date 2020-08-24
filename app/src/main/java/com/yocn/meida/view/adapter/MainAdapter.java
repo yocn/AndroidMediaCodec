@@ -44,7 +44,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class VH extends RecyclerView.ViewHolder {
         final TextView title;
         final TextView tv_hint;
-        final RelativeLayout all;
+        final ViewGroup all;
         int a = 1;
 
         VH(View v) {

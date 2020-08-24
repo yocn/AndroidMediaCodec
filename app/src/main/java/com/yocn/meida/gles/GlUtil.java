@@ -1,5 +1,6 @@
 package com.yocn.meida.gles;
 
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.Matrix;
@@ -8,6 +9,8 @@ import android.util.Log;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.opengles.GL10;
 
 /**
  * Some OpenGL utility functions.
@@ -175,5 +178,26 @@ public class GlUtil {
 				Log.i(TAG, "iversion: " + majorVersion + "." + minorVersion);
 			}
 		}
+	}
+
+	/**
+	 * 相机预览使用EXTERNAL_OES纹理，创建方式与2D纹理创建基本相同
+	 * @return
+	 */
+	public static int getOESTextureId() {
+		int[] texture = new int[1];
+		GLES20.glGenTextures(1, texture, 0);
+		//于我们创建的是扩展纹理，所以绑定的时候我们也需要绑定到扩展纹理上才可以正常使用，
+		GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture[0]);
+		GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+				GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
+		GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+				GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+		GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+				GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+				GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE);
+		GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
+		return texture[0];
 	}
 }

@@ -2,6 +2,7 @@ package com.yocn.meida.view.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.yocn.meida.util.LogUtil;
@@ -11,7 +12,7 @@ import com.yocn.meida.util.LogUtil;
  * @Date 2019/8/6 1:58 PM
  * @ClassName SquareRelativeLayout
  */
-public class SquareRelativeLayout extends RelativeLayout {
+public class SquareRelativeLayout extends LinearLayout {
     public SquareRelativeLayout(Context context) {
         super(context);
     }
