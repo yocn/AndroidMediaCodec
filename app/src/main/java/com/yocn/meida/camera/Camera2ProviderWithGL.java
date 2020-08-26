@@ -68,6 +68,8 @@ public class Camera2ProviderWithGL extends BaseCameraProvider {
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 //使用后置摄像头
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
+                    Integer rotation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                    LogUtil.d("后置摄像头旋转角度->" + rotation);
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);

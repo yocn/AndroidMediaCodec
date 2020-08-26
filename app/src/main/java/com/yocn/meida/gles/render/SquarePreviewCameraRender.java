@@ -17,20 +17,6 @@ import static android.opengl.GLES20.GL_FRAMEBUFFER;
 
 public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
     // 顶点着色器的脚本
-//    String vertexShaderCode =
-//            "uniform mat4 uMVPMatrix;//接收传入的转换矩阵\n" +
-//                    "attribute vec4 aPosition;//接收传入的顶点\n" +
-//                    "attribute vec2 aTexCoord;//接收传入的顶点纹理位置\n" +
-//                    "varying vec2 vTextureCoord;//增加用于传递给片元着色器的纹理位置变量\n" +
-//                    "varying vec4 vPosition;//传顶点坐标给片元着色器\n" +
-//                    "void main() {\n" +
-//                    "    gl_Position = uMVPMatrix * aPosition;//矩阵变换计算之后的位置\n" +
-//                    "    vPosition = uMVPMatrix * aPosition;//矩阵变换计算之后的位置\n" +
-//                    "    vTextureCoord = aTexCoord;\n" +
-//                    "}\n" +
-//                    "\n" +
-//                    "\n";
-
     String vertexShaderCode =
             "attribute vec4 vPosition;" +     // 应用程序传入顶点着色器的顶点位置
                     "attribute vec2 aTexCoord;" +       //接收传入的顶点纹理位置
@@ -48,9 +34,11 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
                     "varying vec2 vTextureCoord;\n" +
                     "void main()\n" +
                     "{\n" +
-                    "  vec4 vCameraColor = texture2D(uTextureSampler, vTextureCoord);\n" +
-                    "  float fGrayColor = (0.3*vCameraColor.r + 0.59*vCameraColor.g + 0.11*vCameraColor.b);\n" +
-                    "  gl_FragColor = vec4(fGrayColor, fGrayColor, fGrayColor, 1.0);\n" +
+//                    "  vec4 vCameraColor = texture2D(uTextureSampler, vTextureCoord);\n" +
+//                    "  float fGrayColor = (0.3*vCameraColor.r + 0.59*vCameraColor.g + 0.11*vCameraColor.b);\n" +
+//                    "  gl_FragColor = vec4(fGrayColor, fGrayColor, fGrayColor, 1.0);\n" +
+                    "  gl_FragColor = texture2D(uTextureSampler, vTextureCoord);\n" +
+
                     "}\n";
 
     private FloatBuffer vertexBuffer;
@@ -58,12 +46,13 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
 
     // 数组中每3个值作为一个坐标点
     static final int COORDS_PER_VERTEX = 3;
+    final static float radio = 0.9f;
     // 正方形的坐标数组
     static float[] squareCoords = {
-            -0.8f, 0.8f, 0.0f, // top left
-            -0.8f, -0.8f, 0.0f, // bottom left
-            0.8f, 0.8f, 0.0f,  // top right
-            0.8f, -0.8f, 0.0f  // bottom right
+            -1, 1, 0.0f, // top left
+            -1, -1, 0.0f, // bottom left
+            1, 1, 0.0f,  // top right
+            1, -1, 0.0f  // bottom right
     };
 
     static float[] colorCoords = {
