@@ -80,6 +80,7 @@ public class SquareRender implements GLSurfaceView.Renderer {
         /* 4、链接程序*/
         GLES20.glLinkProgram(mProgram);
     }
+
     private float[] mvpMatrix = new float[16];
 
     @Override
@@ -88,7 +89,6 @@ public class SquareRender implements GLSurfaceView.Renderer {
         final float aspectRadio = (float) height / width;
         //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
         Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
-
     }
 
     @Override
@@ -137,14 +137,14 @@ public class SquareRender implements GLSurfaceView.Renderer {
         mColor[0] = r;
         mColor[1] = g;
         mColor[2] = b;
-        if (r < 1.0f) {
-            r += 0.1f;
-            return;
-        } else if (g < 1.0f) {
+        if (g < 1.0f) {
             g += 0.1f;
             return;
         } else if (b < 1.0f) {
             b += 0.1f;
+            return;
+        } else if (r < 1.0f) {
+            r += 0.1f;
             return;
         }
     }

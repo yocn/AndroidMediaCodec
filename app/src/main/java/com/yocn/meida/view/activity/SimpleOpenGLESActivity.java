@@ -28,17 +28,20 @@ public class SimpleOpenGLESActivity extends BaseCameraActivity {
         GLSurfaceView glSurfaceView2 = findViewById(R.id.flsv_2);
         GLSurfaceView glSurfaceView3 = findViewById(R.id.flsv_3);
         GLSurfaceView glSurfaceView4 = findViewById(R.id.flsv_4);
+        GLSurfaceView glSurfaceView5 = findViewById(R.id.flsv_5);
+        GLSurfaceView glSurfaceView6 = findViewById(R.id.flsv_6);
         // if doesn't set setEGLContextClientVersion maybe report 'glDrawArrays is called with VERTEX_ARRAY client state disabled!'
         glSurfaceView1.setEGLContextClientVersion(2);
         glSurfaceView2.setEGLContextClientVersion(2);
         glSurfaceView3.setEGLContextClientVersion(2);
         glSurfaceView4.setEGLContextClientVersion(2);
-//        glSurfaceView1.setRenderer(new SimpleColorRender());
-//        glSurfaceView2.setRenderer(new TriangleRender());
-//        glSurfaceView3.setRenderer(new SquareRender());
-        glSurfaceView1.setRenderer(new SquareTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
-        glSurfaceView2.setRenderer(new SquareRender());
-        glSurfaceView3.setRenderer(new SquareRender1(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
-        glSurfaceView4.setRenderer(new SquareRender2(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+        glSurfaceView5.setEGLContextClientVersion(2);
+        glSurfaceView6.setEGLContextClientVersion(2);
+        glSurfaceView1.setRenderer(new SimpleColorRender());
+        glSurfaceView2.setRenderer(new TriangleRender());
+        glSurfaceView3.setRenderer(new SquareRender());
+        glSurfaceView4.setRenderer(new SquareTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+        glSurfaceView5.setRenderer(new SquareRender1(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+        glSurfaceView6.setRenderer(new SquareRender2(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
     }
 }
