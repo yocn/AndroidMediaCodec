@@ -50,6 +50,7 @@ public class Camera2ProviderWithGL extends BaseCameraProvider {
     public void initTexture(SurfaceTexture surfaceTexture, TextureView textureView) {
         this.textureView = textureView;
         this.surfaceTexture = surfaceTexture;
+        //delay 300只是为了测试，因为这里camera输出同时在GLSurfaceView和textureView上，延时300毫秒保证这俩都准备好。
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {

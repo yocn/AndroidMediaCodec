@@ -4,6 +4,7 @@ import android.graphics.SurfaceTexture;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 
 import com.yocn.meida.gles.GlUtil;
 
@@ -18,11 +19,12 @@ import static android.opengl.GLES20.GL_FRAMEBUFFER;
 public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
     // 顶点着色器的脚本
     String vertexShaderCode =
+            "uniform mat4 uMVPMatrix;" +         //接收传入的转换矩阵
             "attribute vec4 vPosition;" +     // 应用程序传入顶点着色器的顶点位置
                     "attribute vec2 aTexCoord;" +       //接收传入的顶点纹理位置
                     "varying vec2 vTextureCoord;" +
                     " void main() {" +
-                    "     gl_Position = vPosition;" +  // 此次绘制此顶点位置
+                    "     gl_Position = uMVPMatrix * vPosition;" +  // 此次绘制此顶点位置
                     "     vTextureCoord = aTexCoord;" +  // 设置texture的坐标
                     " }";
 
@@ -86,9 +88,14 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
         mProgramId = GlUtil.createProgram(vertexShaderCode, fragmentShaderCode);
     }
 
+    private float[] mvpMatrix = new float[16];
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+
+        final float aspectRadio = (float) height / width;
+        //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
+        Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
     }
 
     @Override
@@ -106,6 +113,8 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
         //当前绘制的顶点位置句柄
         int vPosition = GLES20.glGetAttribLocation(mProgramId, "vPosition");
         int aTexCoord = GLES20.glGetAttribLocation(mProgramId, "aTexCoord");
+        int mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgramId, "uMVPMatrix");
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 
         // 启用顶点属性
         GLES20.glEnableVertexAttribArray(vPosition);

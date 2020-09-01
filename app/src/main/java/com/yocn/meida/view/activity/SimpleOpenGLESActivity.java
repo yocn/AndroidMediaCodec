@@ -6,6 +6,8 @@ import android.os.Bundle;
 import com.yocn.media.R;
 import com.yocn.meida.gles.render.SimpleColorRender;
 import com.yocn.meida.gles.render.SquareRender;
+import com.yocn.meida.gles.render.SquareRender1;
+import com.yocn.meida.gles.render.SquareRender2;
 import com.yocn.meida.gles.render.SquareTextureRender;
 import com.yocn.meida.gles.render.TriangleRender;
 import com.yocn.meida.util.BitmapUtil;
@@ -31,9 +33,12 @@ public class SimpleOpenGLESActivity extends BaseCameraActivity {
         glSurfaceView2.setEGLContextClientVersion(2);
         glSurfaceView3.setEGLContextClientVersion(2);
         glSurfaceView4.setEGLContextClientVersion(2);
-        glSurfaceView1.setRenderer(new SimpleColorRender());
-        glSurfaceView2.setRenderer(new TriangleRender());
-        glSurfaceView3.setRenderer(new SquareRender());
-        glSurfaceView4.setRenderer(new SquareTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+//        glSurfaceView1.setRenderer(new SimpleColorRender());
+//        glSurfaceView2.setRenderer(new TriangleRender());
+//        glSurfaceView3.setRenderer(new SquareRender());
+        glSurfaceView1.setRenderer(new SquareTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+        glSurfaceView2.setRenderer(new SquareRender());
+        glSurfaceView3.setRenderer(new SquareRender1(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+        glSurfaceView4.setRenderer(new SquareRender2(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
     }
 }
