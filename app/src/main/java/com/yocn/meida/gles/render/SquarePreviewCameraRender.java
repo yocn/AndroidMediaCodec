@@ -5,6 +5,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.gles.GlUtil;
@@ -21,7 +22,7 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
     // 顶点着色器的脚本
     String vertexShaderCode =
             "uniform mat4 uMVPMatrix;" +         //接收传入的转换矩阵
-            "attribute vec4 vPosition;" +     // 应用程序传入顶点着色器的顶点位置
+                    "attribute vec4 vPosition;" +     // 应用程序传入顶点着色器的顶点位置
                     "attribute vec2 aTexCoord;" +       //接收传入的顶点纹理位置
                     "varying vec2 vTextureCoord;" +
                     " void main() {" +
@@ -90,13 +91,24 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
     }
 
     private float[] mvpMatrix = new float[16];
+
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
 
-        final float aspectRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
-        //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
-        Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
+        float surfaceRadio = (float) height / width;
+        float previewRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
+        Log.d("yocnyocn", "surfaceRadio:" + surfaceRadio);
+        Log.d("yocnyocn", "previewRadio:" + previewRadio);
+        if (surfaceRadio > previewRadio) {
+            // 预览画面比较长
+            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
+            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -surfaceRadio, surfaceRadio, -1f, 1f);
+        } else {
+            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
+//            Matrix.orthoM(mvpMatrix, 0, -previewRadio, previewRadio, -1f, 1f, -1f, 1f);
+            Matrix.orthoM(mvpMatrix, 0, -surfaceRadio, surfaceRadio, -1f, 1f, -1f, 1f);
+        }
         Matrix.rotateM(mvpMatrix, 0, 270, 0, 0, 1);
     }
 

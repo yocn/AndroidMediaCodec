@@ -37,7 +37,9 @@
         <activity android:name="com.yocn.meida.view.activity.TestScrollActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTrans264Activity" />
         <activity android:name="com.yocn.meida.view.activity.SimpleOpenGLESActivity" />
-        <activity android:name="com.yocn.meida.view.activity.PreviewWithOpenGLESActivity" />
+        <activity
+            android:name="com.yocn.meida.view.activity.PreviewWithOpenGLESActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.yocn.meida.view.activity.YUVPlayerActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />

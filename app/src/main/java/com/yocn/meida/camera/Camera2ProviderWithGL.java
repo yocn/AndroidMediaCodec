@@ -74,7 +74,9 @@ public class Camera2ProviderWithGL extends BaseCameraProvider {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
-                        LogUtil.d("preview->" + previewSize.toString());
+                        for (Size size : sizeMap) {
+                            LogUtil.d("preview->" + size.toString());
+                        }
                         mCameraId = cameraId;
                     }
                     String[] params = new String[]{Manifest.permission.CAMERA};
