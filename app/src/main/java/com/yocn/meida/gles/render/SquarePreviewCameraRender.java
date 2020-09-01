@@ -6,6 +6,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
+import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.gles.GlUtil;
 
 import java.nio.FloatBuffer;
@@ -93,9 +94,10 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
 
-        final float aspectRadio = (float) height / width;
+        final float aspectRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
         //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
         Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
+        Matrix.rotateM(mvpMatrix, 0, 270, 0, 0, 1);
     }
 
     @Override
