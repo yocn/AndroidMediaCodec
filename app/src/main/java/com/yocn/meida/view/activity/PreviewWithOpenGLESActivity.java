@@ -48,8 +48,15 @@ public class PreviewWithOpenGLESActivity extends BaseCameraActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        float previewRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
+        float cameraRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
+
         int showHeight = BaseCameraProvider.previewSize.getHeight() * BaseCameraProvider.ScreenSize.getWidth() / BaseCameraProvider.previewSize.getWidth();
         int showWidth = BaseCameraProvider.ScreenSize.getWidth();
+        if (previewRadio > cameraRadio) {
+            showHeight = BaseCameraProvider.ScreenSize.getHeight();
+            showWidth = BaseCameraProvider.previewSize.getWidth() * BaseCameraProvider.ScreenSize.getHeight() / BaseCameraProvider.previewSize.getHeight();
+        }
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) textureView.getLayoutParams();
         layoutParams.height = showHeight;
         layoutParams.width = showWidth;

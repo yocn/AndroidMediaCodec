@@ -103,11 +103,11 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
         if (surfaceRadio > previewRadio) {
             // 预览画面比较长
             //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
-            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -surfaceRadio, surfaceRadio, -1f, 1f);
+            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -surfaceRadio / previewRadio, surfaceRadio / previewRadio, -1f, 1f);
         } else {
             //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
-//            Matrix.orthoM(mvpMatrix, 0, -previewRadio, previewRadio, -1f, 1f, -1f, 1f);
-            Matrix.orthoM(mvpMatrix, 0, -surfaceRadio, surfaceRadio, -1f, 1f, -1f, 1f);
+            Matrix.orthoM(mvpMatrix, 0, -previewRadio / surfaceRadio, previewRadio / surfaceRadio, -1f, 1f, -1f, 1f);
+//            Matrix.orthoM(mvpMatrix, 0, -surfaceRadio, surfaceRadio, -1f, 1f, -1f, 1f);
         }
         Matrix.rotateM(mvpMatrix, 0, 270, 0, 0, 1);
     }
