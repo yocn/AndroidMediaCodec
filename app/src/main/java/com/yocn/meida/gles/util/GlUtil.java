@@ -1,4 +1,4 @@
-package com.yocn.meida.gles;
+package com.yocn.meida.gles.util;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
@@ -151,6 +151,18 @@ public class GlUtil {
 	 * Allocates a direct float buffer, and populates it with the float array data.
 	 */
 	public static FloatBuffer createFloatBuffer(float[] coords) {
+		// Allocate a direct ByteBuffer, using 4 bytes per float, and copy coords into it.
+		ByteBuffer bb = ByteBuffer.allocateDirect(coords.length * SIZEOF_FLOAT);
+		bb.order(ByteOrder.nativeOrder());
+		FloatBuffer fb = bb.asFloatBuffer();
+		fb.put(coords);
+		fb.position(0);
+		return fb;
+	}
+	/**
+	 * Allocates a direct float buffer, and populates it with the float array data.
+	 */
+	public static FloatBuffer floatArray2FloatBuffer(float[] coords) {
 		// Allocate a direct ByteBuffer, using 4 bytes per float, and copy coords into it.
 		ByteBuffer bb = ByteBuffer.allocateDirect(coords.length * SIZEOF_FLOAT);
 		bb.order(ByteOrder.nativeOrder());

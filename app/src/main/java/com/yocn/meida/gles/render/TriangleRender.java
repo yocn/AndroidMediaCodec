@@ -3,7 +3,7 @@ package com.yocn.meida.gles.render;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 
-import com.yocn.meida.gles.GlUtil;
+import com.yocn.meida.gles.util.GlUtil;
 
 import java.nio.FloatBuffer;
 

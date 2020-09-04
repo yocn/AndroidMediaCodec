@@ -5,16 +5,15 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
-import android.util.Log;
 
-import com.yocn.meida.gles.GlUtil;
+import com.yocn.meida.gles.util.GlUtil;
 
 import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class SquareRender1 implements GLSurfaceView.Renderer {
+public class SquareTextureRender2 implements GLSurfaceView.Renderer {
 
     // 顶点着色器的脚本
     String vertexShaderCode =
@@ -37,9 +36,6 @@ public class SquareRender1 implements GLSurfaceView.Renderer {
                     "gl_FragColor = texture2D(sTexture,vTextureCoord);" +//进行纹理采样
                     " }";
 
-    private FloatBuffer vertexBuffer;  //顶点坐标数据要转化成FloatBuffer格式
-    private FloatBuffer texBuffer;  //顶点坐标数据要转化成FloatBuffer格式
-
     // 正方形的坐标数组
     static float squareCoords[] = {
             -1f, 1f, 0.0f, // top left
@@ -54,25 +50,30 @@ public class SquareRender1 implements GLSurfaceView.Renderer {
             1, 1,
     };//纹理顶点数组
 
+    private FloatBuffer mVertexBuffer;
+    private FloatBuffer mTexCoordBuffer;
     private int mProgram;
     private int vPositionHandle;
     private int aTexCoordHandle;
     private int mMvpMatrixHandle;
-    private int uTextureUnitLocationHandle;
+    private int mTextureId;
+    private Bitmap mBitmap;
 
-    public SquareRender1(Bitmap bitmap) {
+    public SquareTextureRender2(Bitmap bitmap) {
         mBitmap = bitmap;
         /* 1、数据转换，顶点坐标数据float类型转换成OpenGL格式FloatBuffer，int和short同理*/
-        vertexBuffer = GlUtil.createFloatBuffer(squareCoords);
-        texBuffer = GlUtil.createFloatBuffer(colors);
-        mTextureId = createTexture();
+        mVertexBuffer = GlUtil.createFloatBuffer(squareCoords);
+        mTexCoordBuffer = GlUtil.createFloatBuffer(colors);
     }
 
     // gles相关的代码应该在gles的线层内调用，也就是这三个声明周期内调用。否则可能会报 call to OpenGL ES API with no current context (logged once per thread)
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         gl.glClearColor(1.0f, 0.3f, 0.2f, 1.0f);
+        // 之前initTexture();放构造方法了，一直没找到原因，百思不得其姐了好久！！！！！！！！！！！！！
+        initTexture();
 
+//        gl.glEnable(GLES20.GL_TEXTURE_2D);
         /* 加载编译顶点着色器和片元着色器*/
         int vertexShader = GlUtil.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
         int fragmentShader = GlUtil.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
@@ -93,7 +94,6 @@ public class SquareRender1 implements GLSurfaceView.Renderer {
         aTexCoordHandle = GLES20.glGetAttribLocation(mProgram, "aTexCoord");
 
         mMvpMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        uTextureUnitLocationHandle = GLES20.glGetUniformLocation(mProgram, "sTexture");
     }
 
     private float[] mvpMatrix = new float[16];
@@ -106,53 +106,77 @@ public class SquareRender1 implements GLSurfaceView.Renderer {
         Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
     }
 
-    private int mTextureId;
-    private Bitmap mBitmap;
-
-    private int createTexture() {
-        int[] texture = new int[1];
-        if (mBitmap != null && !mBitmap.isRecycled()) {
-            //生成纹理
-            GLES20.glGenTextures(1, texture, 0);
-            //生成纹理
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
-            //设置缩小过滤为使用纹理中坐标最接近的一个像素的颜色作为需要绘制的像素颜色
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            //设置放大过滤为使用纹理中坐标最接近的若干个颜色，通过加权平均算法得到需要绘制的像素颜色
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-            //设置环绕方向S，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-            //设置环绕方向T，截取纹理坐标到[1/2n,1-1/2n]。将导致永远不会与border融合
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-            //根据以上指定的参数，生成一个2D纹理
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
-            return texture[0];
-        }
-        return 0;
-    }
-
     @Override
     public void onDrawFrame(GL10 gl) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         // 将程序添加到OpenGL ES环境
         GLES20.glUseProgram(mProgram);
 
-        // 启用顶点属性
+        /**设置数据*/
+        // 启用顶点属性，最后对应禁用
         GLES20.glEnableVertexAttribArray(vPositionHandle);
         GLES20.glEnableVertexAttribArray(aTexCoordHandle);
-        mTextureId = createTexture();
-        //准备三角形坐标数据
-        GLES20.glVertexAttribPointer(vPositionHandle, 3, GLES20.GL_FLOAT, false, 3 * 4, vertexBuffer);
+
+        //设置三角形坐标数据（一个顶点三个坐标）
+        GLES20.glVertexAttribPointer(vPositionHandle, 3,
+                GLES20.GL_FLOAT, false,
+                3 * 4, mVertexBuffer);
         //设置纹理坐标数据
-        GLES20.glVertexAttribPointer(aTexCoordHandle, 2, GLES20.GL_FLOAT, false, 2 * 4, texBuffer);
+        GLES20.glVertexAttribPointer(aTexCoordHandle, 2,
+                GLES20.GL_FLOAT, false,
+                2 * 4, mTexCoordBuffer);
 
+        // 将投影和视图转换传递给着色器，可以理解为给uMVPMatrix这个变量赋值为mvpMatrix
         GLES20.glUniformMatrix4fv(mMvpMatrixHandle, 1, false, mvpMatrix, 0);
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
-        GLES20.glUniform1i(uTextureUnitLocationHandle, 0);
 
-        // 绘制三角形
+        //设置使用的纹理编号
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        //绑定指定的纹理id
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
+
+        /** 绘制三角形，三个顶点*/
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
+        // 禁用顶点数组（好像不禁用也没啥问题）
+        GLES20.glDisableVertexAttribArray(vPositionHandle);
+        GLES20.glDisableVertexAttribArray(aTexCoordHandle);
+    }
+
+
+    protected int initTexture() {
+        int textures[] = new int[1]; //生成纹理id
+
+        GLES20.glGenTextures(  //创建纹理对象
+                1, //产生纹理id的数量
+                textures, //纹理id的数组
+                0  //偏移量
+        );
+        mTextureId = textures[0];
+
+        //绑定纹理id，将对象绑定到环境的纹理单元
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureId);
+
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);//设置MIN 采样方式
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);//设置MAG采样方式
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);//设置S轴拉伸方式
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
+                GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);//设置T轴拉伸方式
+
+        if (mBitmap == null) {
+            return -1;
+        }
+        //加载图片
+        GLUtils.texImage2D( //实际加载纹理进显存
+                GLES20.GL_TEXTURE_2D, //纹理类型
+                0, //纹理的层次，0表示基本图像层，可以理解为直接贴图
+                mBitmap, //纹理图像
+                0 //纹理边框尺寸
+        );
+
+        return textures[0];
     }
 
 }

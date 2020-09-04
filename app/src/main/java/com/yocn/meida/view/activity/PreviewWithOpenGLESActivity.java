@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import com.yocn.media.R;
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.camera.Camera2ProviderWithGL;
-import com.yocn.meida.gles.GlUtil;
+import com.yocn.meida.gles.util.GlUtil;
 import com.yocn.meida.gles.render.SquarePreviewCameraRender;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.view.widget.MyTextureView;

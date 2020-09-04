@@ -5,7 +5,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import com.yocn.meida.gles.GlUtil;
+import com.yocn.meida.gles.util.GlUtil;
 
 import java.nio.FloatBuffer;
 
