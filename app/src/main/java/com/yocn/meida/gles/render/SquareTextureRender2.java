@@ -72,8 +72,6 @@ public class SquareTextureRender2 implements GLSurfaceView.Renderer {
         gl.glClearColor(1.0f, 0.3f, 0.2f, 1.0f);
         // 之前initTexture();放构造方法了，一直没找到原因，百思不得其姐了好久！！！！！！！！！！！！！
         initTexture();
-
-//        gl.glEnable(GLES20.GL_TEXTURE_2D);
         /* 加载编译顶点着色器和片元着色器*/
         int vertexShader = GlUtil.loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode);
         int fragmentShader = GlUtil.loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
@@ -101,9 +99,16 @@ public class SquareTextureRender2 implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
-        final float aspectRadio = (float) height / width;
-        //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
-        Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -aspectRadio, aspectRadio, -1f, 1f);
+        float surfaceRadio = (float) height / width;
+        float picRadio = (float) mBitmap.getHeight() / mBitmap.getWidth();
+        if (surfaceRadio > picRadio) {
+            // 预览画面比较长
+            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
+            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -surfaceRadio / picRadio, surfaceRadio / picRadio, -1f, 1f);
+        } else {
+            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
+            Matrix.orthoM(mvpMatrix, 0, -picRadio / surfaceRadio, picRadio / surfaceRadio, -1f, 1f, -1f, 1f);
+        }
     }
 
     @Override
