@@ -50,7 +50,6 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
 
     // 数组中每3个值作为一个坐标点
     static final int COORDS_PER_VERTEX = 3;
-    final static float radio = 0.9f;
     // 正方形的坐标数组
     static float[] squareCoords = {
             -1, 1, 0.0f, // top left
