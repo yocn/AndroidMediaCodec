@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.yocn.media.R;
 import com.yocn.meida.gles.render.SimpleColorRender;
+import com.yocn.meida.gles.render.SquareForTextureRender;
 import com.yocn.meida.gles.render.SquareRender;
 import com.yocn.meida.gles.render.SquareTextureRender;
 import com.yocn.meida.gles.render.SquareTextureRender2;
@@ -41,5 +42,6 @@ public class SimpleOpenGLESActivity extends BaseCameraActivity {
         glSurfaceView3.setRenderer(new SquareRender());
         glSurfaceView4.setRenderer(new SquareTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
         glSurfaceView5.setRenderer(new SquareTextureRender2(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+        glSurfaceView6.setRenderer(new SquareForTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
     }
 }

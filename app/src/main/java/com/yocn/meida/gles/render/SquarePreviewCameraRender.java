@@ -38,12 +38,8 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
                     "varying vec2 vTextureCoord;\n" +
                     "void main()\n" +
                     "{\n" +
-//                    "  vec4 vCameraColor = texture2D(uTextureSampler, vTextureCoord);\n" +
-//                    "  float fGrayColor = (0.3*vCameraColor.r + 0.59*vCameraColor.g + 0.11*vCameraColor.b);\n" +
-//                    "  gl_FragColor = vec4(fGrayColor, fGrayColor, fGrayColor, 1.0);\n" +
                     "  gl_FragColor = texture2D(uTextureSampler, vTextureCoord);\n" +
-
-                    "}\n";
+                    "}";
 
     private FloatBuffer vertexBuffer;
     private FloatBuffer colorCoordsBuffer;
