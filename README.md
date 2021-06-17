@@ -18,3 +18,5 @@ Android Camera2从入门到放弃
 
 6.使用GPUImage库做预览，可以选择各种gles效果。
 -------  
+
+详细文章可以查看 https://www.jianshu.com/p/b9d994f2b381
