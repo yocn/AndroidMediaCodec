@@ -26,4 +26,5 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+    delete rootProject.file('libNative/.cxx/')
 }

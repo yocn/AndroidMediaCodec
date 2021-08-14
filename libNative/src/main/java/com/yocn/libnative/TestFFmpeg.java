@@ -1,5 +1,5 @@
 package com.yocn.libnative;
 
 public class TestFFmpeg {
-    public native void init();
+    public native void init(String url);
 }
