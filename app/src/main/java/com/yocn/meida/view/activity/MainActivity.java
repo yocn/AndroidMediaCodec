@@ -17,6 +17,7 @@ import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.base.DataProvider;
 import com.yocn.meida.camera.BaseCameraProvider;
+import com.yocn.meida.ffmpeg.FFMpegUtil;
 import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionsUtils;
@@ -56,7 +57,7 @@ public class MainActivity extends Activity {
         requestPermission();
         String ss = YUVTransUtil.getInstance().stringFromJNI();
         LogUtil.d("yocn", "ss::" + ss);
-        new TestFFmpeg().init();
+        new FFMpegUtil().test(this);
     }
 
     private void initView(View root) {
