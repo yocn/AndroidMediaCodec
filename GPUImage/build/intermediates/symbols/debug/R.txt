@@ -1,7 +1,0 @@
-int attr gpuimage_show_loading 0x7f040001
-int attr gpuimage_surface_type 0x7f040002
-int id surface_view 0x7f0c0001
-int id texture_view 0x7f0c0002
-int[] styleable GPUImageView { 0x7f040001, 0x7f040002 }
-int styleable GPUImageView_gpuimage_show_loading 0
-int styleable GPUImageView_gpuimage_surface_type 1
