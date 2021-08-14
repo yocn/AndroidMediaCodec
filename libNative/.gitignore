@@ -3,3 +3,4 @@
 /src/main/jniLibs
 /src/main/jni/ffmpeg-build/
 /src/main/jni/lame-build/
+/.cxx

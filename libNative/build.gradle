@@ -5,8 +5,8 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 30
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         externalNativeBuild {
@@ -45,21 +45,13 @@ android {
         }
     }
 
-//    sourceSets.main {
-//        jni.srcDirs = []//disable automatic ndk-build call 屏蔽gradle自动生成Android.mk
-//        jniLibs.srcDirs = ['jniLibs']//这个脚本的意思是把app下的libs文件夹，当成原本/src/main下的jniLibs文件夹，这样就可以加载so库了。
-//    }
-
     externalNativeBuild {
-//        ndkBuild {
-//            path "src/main/jni/Android.mk"
-//        }
         cmake {
             path "src/main/jni/CMakeLists.txt"
-//            version "3.20.2"
+            // if can not find, please add  cmake.dir=/Users/yocn/Library/Android/sdk/cmake/3.10.2.4988404   to local.propertoes
+            version "3.10.2"
         }
     }
-
 }
 
 dependencies {

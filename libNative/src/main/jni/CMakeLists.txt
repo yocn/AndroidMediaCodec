@@ -57,30 +57,13 @@ add_library( # Sets the name of the library.
         # Sets the library as a shared library.
         SHARED
 
-        # Provides a relative path to your source file(s).
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/NXMediaCodecEncLib.c
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/NXMediaCodecEncInterface.c
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/NXMediaCodecEncJni.c
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/NXUtilCodecInfoProcess.cpp
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/android/jniUtils/NXAndroidAllClass.c
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/android/jniUtils/NXAndroidJni.c
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/android/jniUtils/NXAndroidJniBase.c
-        #        ${CMAKE_SOURCE_DIR}/mediacodec/android/jniUtils/NXAndroidOSBuild.c
         native-lib.cpp
-        #        mx_native_crash_collector.c
-        #        concurrent/Thread.cpp
-        #        GLVideo.cpp
-        #        effect/BaseEffect.cpp
-        #        effect/GLUtil.cpp
-        #        effect/TextureCopy.cpp
-        #        effect/TestEffect.cpp
-        #        effect/ZEffect.cpp
+        YUVTrans.cpp
+        ffmpegTests.cpp
         )
 
 INCLUDE_DIRECTORIES(
         ${CMAKE_SOURCE_DIR}
-        #        ${CMAKE_SOURCE_DIR}/effect
-        #        ${CMAKE_SOURCE_DIR}/ffmpeg-build/${ANDROID_ABI}/include
         ${CMAKE_SOURCE_DIR}/ffmpeg
         ${CMAKE_SOURCE_DIR}/libyuv/include
 )
