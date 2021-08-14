@@ -7,7 +7,7 @@ package com.yocn.libnative;
  */
 public class YUVTransUtil {
     static {
-        System.loadLibrary("Native");
+//        System.loadLibrary("Native");
     }
 
     static YUVTransUtil mYUVTransUtil;

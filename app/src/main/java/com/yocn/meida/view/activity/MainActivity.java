@@ -11,11 +11,14 @@ import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.yocn.libnative.TestFFmpeg;
+import com.yocn.libnative.YUVTransUtil;
 import com.yocn.media.R;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.base.DataProvider;
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.util.DisplayUtil;
+import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionsUtils;
 import com.yocn.meida.view.adapter.MainAdapter;
 
@@ -51,6 +54,9 @@ public class MainActivity extends Activity {
         initView(rootView);
         initData();
         requestPermission();
+        String ss = YUVTransUtil.getInstance().stringFromJNI();
+        LogUtil.d("yocn", "ss::" + ss);
+        new TestFFmpeg().init();
     }
 
     private void initView(View root) {

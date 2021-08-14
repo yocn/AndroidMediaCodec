@@ -1,0 +1,6 @@
+[submodule "libNative/src/main/jni/ffmpeg"]
+	path = libNative/src/main/jni/ffmpeg
+	url = https://git.ffmpeg.org/ffmpeg.git
+[submodule "libNative/src/main/jni/libyuv"]
+	path = libNative/src/main/jni/libyuv
+	url = https://chromium.googlesource.com/libyuv/libyuv

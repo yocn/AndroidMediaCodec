@@ -1,36 +1,57 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 28
+        minSdkVersion 21
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_ARM_NEON=TRUE",    \
+                          "-DANDROID_TOOLCHAIN=clang",  \
+                          "-DANDROID_ARM_MODE=arm",     \
+                          "-DANDROID_STL=c++_shared"
+
+
+                cFlags "-D__STDC_FORMAT_MACROS",        \
+                       "-DFFCMD",                       \
+                       "-DGL_GLEXT_PROTOTYPES=1"
+
+
+                cppFlags "-std=c++11",                  \
+                         "-fexceptions",                \
+                         "-frtti",                      \
+                         "-DGL_GLEXT_PROTOTYPES=1"
+            }
+        }
         ndk {
-            abiFilters 'armeabi-v7a'
+            abiFilters 'arm64-v8a'
         }
     }
 
     buildTypes {
+        debug {
+            packagingOptions {
+                doNotStrip "**.so"
+            }
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
-    sourceSets.main {
-        jni.srcDirs = []//disable automatic ndk-build call 屏蔽gradle自动生成Android.mk
-        jniLibs.srcDirs = ['jniLibs']//这个脚本的意思是把app下的libs文件夹，当成原本/src/main下的jniLibs文件夹，这样就可以加载so库了。
-    }
-
     externalNativeBuild {
-        ndkBuild {
-            path "src/main/jni/Android.mk"
+        cmake {
+            path "src/main/jni/CMakeLists.txt"
+            // if can not find, please add  cmake.dir=/Users/yocn/Library/Android/sdk/cmake/3.10.2.4988404   to local.propertoes
+            version "3.10.2"
         }
     }
-
 }
 
 dependencies {
