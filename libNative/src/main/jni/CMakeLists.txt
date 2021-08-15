@@ -33,6 +33,7 @@ elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
     add_compile_options(-fPIC)
 endif ()
 
+# 三方静态库命名为third-libs
 set(
         third-libs
         ${CMAKE_SOURCE_DIR}/ffmpeg-build/${ANDROID_ABI}/lib/libavfilter.a
@@ -45,12 +46,12 @@ set(
         ${CMAKE_SOURCE_DIR}/x264/install/lib/libx264.a
 )
 
-
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
+#创建一个so，名字叫native-lib
 add_library( # Sets the name of the library.
         native-lib
 
@@ -74,31 +75,20 @@ INCLUDE_DIRECTORIES(
 # you want to add. CMake verifies that the library exists before
 # completing its build.
 
+# 找到log库，命名为log-lib
 find_library( # Sets the name of the path variable.
         log-lib
 
         # Specifies the name of the NDK library that
         # you want CMake to locate.
         log)
-
+#找到z库，命名为z-lib，必须使用z库，否则会报错
 find_library(z-lib z)
 find_library(gl-lib GLESV2)
 
-#string(TOLOWER "${CMAKE_BUILD_TYPE}" build_type)
-#if (build_type MATCHES "^rel")
-#    set_target_properties(native-lib PROPERTIES CXX_VISIBILITY_PRESET hidden)
-#    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${CMAKE_SOURCE_DIR}/version_script")
-#endif ()
-
-# Specifies libraries CMake should link to your target library. You
-# can link multiple libraries, such as libraries you define in this
-# build script, prebuilt third-party libraries, or system libraries.
-
+# 打印信息在.cxx/cmake/debug/arm64-v8a/cmake_build_output.txt
 message("-----------------------message----------------------")
 message(${third-libs})
-MESSAGE("-----------------------message----------------------")
-MESSAGE(${third-libs})
-MESSAGE(${log-lib})
 
 target_link_libraries( # Specifies the target library.
         native-lib
@@ -107,6 +97,6 @@ target_link_libraries( # Specifies the target library.
         # included in the NDK.
         ${log-lib}
         ${z-lib}
-        ${gl-lib}
+        #        ${gl-lib}
         yuv
         )
