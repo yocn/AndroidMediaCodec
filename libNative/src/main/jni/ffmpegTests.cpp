@@ -158,47 +158,34 @@ JNI_METHOD_NAME(init)(JNIEnv *env, jobject jobject, jstring url, jstring out_url
     }
 }
 
-extern "C"
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(decode2Yuv)(
-        JNIEnv
-        *env,
-        jobject /* this */,
-        jstring input_, jstring
-        output_) {
+JNI_METHOD_NAME(decode2Yuv)(JNIEnv *env, jobject, jstring input_, jstring output_) {
 
 //ffmpeg 开始前必掉用此函数
     av_register_all();
 
 //路径  java String 转换 C 字符串
-    const char *inputStr = env->GetStringUTFChars(input_, 0);
-    const char *outputStr = env->GetStringUTFChars(output_, 0);
+    jboolean copy;
+    const char *inputStr = env->GetStringUTFChars(input_, &copy);
+    const char *outputStr = env->GetStringUTFChars(output_, &copy);
 
 //AVFormatContext结构体开辟内存
     AVFormatContext *pContext = avformat_alloc_context();
 
 //Open an input stream and read the header
-    if (
-            avformat_open_input(&pContext, inputStr, NULL, NULL
-            ) < 0) {
+    if (avformat_open_input(&pContext, inputStr, nullptr, nullptr) < 0) {
         LOGE("打开失败");
     }
 
 //Read packets of a media file to get stream information
-    if (
-            avformat_find_stream_info(pContext, NULL
-            ) < 0) {
+    if (avformat_find_stream_info(pContext, nullptr) < 0) {
         LOGE("获取信息失败");
     }
 
     int video_stream_idx = -1;
 
 //找到视频流
-    for (
-            int i = 0;
-            i < pContext->
-                    nb_streams;
-            ++i) {
+    for (int i = 0; i < pContext->nb_streams; ++i) {
         LOGE("循环流 %d", i);
         if (pContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
             video_stream_idx = i;
@@ -211,9 +198,7 @@ JNI_METHOD_NAME(decode2Yuv)(
     AVCodec *decoder = avcodec_find_decoder(codecContext->codec_id);
 
 //Initialize the AVCodecContext to use the given AVCodec 在此为解码器上下文初始化？（不太确定）
-    if (
-            avcodec_open2(codecContext, decoder, NULL
-            ) < 0) {
+    if (avcodec_open2(codecContext, decoder, nullptr) < 0) {
         LOGE("解码失败");
     }
 
@@ -240,11 +225,8 @@ JNI_METHOD_NAME(decode2Yuv)(
 //打开用于输出的文件
     FILE *fp_yuv = fopen(outputStr, "wb");
 
-    while (
-            av_read_frame(pContext, avPacket
-            ) >= 0) {
-        avcodec_decode_video2(codecContext, frame, &got_frame, avPacket
-        );
+    while (av_read_frame(pContext, avPacket) >= 0) {
+        avcodec_decode_video2(codecContext, frame, &got_frame, avPacket);
         if (got_frame > 0) {
             LOGE("解码=%d  format::%d linesize->%d w/d::%d/%d", codecContext->frame_number,
                  frame->format,
@@ -260,15 +242,13 @@ JNI_METHOD_NAME(decode2Yuv)(
 
 //输出至文件
             int y_size = codecContext->width * codecContext->height;
-            fwrite(frame
-                           ->data[0], 1, y_size, fp_yuv);
-            fwrite(frame
-                           ->data[1], 1, y_size / 4, fp_yuv);
-            fwrite(frame
-                           ->data[2], 1, y_size / 4, fp_yuv);
+            fwrite(frame->data[0], 1, y_size, fp_yuv);
+            fwrite(frame->data[1], 1, y_size / 4, fp_yuv);
+            fwrite(frame->data[2], 1, y_size / 4, fp_yuv);
         }
         av_free_packet(avPacket);
     }
+
 //关闭文件  释放内存
     fclose(fp_yuv);
     av_frame_free(&frame);
