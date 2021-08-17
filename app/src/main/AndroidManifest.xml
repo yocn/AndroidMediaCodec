@@ -36,7 +36,7 @@
         <activity android:name="com.yocn.meida.view.activity.PreviewNativeYUVActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTransportActivity" />
         <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity" />
-        <activity android:name="com.yocn.meida.view.activity.TestScrollActivity" />
+        <activity android:name="com.yocn.meida.view.activity.SimpleFFMpegPlayActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTrans264Activity" />
         <activity android:name="com.yocn.meida.view.activity.SimpleOpenGLESActivity" />
         <activity android:name="com.yocn.meida.view.activity.MediaCodecActivity" />

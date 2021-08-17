@@ -13,7 +13,7 @@ import com.yocn.meida.view.activity.PreviewWithOpenGLESActivity;
 import com.yocn.meida.view.activity.PreviewYUVDataActivity;
 import com.yocn.meida.view.activity.PreviewYUVDataActivity2;
 import com.yocn.meida.view.activity.SimpleOpenGLESActivity;
-import com.yocn.meida.view.activity.TestScrollActivity;
+import com.yocn.meida.view.activity.SimpleFFMpegPlayActivity;
 import com.yocn.meida.view.activity.YUVPlayerActivity;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class DataProvider {
         list.add(new JumpBean("OpenGLES", SimpleOpenGLESActivity.class));
         list.add(new JumpBean("Preview OpenGLES", PreviewWithOpenGLESActivity.class));
         list.add(new JumpBean("MediaCodec", MediaCodecActivity.class));
-//        list.add(new JumpBean("TestScrollActivity", TestScrollActivity.class));
+        list.add(new JumpBean("FFMpeg播放", SimpleFFMpegPlayActivity.class));
         return list;
     }
 }

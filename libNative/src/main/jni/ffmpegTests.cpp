@@ -2,6 +2,7 @@ extern "C" {
 #include <libswresample/swresample.h>
 #include <libavutil/opt.h>
 #include <ffmpeg/libswscale/swscale.h>
+#include <android/native_window_jni.h>
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 }
@@ -9,16 +10,18 @@ extern "C" {
 #include <android/log.h>
 #include <jni.h>
 
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "yocn", __VA_ARGS__)
+#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "LogUtil", __VA_ARGS__)
 #define LOGCATE LOGE
 
 #define JNI_METHOD_NAME(name) Java_com_yocn_libnative_TestFFmpeg_##name
 
 extern "C" {
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(init)(JNIEnv *env, jobject jobject, jstring url, jstring out_url);
+JNI_METHOD_NAME(init)(JNIEnv *env, jobject jobj, jstring url, jstring out_url);
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(decode2Yuv)(JNIEnv *env, jobject jobject, jstring url, jstring out_url);
+JNI_METHOD_NAME(decode2Yuv)(JNIEnv *env, jobject jobj, jstring url, jstring out_url);
+JNIEXPORT void JNICALL
+JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface);
 }
 
 JNIEXPORT void JNICALL
@@ -255,4 +258,18 @@ JNI_METHOD_NAME(decode2Yuv)(JNIEnv *env, jobject, jstring input_, jstring output
     av_frame_free(&pYUVFrame);
     avcodec_close(codecContext);
     avformat_free_context(pContext);
+}
+
+
+JNIEXPORT void JNICALL
+JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
+    ANativeWindow *m_NativeWindow = ANativeWindow_fromSurface(env, surface);
+
+    jboolean copy;
+    const char *m_Url = env->GetStringUTFChars(url, &copy);
+    LOGE("-------------------------init-----------------m_Url--%s", m_Url);
+
+    //4. 释放 ANativeWindow
+    if(m_NativeWindow)
+        ANativeWindow_release(m_NativeWindow);
 }

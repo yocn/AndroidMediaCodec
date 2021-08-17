@@ -97,6 +97,7 @@ target_link_libraries( # Specifies the target library.
         # included in the NDK.
         ${log-lib}
         ${z-lib}
+        -landroid
         #        ${gl-lib}
         yuv
         )
