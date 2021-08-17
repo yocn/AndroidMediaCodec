@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
  * @ClassName PreviewPureActivity
  */
 public class SimpleFFMpegPlayActivity extends BaseActivity {
-
+    public static String DESC = "最简单的FFMpeg播放视频";
     private SurfaceView surfaceView;
 
     @Override
@@ -36,7 +36,7 @@ public class SimpleFFMpegPlayActivity extends BaseActivity {
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
                 TestFFmpeg testFFmpeg = new TestFFmpeg();
                 String mp4FilePath = Constant.getTestMp4FilePath();
-                testFFmpeg.play(mp4FilePath, surfaceView.getHolder().getSurface());
+                new Thread(() -> testFFmpeg.play(mp4FilePath, surfaceView.getHolder().getSurface())).start();
             }
 
             @Override

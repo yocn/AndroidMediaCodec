@@ -23,7 +23,7 @@
         android:layout_height="1px"
         android:background="@color/h_half" />
 
-    <com.yocn.meida.view.widget.NestScrollView
+    <FrameLayout
         android:id="@+id/nsv_item"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -38,7 +38,7 @@
             android:padding="2dp"
             android:textColor="@color/color5"
             android:textSize="12sp" />
-    </com.yocn.meida.view.widget.NestScrollView>
+    </FrameLayout>
 
 
 </com.yocn.meida.view.widget.SquareRelativeLayout>
