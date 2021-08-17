@@ -36,12 +36,12 @@ public class DataProvider {
         list.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
         list.add(new JumpBean("ARGB转I420-libyuv", FormatTransportActivity.class));
         list.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
-        list.add(new JumpBean("x264转换", FormatTrans264Activity.class));
+        list.add(new JumpBean("FFMpeg播放", SimpleFFMpegPlayActivity.class));
         list.add(new JumpBean("播放YUV文件", YUVPlayerActivity.class));
         list.add(new JumpBean("OpenGLES", SimpleOpenGLESActivity.class));
         list.add(new JumpBean("Preview OpenGLES", PreviewWithOpenGLESActivity.class));
+        list.add(new JumpBean("x264转换", FormatTrans264Activity.class));
         list.add(new JumpBean("MediaCodec", MediaCodecActivity.class));
-        list.add(new JumpBean("FFMpeg播放", SimpleFFMpegPlayActivity.class));
         return list;
     }
 }

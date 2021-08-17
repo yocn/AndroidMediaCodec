@@ -5,6 +5,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.yocn.libnative.FFMpegSimplePlayer;
 import com.yocn.libnative.TestFFmpeg;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
@@ -34,9 +35,9 @@ public class SimpleFFMpegPlayActivity extends BaseActivity {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                TestFFmpeg testFFmpeg = new TestFFmpeg();
+                FFMpegSimplePlayer simplePlayer = new FFMpegSimplePlayer();
                 String mp4FilePath = Constant.getTestMp4FilePath();
-                new Thread(() -> testFFmpeg.play(mp4FilePath, surfaceView.getHolder().getSurface())).start();
+                new Thread(() -> simplePlayer.play(mp4FilePath, surfaceView.getHolder().getSurface())).start();
             }
 
             @Override
