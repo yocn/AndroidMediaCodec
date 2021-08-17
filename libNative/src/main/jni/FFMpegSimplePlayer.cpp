@@ -6,12 +6,9 @@ extern "C" {
 #include <android/native_window_jni.h>
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
-#include <android/log.h>
-#include <jni.h>
+#include <GlobalMacro.h>
+#include <Util.h>
 }
-
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "LogUtil", __VA_ARGS__)
-#define LOGCATE LOGE
 
 #define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimplePlayer_##name
 
@@ -23,6 +20,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface);
 JNIEXPORT void JNICALL
 JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
     jboolean copy;
+    LOG(env, jobj);
     const char *m_Url = env->GetStringUTFChars(url, &copy);
     LOGE("-------------------------init-----------------m_Url--%s", m_Url);
 //1.创建封装格式上下文

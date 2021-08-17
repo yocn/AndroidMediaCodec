@@ -61,6 +61,7 @@ add_library( # Sets the name of the library.
         native-lib.cpp
         YUVTrans.cpp
         ffmpegTests.cpp
+        Util.cpp
         FFMpegSimplePlayer.cpp
         )
 

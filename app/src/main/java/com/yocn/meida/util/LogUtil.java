@@ -8,7 +8,7 @@ import android.util.Log;
  * @ClassName LogUtil
  */
 public class LogUtil {
-    private static final String TAG = LogUtil.class.getSimpleName();
+    public static final String TAG = LogUtil.class.getSimpleName();
 
     public static void d(String pre, Object... msg) {
         Log.d(TAG, getStr(pre, msg));
