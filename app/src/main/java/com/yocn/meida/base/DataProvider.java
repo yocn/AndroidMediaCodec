@@ -17,6 +17,7 @@ import com.yocn.meida.view.activity.camera.PreviewYUVDataActivity;
 import com.yocn.meida.view.activity.camera.PreviewYUVDataActivity2;
 import com.yocn.meida.view.activity.ffmpeg.FFMpegActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayActivity;
+import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -69,6 +70,7 @@ public class DataProvider {
         cameraDataList.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
 //--------------------------------------------------------------------------------------------------
         ffmpegDataList.add(new JumpBean("FFMpeg播放", SimpleFFMpegPlayActivity.class));
+        ffmpegDataList.add(new JumpBean("FFMpeg播放Audio", SimpleFFMpegPlayAudioActivity.class));
     }
 
     public static List<JumpBean> getDataList(@Type int type) {

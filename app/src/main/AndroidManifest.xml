@@ -36,7 +36,6 @@
         <activity android:name="com.yocn.meida.view.activity.camera.PreviewNativeYUVActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTransportActivity" />
         <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity" />
-        <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTrans264Activity" />
         <activity android:name="com.yocn.meida.view.activity.SimpleOpenGLESActivity" />
         <activity android:name="com.yocn.meida.view.activity.MediaCodecActivity" />
@@ -48,6 +47,8 @@
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity android:name="com.yocn.meida.view.activity.camera.CameraActivity" />
         <activity android:name="com.yocn.meida.view.activity.ffmpeg.FFMpegActivity" />
+        <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayActivity" />
+        <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioActivity" />
     </application>
 
 </manifest>

@@ -10,15 +10,15 @@ extern "C" {
 #include <code-self/Util.h>
 }
 
-#define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimplePlayer_##name
+#define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimpleAudioPlayer_##name
 
 extern "C" {
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface);
+JNI_METHOD_NAME(playAudio)(JNIEnv *env, jobject jobj, jstring url);
 }
 
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
+JNI_METHOD_NAME(playAudio)(JNIEnv *env, jobject jobj, jstring url) {
     jboolean copy;
     LOG(env, jobj);
     const char *m_Url = env->GetStringUTFChars(url, &copy);
@@ -41,7 +41,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
     int m_StreamIndex = 0;
 //4.获取音视频流索引
     for (int i = 0; i < m_AVFormatContext->nb_streams; i++) {
-        if (m_AVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+        if (m_AVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
             m_StreamIndex = i;
             break;
         }
@@ -75,37 +75,36 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
         return;
     }
 
+    //1. 生成 resample 上下文，设置输入和输出的通道数、采样率以及采样格式，初始化上下文
+    SwrContext *m_SwrContext = swr_alloc();
+
+    int64_t AUDIO_DST_CHANNEL_LAYOUT = av_get_channel_layout("mono");;
+    int64_t AUDIO_DST_SAMPLE_RATE = 16000;
+    AVSampleFormat DST_SAMPLT_FORMAT = AV_SAMPLE_FMT_S16;
+    int64_t NB_SAMPLES = av_get_channel_layout_nb_channels(AUDIO_DST_CHANNEL_LAYOUT);
+    int AUDIO_DST_CHANNEL_COUNTS = 1;
+
+    av_opt_set_int(m_SwrContext, "in_channel_layout", m_AVCodecContext->channel_layout, 0);
+    av_opt_set_int(m_SwrContext, "out_channel_layout", AUDIO_DST_CHANNEL_LAYOUT, 0);
+    av_opt_set_int(m_SwrContext, "in_sample_rate", m_AVCodecContext->sample_rate, 0);
+    av_opt_set_int(m_SwrContext, "out_sample_rate", AUDIO_DST_SAMPLE_RATE, 0);
+    av_opt_set_sample_fmt(m_SwrContext, "in_sample_fmt", m_AVCodecContext->sample_fmt, 0);
+    av_opt_set_sample_fmt(m_SwrContext, "out_sample_fmt", DST_SAMPLT_FORMAT, 0);
+
+    swr_init(m_SwrContext);
+
+//2. 申请输出 Buffer
+    int m_nbSamples = (int) av_rescale_rnd(NB_SAMPLES, AUDIO_DST_SAMPLE_RATE,
+                                           m_AVCodecContext->sample_rate, AV_ROUND_UP);
+    int m_BufferSize = av_samples_get_buffer_size(nullptr, AUDIO_DST_CHANNEL_COUNTS, m_nbSamples,
+                                                  DST_SAMPLT_FORMAT, 1);
+    auto m_AudioOutBuffer = (uint8_t *) malloc(m_BufferSize);
+
 //9.创建存储编码数据和解码数据的结构体
     AVPacket *m_Packet = av_packet_alloc(); //创建 AVPacket 存放编码数据
     AVFrame *m_Frame = av_frame_alloc(); //创建 AVFrame 存放解码后的数据
 
-//2.1. 分配存储 RGB 图像的 buffer
-    int m_VideoWidth = m_AVCodecContext->width;
-    int m_VideoHeight = m_AVCodecContext->height;
-
-    int m_RenderWidth = m_VideoWidth;
-    int m_RenderHeight = m_VideoHeight;
-
-    AVFrame *m_RGBAFrame = av_frame_alloc();
-//计算 Buffer 的大小
-    int bufferSize = av_image_get_buffer_size(AV_PIX_FMT_RGBA, m_VideoWidth, m_VideoHeight, 1);
-//为 m_RGBAFrame 分配空间
-    auto *m_FrameBuffer = (uint8_t *) av_malloc(bufferSize * sizeof(uint8_t));
-    av_image_fill_arrays(m_RGBAFrame->data, m_RGBAFrame->linesize, m_FrameBuffer, AV_PIX_FMT_RGBA,
-                         m_VideoWidth, m_VideoHeight, 1);
-//2.2. 获取转换的上下文
-    SwsContext *m_SwsContext = sws_getContext(m_VideoWidth, m_VideoHeight,
-                                              m_AVCodecContext->pix_fmt,
-                                              m_RenderWidth, m_RenderHeight, AV_PIX_FMT_RGBA,
-                                              SWS_FAST_BILINEAR, nullptr, nullptr, nullptr);
-
-//3.1. 利用 Java 层 SurfaceView 传下来的 Surface 对象，获取 ANativeWindow
-    ANativeWindow *m_NativeWindow = ANativeWindow_fromSurface(env, surface);
-
-//3.2. 设置渲染区域和输入格式
-    ANativeWindow_setBuffersGeometry(m_NativeWindow, m_VideoWidth,
-                                     m_VideoHeight, WINDOW_FORMAT_RGBA_8888);
-
+    int frame_index = 0;
 //10.解码循环
     while (av_read_frame(m_AVFormatContext, m_Packet) >= 0) { //读取帧
         if (m_Packet->stream_index == m_StreamIndex) {
@@ -113,63 +112,17 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                 return;
             }
             while (avcodec_receive_frame(m_AVCodecContext, m_Frame) == 0) {
-                //获取到 m_Frame 解码数据，在这里进行格式转换，然后进行渲染，下一节介绍 ANativeWindow 渲染过程
+                frame_index++;
 
-//2.3. 格式转换
-                sws_scale(m_SwsContext, m_Frame->data, m_Frame->linesize, 0, m_VideoHeight,
-                          m_RGBAFrame->data, m_RGBAFrame->linesize);
-
-//3.3. 渲染
-                ANativeWindow_Buffer m_NativeWindowBuffer;
-//锁定当前 Window ，获取屏幕缓冲区 Buffer 的指针
-                ANativeWindow_lock(m_NativeWindow, &m_NativeWindowBuffer, nullptr);
-                auto *dstBuffer = static_cast<uint8_t *>(m_NativeWindowBuffer.bits);
-
-                int srcLineSize = m_RGBAFrame->linesize[0];//输入图的步长（一行像素有多少字节）
-                int dstLineSize = m_NativeWindowBuffer.stride * 4;//RGBA 缓冲区步长
-
-                for (int i = 0; i < m_VideoHeight; ++i) {
-                    //一行一行地拷贝图像数据
-                    memcpy(dstBuffer + i * dstLineSize, m_FrameBuffer + i * srcLineSize,
-                           srcLineSize);
+                //3. 重采样，frame 为解码帧
+                int ret = swr_convert(m_SwrContext, &m_AudioOutBuffer, m_BufferSize / 2,
+                                      (const uint8_t **) m_Frame->data, m_Frame->nb_samples);
+                if (ret > 0) {
+                    //play
+                    LOGE("play----index::%d", frame_index);
                 }
-//解锁当前 Window ，渲染缓冲区数据
-                ANativeWindow_unlockAndPost(m_NativeWindow);
-
             }
         }
-        av_packet_unref(m_Packet); //释放 m_Packet 引用，防止内存泄漏
-    }
-
-//3.4. 释放 ANativeWindow
-    if (m_NativeWindow)
-        ANativeWindow_release(m_NativeWindow);
-
-//2.4. 释放资源
-    if (m_RGBAFrame != nullptr) {
-        av_frame_free(&m_RGBAFrame);
-        m_RGBAFrame = nullptr;
-    }
-
-    if (m_FrameBuffer != nullptr) {
-        free(m_FrameBuffer);
-        m_FrameBuffer = nullptr;
-    }
-
-    if (m_SwsContext != nullptr) {
-        sws_freeContext(m_SwsContext);
-        m_SwsContext = nullptr;
-    }
-
-//11.释放资源，解码完成
-    if (m_Frame != nullptr) {
-        av_frame_free(&m_Frame);
-        m_Frame = nullptr;
-    }
-
-    if (m_Packet != nullptr) {
-        av_packet_free(&m_Packet);
-        m_Packet = nullptr;
     }
 
     if (m_AVCodecContext != nullptr) {
