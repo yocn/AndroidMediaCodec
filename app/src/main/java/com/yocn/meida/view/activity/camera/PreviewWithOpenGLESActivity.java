@@ -1,4 +1,4 @@
-package com.yocn.meida.view.activity;
+package com.yocn.meida.view.activity.camera;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
@@ -29,12 +29,8 @@ public class PreviewWithOpenGLESActivity extends BaseCameraActivity {
     MyTextureView textureView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_preview_opengles, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
+    protected int getContentViewId() {
+        return R.layout.activity_preview_opengles;
     }
 
     @Override

@@ -1,36 +1,35 @@
-package com.yocn.meida.view.activity;
+package com.yocn.meida.view.activity.camera;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
-import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV;
-import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV2;
+import com.yocn.meida.camera.Camera2ProviderNativeYuv;
 import com.yocn.meida.util.CameraUtil;
 
 /**
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
- * @ClassName PreviewPureActivity
- * Yuv数据获取 方式2
+ * @ClassName PreviewNativeYUVActivity
+ * Native转换Yuv
  */
-public class PreviewYUVDataActivity2 extends BaseCameraActivity {
+public class PreviewNativeYUVActivity extends BaseCameraActivity {
     TextureView mPreviewView;
     ImageView mShowIv;
-    Camera2ProviderPreviewWithYUV2 mCamera2Provider;
-    public static String DESC = "YUV输出格式I420，自己方法实现转化为NV21，再使用YuvImage生成Bitmap实现预览";
+    Camera2ProviderNativeYuv mCamera2Provider;
+    public static String DESC = "libyuv做rgb跟yuv的转换|NV21ToArgb";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_preview_data, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
+    }
+
+    @Override
+    protected int getContentViewId() {
+        return R.layout.activity_preview_yuv;
     }
 
     @Override
@@ -43,12 +42,12 @@ public class PreviewYUVDataActivity2 extends BaseCameraActivity {
 
     @Override
     protected void initData() {
-        mCamera2Provider = new Camera2ProviderPreviewWithYUV2(this);
+        mCamera2Provider = new Camera2ProviderNativeYuv(this);
         mCamera2Provider.initTexture(mPreviewView);
         mCamera2Provider.setmOnGetBitmapInterface(onGetBitmapInterface);
     }
 
-    private Camera2ProviderPreviewWithYUV2.OnGetBitmapInterface onGetBitmapInterface = new Camera2ProviderPreviewWithYUV2.OnGetBitmapInterface() {
+    private Camera2ProviderNativeYuv.OnGetBitmapInterface onGetBitmapInterface = new Camera2ProviderNativeYuv.OnGetBitmapInterface() {
         @Override
         public void getABitmap(final Bitmap bitmap) {
             mShowIv.post(new Runnable() {

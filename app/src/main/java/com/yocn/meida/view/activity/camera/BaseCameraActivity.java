@@ -1,4 +1,4 @@
-package com.yocn.meida.view.activity;
+package com.yocn.meida.view.activity.camera;
 
 import android.os.Bundle;
 import android.view.View;
@@ -7,13 +7,14 @@ import android.widget.ImageView;
 
 import com.yocn.media.R;
 import com.yocn.meida.util.LogUtil;
+import com.yocn.meida.view.activity.BaseActivity;
 
 /**
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewDataActivity
  */
-public class BaseCameraActivity extends BaseActivity implements View.OnClickListener {
+public abstract class BaseCameraActivity extends BaseActivity implements View.OnClickListener {
     ImageView mBack;
 
     @Override

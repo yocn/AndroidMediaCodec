@@ -28,24 +28,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.yocn.meida.view.activity.Camera1PreviewActivity" />
-        <activity android:name="com.yocn.meida.view.activity.PreviewPureActivity" />
+        <activity android:name="com.yocn.meida.view.activity.camera.Camera1PreviewActivity" />
+        <activity android:name="com.yocn.meida.view.activity.camera.PreviewPureActivity" />
         <activity android:name="com.yocn.meida.view.activity.PreviewDataActivity" />
-        <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity" />
-        <activity android:name="com.yocn.meida.view.activity.PreviewYUVDataActivity2" />
-        <activity android:name="com.yocn.meida.view.activity.PreviewNativeYUVActivity" />
+        <activity android:name="com.yocn.meida.view.activity.camera.PreviewYUVDataActivity" />
+        <activity android:name="com.yocn.meida.view.activity.camera.PreviewYUVDataActivity2" />
+        <activity android:name="com.yocn.meida.view.activity.camera.PreviewNativeYUVActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTransportActivity" />
         <activity android:name="com.yocn.meida.view.activity.PreviewGPUImageActivity" />
-        <activity android:name="com.yocn.meida.view.activity.SimpleFFMpegPlayActivity" />
+        <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayActivity" />
         <activity android:name="com.yocn.meida.view.activity.FormatTrans264Activity" />
         <activity android:name="com.yocn.meida.view.activity.SimpleOpenGLESActivity" />
         <activity android:name="com.yocn.meida.view.activity.MediaCodecActivity" />
         <activity
-            android:name="com.yocn.meida.view.activity.PreviewWithOpenGLESActivity"
+            android:name="com.yocn.meida.view.activity.camera.PreviewWithOpenGLESActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.yocn.meida.view.activity.YUVPlayerActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity android:name="com.yocn.meida.view.activity.camera.CameraActivity" />
+        <activity android:name="com.yocn.meida.view.activity.ffmpeg.FFMpegActivity" />
     </application>
 
 </manifest>

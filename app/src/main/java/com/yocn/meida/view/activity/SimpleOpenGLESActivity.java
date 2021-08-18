@@ -11,6 +11,7 @@ import com.yocn.meida.gles.render.SquareTextureRender;
 import com.yocn.meida.gles.render.SquareTextureRender2;
 import com.yocn.meida.gles.render.TriangleRender;
 import com.yocn.meida.util.BitmapUtil;
+import com.yocn.meida.view.activity.camera.BaseCameraActivity;
 
 /**
  * @Author yocn
@@ -23,7 +24,6 @@ public class SimpleOpenGLESActivity extends BaseCameraActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_simple_opengles);
         GLSurfaceView glSurfaceView1 = findViewById(R.id.flsv_1);
         GLSurfaceView glSurfaceView2 = findViewById(R.id.flsv_2);
         GLSurfaceView glSurfaceView3 = findViewById(R.id.flsv_3);
@@ -43,5 +43,10 @@ public class SimpleOpenGLESActivity extends BaseCameraActivity {
         glSurfaceView4.setRenderer(new SquareTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
         glSurfaceView5.setRenderer(new SquareTextureRender2(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
         glSurfaceView6.setRenderer(new SquareForTextureRender(BitmapUtil.getBitmapFromAssets(this, "show.jpeg")));
+    }
+
+    @Override
+    protected int getContentViewId() {
+        return R.layout.activity_simple_opengles;
     }
 }

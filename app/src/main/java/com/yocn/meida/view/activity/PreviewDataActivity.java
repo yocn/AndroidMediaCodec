@@ -1,16 +1,15 @@
 package com.yocn.meida.view.activity;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
 import com.yocn.meida.camera.Camera2ProviderWithData;
 import com.yocn.meida.util.CameraUtil;
+import com.yocn.meida.view.activity.camera.BaseCameraActivity;
 
 /**
  * @Author yocn
@@ -27,12 +26,8 @@ public class PreviewDataActivity extends BaseCameraActivity {
             "Camera2 两路预览：一路TextureView预览，一路获取JPEG输出Bitmap";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_preview_data, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
+    protected int getContentViewId() {
+        return R.layout.activity_preview_data;
     }
 
     @Override

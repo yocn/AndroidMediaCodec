@@ -8,6 +8,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.yocn.media.R;
+
+import androidx.annotation.LayoutRes;
+
 /**
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
@@ -34,10 +38,17 @@ public abstract class BaseActivity extends Activity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(Color.TRANSPARENT);
         window.setNavigationBarColor(Color.TRANSPARENT);
+        View rootView = getLayoutInflater().inflate(getContentViewId(), null);
         super.onCreate(savedInstanceState);
+        setContentView(rootView);
+        initView(rootView);
+        initData();
     }
 
-    abstract void initView(View root);
+    @LayoutRes
+    protected abstract int getContentViewId();
+
+    protected abstract void initView(View root);
 
     protected void initData() {
     }

@@ -1,35 +1,24 @@
 package com.yocn.meida.view.activity;
 
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.app.AlertDialog;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.TextureView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import com.yocn.media.R;
-import com.yocn.meida.camera.Camera2Provider;
 import com.yocn.meida.camera.Camera2ProviderPreviewWithGPUImage;
-import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.DisplayUtil;
 import com.yocn.meida.util.GPUImageFilterTools;
+import com.yocn.meida.view.activity.camera.BaseCameraActivity;
 import com.yocn.meida.view.adapter.GPUImageFilterAdapter;
 
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageView;
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.util.Rotation;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 /**
  * @Author yocn
@@ -48,13 +37,8 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
     public static String DESC = "使用GPUImage框架实现预览和滤镜的实现";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_pure_gpuimage, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
+    protected int getContentViewId() {
+        return R.layout.activity_pure_gpuimage;
     }
 
     @Override

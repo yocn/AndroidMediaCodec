@@ -32,14 +32,15 @@ public class MediaCodecActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_media_codec, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
     }
 
     @Override
-    void initView(View root) {
+    protected int getContentViewId() {
+        return R.layout.activity_media_codec;
+    }
+
+    @Override
+    protected void initView(View root) {
         mSurfaceView = findViewById(R.id.sv_camera);
     }
 

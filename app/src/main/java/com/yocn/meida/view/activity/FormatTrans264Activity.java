@@ -20,12 +20,8 @@ public class FormatTrans264Activity extends BaseActivity {
     public static String DESC = "TODO：";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_trans, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
+    protected int getContentViewId() {
+        return R.layout.activity_trans;
     }
 
     @Override

@@ -1,19 +1,15 @@
-package com.yocn.meida.view.activity;
+package com.yocn.meida.view.activity.camera;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.TextureView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
-import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.camera.Camera2ProviderPreviewWithYUV;
-import com.yocn.meida.camera.Camera2ProviderWithData;
 import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
@@ -32,14 +28,9 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
     Camera2ProviderPreviewWithYUV mCamera2Provider;
     public static String DESC = "Camera2 两路预览：YUV输出格式为ImageFormat.YUV_420_888，工具类转化为NV21，再使用YuvImage生成Bitmap实现预览";
 
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_preview_data, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
+    protected int getContentViewId() {
+        return R.layout.activity_preview_data;
     }
 
     @Override

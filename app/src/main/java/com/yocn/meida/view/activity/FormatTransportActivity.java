@@ -33,14 +33,9 @@ public class FormatTransportActivity extends BaseActivity {
     Button mClickBtn2;
     public static String DESC = "图片转化测试";
 
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        View rootView = getLayoutInflater().inflate(R.layout.activity_trans, null);
-        setContentView(rootView);
-        initView(rootView);
-        initData();
+    protected int getContentViewId() {
+        return R.layout.activity_trans;
     }
 
     @Override
