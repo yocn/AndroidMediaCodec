@@ -46,6 +46,17 @@ set(
         ${CMAKE_SOURCE_DIR}/x264/install/lib/libx264.a
 )
 
+set(
+        self-code
+
+        code-self/native-lib.cpp
+        code-self/YUVTrans.cpp
+        code-self/ffmpegTests.cpp
+        code-self/Util.cpp
+        code-self/FFMpegSimplePlayer.cpp
+        code-self/FFMpegSimpleAudioPlayer.cpp
+)
+
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
@@ -58,16 +69,13 @@ add_library( # Sets the name of the library.
         # Sets the library as a shared library.
         SHARED
 
-        native-lib.cpp
-        YUVTrans.cpp
-        ffmpegTests.cpp
-        Util.cpp
-        FFMpegSimplePlayer.cpp
+        ${self-code}
         )
 
 INCLUDE_DIRECTORIES(
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/ffmpeg
+        ${CMAKE_SOURCE_DIR}/code-self
         ${CMAKE_SOURCE_DIR}/libyuv/include
 )
 
