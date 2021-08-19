@@ -20,7 +20,7 @@ import androidx.annotation.LayoutRes;
 public abstract class BaseActivity extends Activity {
     protected String TAG;
     FrameLayout mBack;
-    public static String DESC = "hint";
+    public static String DESC = "";
 
     {
         TAG = this.getClass().getSimpleName();

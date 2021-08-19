@@ -12,6 +12,7 @@ extern "C" {
 
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, "LogUtil", __VA_ARGS__)
 #define LOGCATE LOGE
+#define LOGI LOGE
 
 #endif //ANDROIDMEDIACODEC_GLOBALMACRO_H
 

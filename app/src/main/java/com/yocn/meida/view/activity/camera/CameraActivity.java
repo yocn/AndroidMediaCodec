@@ -12,6 +12,7 @@ import com.yocn.meida.view.widget.TopViewRecyclerView;
  */
 public class CameraActivity extends BaseActivity {
     private TopViewRecyclerView topViewRecyclerView;
+    public static String DESC = "CAMERA";
 
     @Override
     protected int getContentViewId() {

@@ -14,7 +14,7 @@ import com.yocn.meida.view.activity.BaseActivity;
  * @ClassName PreviewPureActivity
  */
 public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
-    public static String DESC = "最简单的FFMpeg播放视频";
+    public static String DESC = "最简单的FFMpeg播放音频";
     private Button clickBtn;
 
     @Override
@@ -28,7 +28,12 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
 
     protected void initData() {
         String mp4FilePath = Constant.getTestMp4FilePath();
-        clickBtn.setOnClickListener(v -> new FFMpegSimpleAudioPlayer().playAudio(mp4FilePath));
+        String mp3FilePath = "/sdcard/MP3/ring.mp3";
+        String targetMp3FilePath = "/sdcard/MP3/ring.pcm";
+        clickBtn.setOnClickListener(v -> {
+//            new Thread(() -> new FFMpegSimpleAudioPlayer().playAudio(mp4FilePath)).start();
+            new Thread(() -> new FFMpegSimpleAudioPlayer().convert(mp3FilePath, targetMp3FilePath)).start();
+        });
     }
 
 }

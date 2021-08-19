@@ -13,6 +13,7 @@ import com.yocn.meida.view.widget.TopViewRecyclerView;
  */
 public class FFMpegActivity extends BaseActivity {
     private TopViewRecyclerView topViewRecyclerView;
+    public static String DESC = "FFMPEG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

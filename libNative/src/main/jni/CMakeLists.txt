@@ -55,6 +55,8 @@ set(
         code-self/Util.cpp
         code-self/FFMpegSimplePlayer.cpp
         code-self/FFMpegSimpleAudioPlayer.cpp
+        code-self/FFMpegSimpleAudioConvert.cpp
+        code-self/audio/opensl_render.cpp
 )
 
 # Creates and names a library, sets it as either STATIC
@@ -76,6 +78,7 @@ INCLUDE_DIRECTORIES(
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/ffmpeg
         ${CMAKE_SOURCE_DIR}/code-self
+        ${CMAKE_SOURCE_DIR}/code-self/audio
         ${CMAKE_SOURCE_DIR}/libyuv/include
 )
 
@@ -95,6 +98,7 @@ find_library( # Sets the name of the path variable.
 #找到z库，命名为z-lib，必须使用z库，否则会报错
 find_library(z-lib z)
 find_library(gl-lib GLESV2)
+find_library(OpenSLES-lib OpenSLES)
 
 # 打印信息在.cxx/cmake/debug/arm64-v8a/cmake_build_output.txt
 message("-----------------------message----------------------")
@@ -108,6 +112,7 @@ target_link_libraries( # Specifies the target library.
         ${log-lib}
         ${z-lib}
         -landroid
-        #        ${gl-lib}
+        ${gl-lib}
+        ${OpenSLES-lib}
         yuv
         )

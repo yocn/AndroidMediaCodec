@@ -1,3 +1,5 @@
+#include <code-self/audio/opensl_render.h>
+
 extern "C" {
 #include <libswresample/swresample.h>
 #include <libavutil/opt.h>
@@ -8,6 +10,8 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include <code-self/GlobalMacro.h>
 #include <code-self/Util.h>
+#include <SLES/OpenSLES.h>
+#include "SLES/OpenSLES_Android.h"
 }
 
 #define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimpleAudioPlayer_##name
@@ -99,10 +103,14 @@ JNI_METHOD_NAME(playAudio)(JNIEnv *env, jobject jobj, jstring url) {
     int m_BufferSize = av_samples_get_buffer_size(nullptr, AUDIO_DST_CHANNEL_COUNTS, m_nbSamples,
                                                   DST_SAMPLT_FORMAT, 1);
     auto m_AudioOutBuffer = (uint8_t *) malloc(m_BufferSize);
+    LOGE("play----m_BufferSize::%d ", m_BufferSize);
 
 //9.创建存储编码数据和解码数据的结构体
     AVPacket *m_Packet = av_packet_alloc(); //创建 AVPacket 存放编码数据
     AVFrame *m_Frame = av_frame_alloc(); //创建 AVFrame 存放解码后的数据
+
+    OpenSLRender *openSlRender = new OpenSLRender();
+    openSlRender->InitRender();
 
     int frame_index = 0;
 //10.解码循环
@@ -119,10 +127,32 @@ JNI_METHOD_NAME(playAudio)(JNIEnv *env, jobject jobj, jstring url) {
                                       (const uint8_t **) m_Frame->data, m_Frame->nb_samples);
                 if (ret > 0) {
                     //play
-                    LOGE("play----index::%d", frame_index);
+                    LOGE("play----index::%d   size:%d", frame_index, (m_BufferSize / 2));
+                    openSlRender->Render(m_AudioOutBuffer, m_BufferSize / 2);
                 }
             }
         }
+    }
+
+    if (openSlRender != nullptr) {
+        openSlRender->ReleaseRender();
+        openSlRender = nullptr;
+    }
+
+    if (m_SwrContext != nullptr) {
+        swr_free(&m_SwrContext);
+        m_SwrContext = nullptr;
+    }
+
+//11.释放资源，解码完成
+    if (m_Frame != nullptr) {
+        av_frame_free(&m_Frame);
+        m_Frame = nullptr;
+    }
+
+    if (m_Packet != nullptr) {
+        av_packet_free(&m_Packet);
+        m_Packet = nullptr;
     }
 
     if (m_AVCodecContext != nullptr) {
@@ -137,4 +167,9 @@ JNI_METHOD_NAME(playAudio)(JNIEnv *env, jobject jobj, jstring url) {
         avformat_free_context(m_AVFormatContext);
         m_AVFormatContext = nullptr;
     }
+}
+
+void initSL() {
+    OpenSLRender openSlRender = OpenSLRender();
+
 }
