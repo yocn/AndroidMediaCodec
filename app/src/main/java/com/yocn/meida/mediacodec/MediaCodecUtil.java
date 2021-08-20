@@ -33,9 +33,9 @@ public class MediaCodecUtil {
 
     public static void testMediaExtractor(Activity activity) {
         String mp4FilePath = Constant.getTestMp4FilePath();
-        if (!FileUtils.fileExists(mp4FilePath)) {
-            FileUtils.copyAssetsFile2Phone(activity, "test.mp4", mp4FilePath);
-        }
+//        if (!FileUtils.fileExists(mp4FilePath)) {
+//            FileUtils.copyAssetsFile2Phone(activity, "test.mp4", mp4FilePath);
+//        }
         MediaExtractor mediaExtractor = new MediaExtractor();
         try {
             mediaExtractor.setDataSource(mp4FilePath);
@@ -61,7 +61,7 @@ public class MediaCodecUtil {
         String fileName = "shoot.aac";
         String inputFileName = Constant.getMediaCodecDir() + "/shoot.aac";
         String outputFileName = Constant.getMediaCodecDir() + "/shoot.pcm";
-        FileUtils.copyAssetsFile2Phone(activity, fileName, inputFileName);
+//        FileUtils.copyAssetsFile2Phone(activity, fileName, inputFileName);
         new AACToPCM().decodeAACToPCM(inputFileName, outputFileName);
 
     }

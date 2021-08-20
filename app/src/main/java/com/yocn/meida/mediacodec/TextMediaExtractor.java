@@ -21,9 +21,9 @@ public class TextMediaExtractor {
 
     public static void separate(Activity activity) {
         String mp4FilePath = Constant.getTestMp4FilePath();
-        if (!FileUtils.fileExists(mp4FilePath)) {
-            FileUtils.copyAssetsFile2Phone(activity, "test.mp4", mp4FilePath);
-        }
+//        if (!FileUtils.fileExists(mp4FilePath)) {
+//            FileUtils.copyAssetsFile2Phone(activity, "test.mp4", mp4FilePath);
+//        }
         File mFile = new File(mp4FilePath);
         if (!mFile.exists()) {
             Log.e(TAG, "mp4文件不存在");

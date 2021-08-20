@@ -15,7 +15,8 @@ import com.yocn.meida.view.activity.BaseActivity;
  */
 public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
     public static String DESC = "最简单的FFMpeg播放音频";
-    private Button clickBtn;
+    private Button playBtn;
+    private Button convertBtn;
 
     @Override
     protected int getContentViewId() {
@@ -23,17 +24,22 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
     }
 
     protected void initView(View root) {
-        clickBtn = root.findViewById(R.id.btn_click);
+        playBtn = root.findViewById(R.id.btn_play);
+        convertBtn = root.findViewById(R.id.btn_convert);
     }
 
     protected void initData() {
-        String mp4FilePath = Constant.getTestMp4FilePath();
-        String mp3FilePath = "/sdcard/MP3/ring.mp3";
-        String targetMp3FilePath = "/sdcard/MP3/ring.pcm";
-        clickBtn.setOnClickListener(v -> {
-//            new Thread(() -> new FFMpegSimpleAudioPlayer().playAudio(mp4FilePath)).start();
-            new Thread(() -> new FFMpegSimpleAudioPlayer().convert(mp3FilePath, targetMp3FilePath)).start();
-        });
+        playBtn.setOnClickListener(onClickListener);
+        convertBtn.setOnClickListener(onClickListener);
     }
 
+    View.OnClickListener onClickListener = v -> {
+        String mp3FilePath = Constant.getTestMp3FilePath();
+        String targetMp3FilePath = Constant.getTestFilePath("test.pcm");
+        if (v.getId() == R.id.btn_play) {
+            new Thread(() -> new FFMpegSimpleAudioPlayer().play(mp3FilePath)).start();
+        } else if (v.getId() == R.id.btn_convert) {
+            new Thread(() -> new FFMpegSimpleAudioPlayer().convert(mp3FilePath, targetMp3FilePath)).start();
+        }
+    };
 }

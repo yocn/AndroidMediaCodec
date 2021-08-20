@@ -18,158 +18,123 @@ extern "C" {
 
 extern "C" {
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(playAudio)(JNIEnv *env, jobject jobj, jstring url);
+JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src);
 }
 
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(playAudio)(JNIEnv *env, jobject jobj, jstring url) {
-    jboolean copy;
-    LOG(env, jobj);
-    const char *m_Url = env->GetStringUTFChars(url, &copy);
-    LOGE("-------------------------init-----------------m_Url--%s", m_Url);
-//1.创建封装格式上下文
-    AVFormatContext *m_AVFormatContext = avformat_alloc_context();
-
-//2.打开输入文件，解封装
-    if (avformat_open_input(&m_AVFormatContext, m_Url, nullptr, nullptr) != 0) {
-        LOGCATE("DecoderBase::InitFFDecoder avformat_open_input fail.");
+JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src) {
+    // 源文件路径
+    const char *src_path = env->GetStringUTFChars(src, nullptr);
+    LOGE("-------------------------init-----------------src_path--%s", src_path);
+    // AVFormatContext 对象创建
+    AVFormatContext *avFormatContext = avformat_alloc_context();
+    // 打开音频文件
+    int ret = avformat_open_input(&avFormatContext, src_path, nullptr, nullptr);
+    if (ret != 0) {
+        LOGE("打开文件失败");
         return;
     }
-
-//3.获取音视频流信息
-    if (avformat_find_stream_info(m_AVFormatContext, nullptr) < 0) {
-        LOGCATE("DecoderBase::InitFFDecoder avformat_find_stream_info fail.");
+    // 输出音频文件的信息
+    av_dump_format(avFormatContext, 0, src_path, 0);
+    // 获取音频文件的流信息
+    ret = avformat_find_stream_info(avFormatContext, nullptr);
+    if (ret < 0) {
+        LOGE("获取流信息失败");
         return;
     }
-
-    int m_StreamIndex = 0;
-//4.获取音视频流索引
-    for (int i = 0; i < m_AVFormatContext->nb_streams; i++) {
-        if (m_AVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-            m_StreamIndex = i;
-            break;
+    // 查找音频流在文件的所有流集合中的位置
+    int streamIndex = 0;
+    for (int i = 0; i < avFormatContext->nb_streams; ++i) {
+        enum AVMediaType avMediaType = avFormatContext->streams[i]->codecpar->codec_type;
+        if (avMediaType == AVMEDIA_TYPE_AUDIO) {  //这边和视频不一样，是AUDIO
+            streamIndex = i;
         }
     }
-
-    if (m_StreamIndex == -1) {
-        LOGCATE("DecoderBase::InitFFDecoder Fail to find stream index.");
+    // 拿到对应音频流的参数
+    AVCodecParameters *avCodecParameters = avFormatContext->streams[streamIndex]->codecpar;
+    // 获取解码器的标识ID
+    enum AVCodecID avCodecId = avCodecParameters->codec_id;
+    // 通过获取的ID，获取对应的解码器
+    AVCodec *avCodec = avcodec_find_decoder(avCodecId);
+    // 创建一个解码器上下文对象
+    AVCodecContext *avCodecContext = avcodec_alloc_context3(nullptr);
+    if (avCodecContext == nullptr) {
+        //创建解码器上下文失败
+        LOGE("创建解码器上下文失败");
         return;
     }
-//5.获取解码器参数
-    AVCodecParameters *codecParameters = m_AVFormatContext->streams[m_StreamIndex]->codecpar;
-
-//6.根据 codec_id 获取解码器
-    AVCodec *m_AVCodec = avcodec_find_decoder(codecParameters->codec_id);
-    if (m_AVCodec == nullptr) {
-        LOGCATE("DecoderBase::InitFFDecoder avcodec_find_decoder fail.");
+    // 将新的API中的 codecpar 转成 AVCodecContext
+    avcodec_parameters_to_context(avCodecContext, avCodecParameters);
+    ret = avcodec_open2(avCodecContext, avCodec, nullptr);
+    if (ret < 0) {
+        LOGE("打开解码器失败 ");
         return;
     }
+    LOGE("decodec name: %s", avCodec->name);
 
-//7.创建解码器上下文
-    AVCodecContext *m_AVCodecContext = avcodec_alloc_context3(m_AVCodec);
-    if (avcodec_parameters_to_context(m_AVCodecContext, codecParameters) != 0) {
-        LOGCATE("DecoderBase::InitFFDecoder avcodec_parameters_to_context fail.");
-        return;
-    }
+    //压缩数据包
+    AVPacket *packet = (AVPacket *) av_malloc(sizeof(AVPacket));
+    //解压缩后存放的数据帧的对象
+    AVFrame *inFrame = av_frame_alloc();
+    //frame->16bit 44100 PCM 统一音频采样格式与采样率
+    //创建swrcontext上下文件
+    SwrContext *swrContext = swr_alloc();
+    //音频格式  输入的采样设置参数
+    AVSampleFormat inFormat = avCodecContext->sample_fmt;
+    // 出入的采样格式
+    AVSampleFormat outFormat = AV_SAMPLE_FMT_S16;
+    // 输入采样率
+    int inSampleRate = avCodecContext->sample_rate;
+    // 输出采样率
+    int outSampleRate = 44100;
+    // 输入声道布局
+    uint64_t in_ch_layout = avCodecContext->channel_layout;
+    //输出声道布局，双声道
+    uint64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
+    //给Swrcontext 分配空间，设置公共参数
+    swr_alloc_set_opts(swrContext, out_ch_layout, outFormat, outSampleRate,
+                       in_ch_layout, inFormat, inSampleRate, 0, nullptr
+    );
+    // 初始化
+    swr_init(swrContext);
+    // 获取声道数量
+    int outChannelCount = av_get_channel_layout_nb_channels(out_ch_layout);
 
-//8.打开解码器
-    int result = avcodec_open2(m_AVCodecContext, m_AVCodec, nullptr);
-    if (result < 0) {
-        LOGCATE("DecoderBase::InitFFDecoder avcodec_open2 fail. result=%d", result);
-        return;
-    }
-
-    //1. 生成 resample 上下文，设置输入和输出的通道数、采样率以及采样格式，初始化上下文
-    SwrContext *m_SwrContext = swr_alloc();
-
-    int64_t AUDIO_DST_CHANNEL_LAYOUT = av_get_channel_layout("mono");;
-    int64_t AUDIO_DST_SAMPLE_RATE = 16000;
-    AVSampleFormat DST_SAMPLT_FORMAT = AV_SAMPLE_FMT_S16;
-    int64_t NB_SAMPLES = av_get_channel_layout_nb_channels(AUDIO_DST_CHANNEL_LAYOUT);
-    int AUDIO_DST_CHANNEL_COUNTS = 1;
-
-    av_opt_set_int(m_SwrContext, "in_channel_layout", m_AVCodecContext->channel_layout, 0);
-    av_opt_set_int(m_SwrContext, "out_channel_layout", AUDIO_DST_CHANNEL_LAYOUT, 0);
-    av_opt_set_int(m_SwrContext, "in_sample_rate", m_AVCodecContext->sample_rate, 0);
-    av_opt_set_int(m_SwrContext, "out_sample_rate", AUDIO_DST_SAMPLE_RATE, 0);
-    av_opt_set_sample_fmt(m_SwrContext, "in_sample_fmt", m_AVCodecContext->sample_fmt, 0);
-    av_opt_set_sample_fmt(m_SwrContext, "out_sample_fmt", DST_SAMPLT_FORMAT, 0);
-
-    swr_init(m_SwrContext);
-
-//2. 申请输出 Buffer
-    int m_nbSamples = (int) av_rescale_rnd(NB_SAMPLES, AUDIO_DST_SAMPLE_RATE,
-                                           m_AVCodecContext->sample_rate, AV_ROUND_UP);
-    int m_BufferSize = av_samples_get_buffer_size(nullptr, AUDIO_DST_CHANNEL_COUNTS, m_nbSamples,
-                                                  DST_SAMPLT_FORMAT, 1);
-    auto m_AudioOutBuffer = (uint8_t *) malloc(m_BufferSize);
-    LOGE("play----m_BufferSize::%d ", m_BufferSize);
-
-//9.创建存储编码数据和解码数据的结构体
-    AVPacket *m_Packet = av_packet_alloc(); //创建 AVPacket 存放编码数据
-    AVFrame *m_Frame = av_frame_alloc(); //创建 AVFrame 存放解码后的数据
+    int currentIndex = 0;
+    LOGE("声道数量%d ", outChannelCount);
+    // 设置音频缓冲区间 16bit   44100  PCM数据, 双声道
+    uint8_t *out_buffer = (uint8_t *) av_malloc(2 * 44100);
 
     OpenSLRender *openSlRender = new OpenSLRender();
     openSlRender->InitRender();
 
-    int frame_index = 0;
-//10.解码循环
-    while (av_read_frame(m_AVFormatContext, m_Packet) >= 0) { //读取帧
-        if (m_Packet->stream_index == m_StreamIndex) {
-            if (avcodec_send_packet(m_AVCodecContext, m_Packet) != 0) { //视频解码
-                return;
+    //开始读取源文件，进行解码
+    while (av_read_frame(avFormatContext, packet) >= 0) {
+        if (packet->stream_index == streamIndex) {
+            avcodec_send_packet(avCodecContext, packet);
+            //解码
+            ret = avcodec_receive_frame(avCodecContext, inFrame);
+            if (ret == 0) {
+                //将每一帧数据转换成pcm
+                swr_convert(swrContext, &out_buffer, 2 * 44100,
+                            (const uint8_t **) inFrame->data, inFrame->nb_samples);
+                //获取实际的缓存大小
+                int out_buffer_size = av_samples_get_buffer_size(nullptr, outChannelCount,
+                                                                 inFrame->nb_samples, outFormat, 1);
+                openSlRender->Render(out_buffer, out_buffer_size);
             }
-            while (avcodec_receive_frame(m_AVCodecContext, m_Frame) == 0) {
-                frame_index++;
-
-                //3. 重采样，frame 为解码帧
-                int ret = swr_convert(m_SwrContext, &m_AudioOutBuffer, m_BufferSize / 2,
-                                      (const uint8_t **) m_Frame->data, m_Frame->nb_samples);
-                if (ret > 0) {
-                    //play
-                    LOGE("play----index::%d   size:%d", frame_index, (m_BufferSize / 2));
-                    openSlRender->Render(m_AudioOutBuffer, m_BufferSize / 2);
-                }
-            }
+            LOGE("正在解码%d   nb_samples:%d  packet：%ld, duration:%ld", currentIndex++, inFrame->nb_samples, packet->pts, avFormatContext->duration);
         }
     }
 
-    if (openSlRender != nullptr) {
-        openSlRender->ReleaseRender();
-        openSlRender = nullptr;
-    }
+    // 及时释放
+    openSlRender->ReleaseRender();
+    av_frame_free(&inFrame);
+    av_free(out_buffer);
+    swr_free(&swrContext);
+    avcodec_close(avCodecContext);
+    avformat_close_input(&avFormatContext);
 
-    if (m_SwrContext != nullptr) {
-        swr_free(&m_SwrContext);
-        m_SwrContext = nullptr;
-    }
-
-//11.释放资源，解码完成
-    if (m_Frame != nullptr) {
-        av_frame_free(&m_Frame);
-        m_Frame = nullptr;
-    }
-
-    if (m_Packet != nullptr) {
-        av_packet_free(&m_Packet);
-        m_Packet = nullptr;
-    }
-
-    if (m_AVCodecContext != nullptr) {
-        avcodec_close(m_AVCodecContext);
-        avcodec_free_context(&m_AVCodecContext);
-        m_AVCodecContext = nullptr;
-        m_AVCodec = nullptr;
-    }
-
-    if (m_AVFormatContext != nullptr) {
-        avformat_close_input(&m_AVFormatContext);
-        avformat_free_context(m_AVFormatContext);
-        m_AVFormatContext = nullptr;
-    }
-}
-
-void initSL() {
-    OpenSLRender openSlRender = OpenSLRender();
+    env->ReleaseStringUTFChars(src, src_path);
 
 }

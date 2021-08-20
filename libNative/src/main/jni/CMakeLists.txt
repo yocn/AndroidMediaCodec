@@ -53,6 +53,7 @@ set(
         code-self/YUVTrans.cpp
         code-self/ffmpegTests.cpp
         code-self/Util.cpp
+        code-self/JniProgress.cpp
         code-self/FFMpegSimplePlayer.cpp
         code-self/FFMpegSimpleAudioPlayer.cpp
         code-self/FFMpegSimpleAudioConvert.cpp

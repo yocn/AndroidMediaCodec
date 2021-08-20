@@ -39,6 +39,10 @@ public class Constant {
         return getMediaCodecDir() + "/test.mp4";
     }
 
+    public static String getTestMp3FilePath() {
+        return getMediaCodecDir() + "/ring.mp3";
+    }
+
     public static String getOutTestMp4FilePath() {
         return getMediaCodecDir() + "/test.yuv";
     }

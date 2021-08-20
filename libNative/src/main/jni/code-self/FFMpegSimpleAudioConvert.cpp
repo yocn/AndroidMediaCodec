@@ -10,6 +10,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include <code-self/GlobalMacro.h>
 #include <code-self/Util.h>
+#include <code-self/JniProgress.h>
 #include <SLES/OpenSLES.h>
 #include "SLES/OpenSLES_Android.h"
 }
@@ -92,7 +93,7 @@ JNI_METHOD_NAME(convert)(JNIEnv *env, jobject jobj, jstring src, jstring out) {
     int outSampleRate = 44100;
     // 输入声道布局
     uint64_t in_ch_layout = avCodecContext->channel_layout;
-    //输出声道布局
+    //输出声道布局，双声道
     uint64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
     //给Swrcontext 分配空间，设置公共参数
     swr_alloc_set_opts(swrContext, out_ch_layout, outFormat, outSampleRate,
@@ -125,9 +126,16 @@ JNI_METHOD_NAME(convert)(JNIEnv *env, jobject jobj, jstring src, jstring out) {
                 // 写入文件
                 fwrite(out_buffer, 1, out_buffer_size, fp_pcm);
             }
-            LOGE("正在解码%d", currentIndex++);
+
+            long index = packet->pts / inFrame->nb_samples;
+            int precent = index * 100 / packet->duration;
+            LOGE("正在解码%d nb_samples:%d  pts：%ld, duration:%ld, index:%ld, precent:%d",
+                 currentIndex++, inFrame->nb_samples, packet->pts, packet->duration, index,
+                 precent);
+            progress(env, jobj, precent);
         }
     }
+
     // 及时释放
     fclose(fp_pcm);
     av_frame_free(&inFrame);

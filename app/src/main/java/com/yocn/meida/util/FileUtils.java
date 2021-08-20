@@ -1,11 +1,14 @@
 package com.yocn.meida.util;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore.Audio;
 import android.provider.MediaStore.Video;
 import android.text.TextUtils;
+
+import com.yocn.meida.base.BaseApplication;
+import com.yocn.meida.base.Constant;
 
 import org.json.JSONObject;
 
@@ -29,6 +32,9 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 public class FileUtils {
@@ -1846,9 +1852,9 @@ public class FileUtils {
         return false;
     }
 
-    public static boolean copyAssetsFile2Phone(Activity activity, String fileName, String targetPath) {
+    public static boolean copyAssetsFile2Phone(Context context, String fileName, String targetPath) {
         try {
-            InputStream inputStream = activity.getAssets().open(fileName);
+            InputStream inputStream = context.getAssets().open(fileName);
             //getFilesDir() 获得当前APP的安装路径 /data/data/包名/files 目录
             File file = new File(targetPath);
             if (!file.exists() || file.length() == 0) {
@@ -1869,5 +1875,29 @@ public class FileUtils {
             return false;
         }
         return true;
+    }
+
+    public static void copyAssets() {
+        Context context = BaseApplication.getAppContext();
+        Set<String> ignoreSet = new HashSet<>();
+        ignoreSet.add("images");
+        ignoreSet.add("sound");
+        ignoreSet.add("webkit");
+        List<String> needCopy = new ArrayList<>();
+        try {
+            String[] list = context.getAssets().list("");
+            for (String ss : list) {
+                if (!ignoreSet.contains(ss) && !isFilePathExist(Constant.getTestFilePath(ss))) {
+                    needCopy.add(ss);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new Thread(() -> {
+            for (String name : needCopy) {
+                copyAssetsFile2Phone(context, name, Constant.getTestFilePath(name));
+            }
+        }).start();
     }
 }
