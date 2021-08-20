@@ -2,10 +2,14 @@ package com.yocn.meida.view.activity.ffmpeg;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.yocn.libnative.FFMpegSimpleAudioPlayer;
+import com.yocn.libnative.NativeProgress;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
+import com.yocn.meida.util.TimeUtil;
 import com.yocn.meida.view.activity.BaseActivity;
 
 /**
@@ -17,6 +21,11 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
     public static String DESC = "最简单的FFMpeg播放音频";
     private Button playBtn;
     private Button convertBtn;
+    private Button convertBtn2;
+    private ProgressBar progressBar;
+    private TextView progressTv;
+    private TextView currTv;
+    private TextView totalTv;
 
     @Override
     protected int getContentViewId() {
@@ -26,20 +35,43 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
     protected void initView(View root) {
         playBtn = root.findViewById(R.id.btn_play);
         convertBtn = root.findViewById(R.id.btn_convert);
+        convertBtn2 = root.findViewById(R.id.btn_convert2);
+        progressBar = root.findViewById(R.id.pb_test);
+        progressTv = root.findViewById(R.id.tv_progress);
+        currTv = root.findViewById(R.id.tv_curr);
+        totalTv = root.findViewById(R.id.tv_total);
     }
 
     protected void initData() {
         playBtn.setOnClickListener(onClickListener);
         convertBtn.setOnClickListener(onClickListener);
+        convertBtn2.setOnClickListener(onClickListener);
     }
 
     View.OnClickListener onClickListener = v -> {
+        String mp4FilePath = Constant.getTestMp4FilePath();
         String mp3FilePath = Constant.getTestMp3FilePath();
+        String mp3FilePath2 = Constant.getTestMp3FilePath2();
         String targetMp3FilePath = Constant.getTestFilePath("test.pcm");
+        FFMpegSimpleAudioPlayer ffMpegSimpleAudioPlayer = new FFMpegSimpleAudioPlayer();
+        ffMpegSimpleAudioPlayer.setGetProgressCallback(new NativeProgress.GetProgressCallback() {
+            @Override
+            public void progress(long curr, long total, int percent) {
+
+                runOnUiThread(() -> {
+                    progressBar.setProgress(percent);
+                    progressTv.setText(String.valueOf(percent));
+                    currTv.setText(TimeUtil.getTimeString(curr / 1000));
+                    totalTv.setText(TimeUtil.getTimeString(total / 1000));
+                });
+            }
+        });
         if (v.getId() == R.id.btn_play) {
-            new Thread(() -> new FFMpegSimpleAudioPlayer().play(mp3FilePath)).start();
+            ffMpegSimpleAudioPlayer.play(mp3FilePath);
         } else if (v.getId() == R.id.btn_convert) {
-            new Thread(() -> new FFMpegSimpleAudioPlayer().convert(mp3FilePath, targetMp3FilePath)).start();
+            ffMpegSimpleAudioPlayer.convert(mp4FilePath, targetMp3FilePath);
+        } else if (v.getId() == R.id.btn_convert2) {
+            ffMpegSimpleAudioPlayer.convert(mp3FilePath2, targetMp3FilePath);
         }
     };
 }

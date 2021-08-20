@@ -19,11 +19,11 @@ extern "C" {
 
 extern "C" {
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(convert)(JNIEnv *env, jobject jobj, jstring src, jstring out);
+JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring out);
 }
 
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(convert)(JNIEnv *env, jobject jobj, jstring src, jstring out) {
+JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring out) {
     // 源文件路径
     const char *src_path = env->GetStringUTFChars(src, nullptr);
     // 生产的pcm文件路径
@@ -104,7 +104,7 @@ JNI_METHOD_NAME(convert)(JNIEnv *env, jobject jobj, jstring src, jstring out) {
     // 获取声道数量
     int outChannelCount = av_get_channel_layout_nb_channels(out_ch_layout);
 
-    int currentIndex = 0;
+    int currentIndex = 1;
     LOGE("声道数量%d ", outChannelCount);
     // 设置音频缓冲区间 16bit   44100  PCM数据, 双声道
     uint8_t *out_buffer = (uint8_t *) av_malloc(2 * 44100);
@@ -126,13 +126,25 @@ JNI_METHOD_NAME(convert)(JNIEnv *env, jobject jobj, jstring src, jstring out) {
                 // 写入文件
                 fwrite(out_buffer, 1, out_buffer_size, fp_pcm);
             }
+            ++currentIndex;
 
-            long index = packet->pts / inFrame->nb_samples;
-            int precent = index * 100 / packet->duration;
-            LOGE("正在解码%d nb_samples:%d  pts：%ld, duration:%ld, index:%ld, precent:%d",
-                 currentIndex++, inFrame->nb_samples, packet->pts, packet->duration, index,
-                 precent);
-            progress(env, jobj, precent);
+//            long index = packet->pts / inFrame->nb_samples;
+//            int percent = index * 100 / packet->duration;
+
+            double timePerFrame = 1.0 * inFrame->nb_samples * 1000 / 44100;
+            double curr = currentIndex * timePerFrame;
+            long duration = avFormatContext->duration / 1000;
+//            double percent = curr * 100 / duration;
+
+            long durationAll = avFormatContext->streams[streamIndex]->duration;
+            float percent2 = 1.0F * packet->pts * 100 / durationAll;
+
+            LOGE("curr::%lf  duration:%ld    percent2:%f pts:%ld  durationAll:%ld",
+                 curr, duration, ceil(percent2), packet->pts * 100, durationAll);
+//            LOGE("percent2:%f pts:%ld  durationAll:%ld", ceil(percent2), packet->pts * 100,
+//                 durationAll);
+
+            progress(env, jobj, (long) curr, duration, ceil(percent2));
         }
     }
 

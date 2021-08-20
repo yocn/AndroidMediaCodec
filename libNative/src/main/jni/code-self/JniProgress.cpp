@@ -7,9 +7,9 @@ extern "C" {
 #include "JniProgress.h"
 #include <code-self/GlobalMacro.h>
 
-void progress(JNIEnv *env, jobject jobj, int progress) {
+void progress(JNIEnv *env, jobject jobj, long curr, long total, int progress) {
     jclass jclazz = env->FindClass("com/yocn/libnative/NativeProgress");
-    jmethodID progressMethod = env->GetMethodID(jclazz, "progress", "(I)V");
-    env->CallVoidMethod(jobj, progressMethod, progress);
+    jmethodID progressMethod = env->GetMethodID(jclazz, "progress", "(JJI)V");
+    env->CallVoidMethod(jobj, progressMethod, curr, total, progress);
 }
 }

@@ -7,7 +7,7 @@
 
 extern "C" {
 #include <code-self/GlobalMacro.h>
-void progress(JNIEnv *env, jobject jobj, int progress);
+void progress(JNIEnv *env, jobject jobj, long curr, long total, int progress);
 }
 
 #endif //ANDROIDMEDIACODEC_JNIPROGRESS_H

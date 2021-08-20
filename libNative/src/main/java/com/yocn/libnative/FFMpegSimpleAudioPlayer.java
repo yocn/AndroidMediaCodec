@@ -1,13 +1,30 @@
 package com.yocn.libnative;
 
-import android.util.Log;
-
 public class FFMpegSimpleAudioPlayer extends NativeProgress {
-    public void progress(int precent) {
-        Log.d("yocnyocn", "precent::" + precent);
+    @Override
+    protected void progress(long curr, long total, int percent) {
+        super.progress(curr, total, percent);
     }
 
-    public native void play(String url);
+    public void play(final String url) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                playJni(url);
+            }
+        }).start();
+    }
 
-    public native void convert(String src, String out);
+    public void convert(final String src, final String out) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                convertJni(src, out);
+            }
+        }).start();
+    }
+
+    public native void playJni(String url);
+
+    public native void convertJni(String src, String out);
 }

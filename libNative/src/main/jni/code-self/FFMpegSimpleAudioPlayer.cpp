@@ -1,4 +1,5 @@
 #include <code-self/audio/opensl_render.h>
+#include "JniProgress.h"
 
 extern "C" {
 #include <libswresample/swresample.h>
@@ -18,11 +19,11 @@ extern "C" {
 
 extern "C" {
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src);
+JNI_METHOD_NAME(playJni)(JNIEnv *env, jobject jobj, jstring src);
 }
 
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src) {
+JNI_METHOD_NAME(playJni)(JNIEnv *env, jobject jobj, jstring src) {
     // 源文件路径
     const char *src_path = env->GetStringUTFChars(src, nullptr);
     LOGE("-------------------------init-----------------src_path--%s", src_path);
@@ -123,7 +124,21 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src) {
                                                                  inFrame->nb_samples, outFormat, 1);
                 openSlRender->Render(out_buffer, out_buffer_size);
             }
-            LOGE("正在解码%d   nb_samples:%d  packet：%ld, duration:%ld", currentIndex++, inFrame->nb_samples, packet->pts, avFormatContext->duration);
+
+            double timePerFrame = 1.0 * inFrame->nb_samples * 1000 / 44100;
+            double curr = ++currentIndex * timePerFrame;
+            long duration = avFormatContext->duration / 1000;
+
+            long durationAll = avFormatContext->streams[streamIndex]->duration;
+            float percent2 = 1.0F * packet->pts * 100 / durationAll;
+
+//            LOGE("curr::%lf  duration:%ld  percent1:%d     percent2:%f pts:%ld  durationAll:%ld",
+//                 curr, duration, (int) percent, ceil(percent2), packet->pts * 100, durationAll);
+            LOGE("percent2:%f pts:%ld  durationAll:%ld", ceil(percent2), packet->pts * 100,
+                 durationAll);
+
+            progress(env, jobj, (long) curr, duration, ceil(percent2));
+//            LOGE("正在解码%d   nb_samples:%d  packet：%ld, duration:%ld", currentIndex++, inFrame->nb_samples, packet->pts, avFormatContext->duration);
         }
     }
 
