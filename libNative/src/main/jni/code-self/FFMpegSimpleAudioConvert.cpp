@@ -54,8 +54,9 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring out)
             streamIndex = i;
         }
     }
+    AVStream *stream = avFormatContext->streams[streamIndex];
     // 拿到对应音频流的参数
-    AVCodecParameters *avCodecParameters = avFormatContext->streams[streamIndex]->codecpar;
+    AVCodecParameters *avCodecParameters = stream->codecpar;
     // 获取解码器的标识ID
     enum AVCodecID avCodecId = avCodecParameters->codec_id;
     // 通过获取的ID，获取对应的解码器
@@ -105,48 +106,65 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring out)
     int outChannelCount = av_get_channel_layout_nb_channels(out_ch_layout);
 
     int currentIndex = 1;
+    int lastPercent = -1;
     LOGE("声道数量%d ", outChannelCount);
     // 设置音频缓冲区间 16bit   44100  PCM数据, 双声道
     uint8_t *out_buffer = (uint8_t *) av_malloc(2 * 44100);
     // 创建pcm的文件对象
     FILE *fp_pcm = fopen(dst_path, "wb");
+
+
+    long durationForRealTime = avFormatContext->duration / 1000;
+    AVRational time_base_rational = stream->time_base;
+    double time_base = av_q2d(time_base_rational);
+    // Audio only. Audio frame size, if known. Required by some formats to be static.
+    int frame_size = avCodecParameters->frame_size;
+    int bit_rate = avCodecParameters->bit_rate;
+    int sample_rate = avCodecParameters->sample_rate;
+    long durationForPts = stream->duration;
+
+    LOGE("------------------------------------------------------------------");
     //开始读取源文件，进行解码
     while (av_read_frame(avFormatContext, packet) >= 0) {
         if (packet->stream_index == streamIndex) {
             avcodec_send_packet(avCodecContext, packet);
             //解码
             ret = avcodec_receive_frame(avCodecContext, inFrame);
+            int nb_samples = inFrame->nb_samples;
             if (ret == 0) {
                 //将每一帧数据转换成pcm
                 swr_convert(swrContext, &out_buffer, 2 * 44100,
-                            (const uint8_t **) inFrame->data, inFrame->nb_samples);
+                            (const uint8_t **) inFrame->data, nb_samples);
                 //获取实际的缓存大小
                 int out_buffer_size = av_samples_get_buffer_size(nullptr, outChannelCount,
-                                                                 inFrame->nb_samples, outFormat, 1);
+                                                                 nb_samples, outFormat, 1);
                 // 写入文件
                 fwrite(out_buffer, 1, out_buffer_size, fp_pcm);
+                LOGE("out_buffer_size:::%d", out_buffer_size);
             }
             ++currentIndex;
 
-//            long index = packet->pts / inFrame->nb_samples;
-//            int percent = index * 100 / packet->duration;
-
             double timePerFrame = 1.0 * inFrame->nb_samples * 1000 / 44100;
-            double curr = currentIndex * timePerFrame;
-            long duration = avFormatContext->duration / 1000;
-//            double percent = curr * 100 / duration;
+            double currTime = currentIndex * timePerFrame;
+            int percent = ceil(1.0F * packet->pts * 100 / durationForPts);
+            double real_time = time_base * inFrame->pts;
 
-            long durationAll = avFormatContext->streams[streamIndex]->duration;
-            float percent2 = 1.0F * packet->pts * 100 / durationAll;
 
-            LOGE("curr::%lf  duration:%ld    percent2:%f pts:%ld  durationAll:%ld",
-                 curr, duration, ceil(percent2), packet->pts * 100, durationAll);
-//            LOGE("percent2:%f pts:%ld  durationAll:%ld", ceil(percent2), packet->pts * 100,
-//                 durationAll);
+            double curr = inFrame->pts * time_base;
 
-            progress(env, jobj, (long) curr, duration, ceil(percent2));
+//            if (percent % 20 == 0 && lastPercent != percent) {
+//                lastPercent = percent;
+            LOGE("currTime::%lf  percent:%d, currentIndex:%d, real_time::%lf,  pts:%ld, real_time2::%lf,  packet->pos:%ld",
+                 currTime, percent, currentIndex, real_time, inFrame->pts, curr, packet->pos);
+//            }
+
+            progress(env, jobj, (long) currTime, durationForRealTime, percent);
         }
     }
+    LOGE("duration:%ld  frame_size:%d, bit_rate:%d, "
+         "sample_rate:%d, currentIndex:%d,  time_base::%2.14lf, durationAll:%ld  num:%d  den:%d",
+         durationForRealTime, frame_size, bit_rate,
+         sample_rate, currentIndex, time_base, durationForPts, time_base_rational.num, time_base_rational.den);
 
     // 及时释放
     fclose(fp_pcm);

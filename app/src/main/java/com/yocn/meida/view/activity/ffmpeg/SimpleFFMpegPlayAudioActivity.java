@@ -69,7 +69,7 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
         if (v.getId() == R.id.btn_play) {
             ffMpegSimpleAudioPlayer.play(mp3FilePath);
         } else if (v.getId() == R.id.btn_convert) {
-            ffMpegSimpleAudioPlayer.convert(mp4FilePath, targetMp3FilePath);
+            ffMpegSimpleAudioPlayer.convert(mp3FilePath, targetMp3FilePath);
         } else if (v.getId() == R.id.btn_convert2) {
             ffMpegSimpleAudioPlayer.convert(mp3FilePath2, targetMp3FilePath);
         }
