@@ -100,9 +100,9 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
     int outSampleRate = 44100;
     // 输入声道布局
     uint64_t in_ch_layout = avCodecContext->channel_layout;
-    //输出声道布局，双声道
+    // 输出声道布局，声道
     uint64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
-    //给Swrcontext 分配空间，设置公共参数
+    // 给Swrcontext 分配空间，设置公共参数
     swr_alloc_set_opts(swrContext, out_ch_layout, outFormat, outSampleRate,
                        in_ch_layout, inFormat, inSampleRate, 0, nullptr
     );
@@ -115,7 +115,7 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
     int lastPercent = -1;
     LOGE("声道数量%d ", outChannelCount);
     // 设置音频缓冲区间 16bit   44100  PCM数据, 双声道
-    uint8_t *out_buffer = (uint8_t *) av_malloc(2 * 44100);
+    auto *out_buffer = (uint8_t *) av_malloc(2 * 44100);
     // 创建pcm的文件对象
     FILE *fp_pcm = fopen(out_pcm_path, "wb");
 
@@ -124,14 +124,14 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
     double time_base = av_q2d(time_base_rational);
     // Audio only. Audio frame size, if known. Required by some formats to be static.
     int frame_size = avCodecParameters->frame_size;
+    int channels = avCodecParameters->channels;
     int bit_rate = avCodecParameters->bit_rate;
     int sample_rate = avCodecParameters->sample_rate;
     long durationForPts = stream->duration;
 
-//    const char *mp3_file = "";
-    Mp3Lame *mp3Lame = new Mp3Lame(out_mp3_path);
+    auto *mp3Lame = new Mp3Lame(out_mp3_path);
 
-    LOGE("------------------------------------------------------------------%ld", sizeof(int8_t));
+    LOGE("------------------------------------------------------------------");
     //开始读取源文件，进行解码
     while (av_read_frame(avFormatContext, packet) >= 0) {
         if (packet->stream_index == streamIndex) {
@@ -144,9 +144,9 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
                 int out_buffer_size = av_samples_get_buffer_size(nullptr, outChannelCount,
                                                                  nb_samples, outFormat, 1);
                 //将每一帧数据转换成pcm
-                swr_convert(swrContext, &out_buffer, 2 * 44100,
+                swr_convert(swrContext, &out_buffer, out_buffer_size,
                             (const uint8_t **) inFrame->data, nb_samples);
-                mp3Lame->encode(reinterpret_cast<short *>(out_buffer), out_buffer_size, false);
+                mp3Lame->encode(reinterpret_cast<short *>(out_buffer), out_buffer_size / 4, false);
                 // 写入文件
                 fwrite(out_buffer, 1, out_buffer_size, fp_pcm);
             }
@@ -157,8 +157,9 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
             double currTime = currentIndex * timePerFrame;
             int percent = ceil(1.0F * packet->pts * 100 / durationForPts);
             double real_time = time_base * inFrame->pts;
-
             double curr = inFrame->pts * time_base;
+
+            LOGE("outChannelCount::%d outFormat::%d", outChannelCount, outFormat);
 
 //            if (percent % 20 == 0 && lastPercent != percent) {
 //                lastPercent = percent;
@@ -171,9 +172,9 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
     }
     mp3Lame->encode(reinterpret_cast<short *>(out_buffer), 4608, true);
 
-    LOGE("duration:%ld  frame_size:%d, bit_rate:%d, "
+    LOGE("duration:%ld  frame_size:%d, bit_rate:%d, channels:%d, "
          "sample_rate:%d, currentIndex:%d,  time_base::%2.14lf, durationAll:%ld  num:%d  den:%d",
-         durationForRealTime, frame_size, bit_rate,
+         durationForRealTime, frame_size, bit_rate, channels,
          sample_rate, currentIndex, time_base, durationForPts, time_base_rational.num,
          time_base_rational.den);
 
