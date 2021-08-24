@@ -15,16 +15,16 @@ public class FFMpegSimpleAudioPlayer extends NativeProgress {
         }).start();
     }
 
-    public void convert(final String src, final String out) {
+    public void convert(final String src, final String pcmOut, final String mp3Out) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                convertJni(src, out);
+                convertJni(src, pcmOut, mp3Out);
             }
         }).start();
     }
 
     public native void playJni(String url);
 
-    public native void convertJni(String src, String out);
+    public native void convertJni(String src, String pcmOut, String mp3Out);
 }

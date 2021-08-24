@@ -58,6 +58,7 @@ set(
         code-self/FFMpegSimpleAudioPlayer.cpp
         code-self/FFMpegSimpleAudioConvert.cpp
         code-self/audio/opensl_render.cpp
+        code-self/audio/encode/Mp3Lame.cpp
 )
 
 # Creates and names a library, sets it as either STATIC
@@ -80,6 +81,7 @@ INCLUDE_DIRECTORIES(
         ${CMAKE_SOURCE_DIR}/ffmpeg
         ${CMAKE_SOURCE_DIR}/code-self
         ${CMAKE_SOURCE_DIR}/code-self/audio
+        ${CMAKE_SOURCE_DIR}/code-self/audio/encode
         ${CMAKE_SOURCE_DIR}/libyuv/include
 )
 

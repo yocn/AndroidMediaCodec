@@ -52,7 +52,8 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
         String mp4FilePath = Constant.getTestMp4FilePath();
         String mp3FilePath = Constant.getTestMp3FilePath();
         String mp3FilePath2 = Constant.getTestMp3FilePath2();
-        String targetMp3FilePath = Constant.getTestFilePath("test.pcm");
+        String targetPcmFilePath = Constant.getTestFilePath("output.pcm");
+        String targetMp3FilePath = Constant.getTestFilePath("output.mp3");
         FFMpegSimpleAudioPlayer ffMpegSimpleAudioPlayer = new FFMpegSimpleAudioPlayer();
         ffMpegSimpleAudioPlayer.setGetProgressCallback(new NativeProgress.GetProgressCallback() {
             @Override
@@ -69,9 +70,9 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
         if (v.getId() == R.id.btn_play) {
             ffMpegSimpleAudioPlayer.play(mp3FilePath);
         } else if (v.getId() == R.id.btn_convert) {
-            ffMpegSimpleAudioPlayer.convert(mp3FilePath, targetMp3FilePath);
+            ffMpegSimpleAudioPlayer.convert(mp3FilePath, targetPcmFilePath, targetMp3FilePath);
         } else if (v.getId() == R.id.btn_convert2) {
-            ffMpegSimpleAudioPlayer.convert(mp3FilePath2, targetMp3FilePath);
+            ffMpegSimpleAudioPlayer.convert(mp3FilePath2, targetPcmFilePath, targetMp3FilePath);
         }
     };
 }
