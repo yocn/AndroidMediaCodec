@@ -13,8 +13,11 @@ extern "C" {
 
 
 struct RGBMode {
+    // sws_scale需要的格式
     AVPixelFormat pixelFormat;
+    // 创建ANativeWindow需要的格式
     ANativeWindow_LegacyFormat aNativeWindowLegacyFormat;
+    // 根据格式判断存储的步长
     int multi_stride;
 };
 
@@ -98,15 +101,14 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
     RGBMode rgb656 = {AV_PIX_FMT_RGB565LE, WINDOW_FORMAT_RGB_565, 2};
     RGBMode rgba8888 = {AV_PIX_FMT_RGBA, WINDOW_FORMAT_RGBA_8888, 4};
 
-    RGBMode rgbMode = true ? rgb656 : rgba8888;
+    RGBMode rgbMode = false ? rgb656 : rgba8888;
 
 //计算 Buffer 的大小
     int bufferSize = av_image_get_buffer_size(rgbMode.pixelFormat, m_VideoWidth, m_VideoHeight, 1);
 //为 m_RGBAFrame 分配空间
     auto *m_FrameBuffer = (uint8_t *) av_malloc(bufferSize * sizeof(uint8_t));
     av_image_fill_arrays(m_RGBAFrame->data, m_RGBAFrame->linesize, m_FrameBuffer,
-                         rgbMode.pixelFormat,
-                         m_VideoWidth, m_VideoHeight, 1);
+                         rgbMode.pixelFormat, m_VideoWidth, m_VideoHeight, 1);
 
 //2.2. 获取转换的上下文
     SwsContext *m_SwsContext = sws_getContext(m_VideoWidth, m_VideoHeight,
@@ -140,7 +142,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                 ANativeWindow_lock(m_NativeWindow, &m_NativeWindowBuffer, nullptr);
                 auto *dstBuffer = static_cast<uint8_t *>(m_NativeWindowBuffer.bits);
 
-                //输入图的步长（一行像素有多少字节）
+                //输入图的步长（一行像素有多少字节），RGB_XXX的模式下linesize[0]总是为宽度
                 int srcLineSize = m_RGBAFrame->linesize[0];
                 //缓冲区步长 输出的stride步长，如果是RGBA是4，如果是RGB565是2
                 int dstLineSize = m_NativeWindowBuffer.stride * rgbMode.multi_stride;
@@ -150,6 +152,8 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                      m_Frame->linesize[3], m_RGBAFrame->linesize[0], m_RGBAFrame->linesize[1],
                      m_RGBAFrame->linesize[2],
                      m_RGBAFrame->linesize[3], srcLineSize, dstLineSize);
+                LOGE("m_RGBAFrame->data[0]:%d, m_FrameBuffer:%d  m_NativeWindowBuffer.stride：%d", m_RGBAFrame->data[0],
+                     m_FrameBuffer, m_NativeWindowBuffer.stride);
 
                 for (int i = 0; i < m_VideoHeight; ++i) {
                     //一行一行地拷贝图像数据
