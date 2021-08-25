@@ -16,6 +16,7 @@ import com.yocn.meida.view.activity.camera.PreviewWithOpenGLESActivity;
 import com.yocn.meida.view.activity.camera.PreviewYUVDataActivity;
 import com.yocn.meida.view.activity.camera.PreviewYUVDataActivity2;
 import com.yocn.meida.view.activity.ffmpeg.FFMpegActivity;
+import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayNormalTimeVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioActivity;
 
@@ -70,6 +71,7 @@ public class DataProvider {
         cameraDataList.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
 //--------------------------------------------------------------------------------------------------
         ffmpegDataList.add(new JumpBean("FFMpeg播放", SimpleFFMpegPlayVideoActivity.class));
+        ffmpegDataList.add(new JumpBean("FFMpeg播放正常速度", SimpleFFMpegPlayNormalTimeVideoActivity.class));
         ffmpegDataList.add(new JumpBean("FFMpeg播放Audio", SimpleFFMpegPlayAudioActivity.class));
     }
 
