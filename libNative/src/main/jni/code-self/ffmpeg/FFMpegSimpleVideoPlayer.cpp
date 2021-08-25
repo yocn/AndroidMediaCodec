@@ -9,8 +9,14 @@ extern "C" {
 #include <code-self/common/GlobalMacro.h>
 #include <code-self/common/Util.h>
 }
-
 #define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimpleVideoPlayer_##name
+
+
+struct RGBMode {
+    AVPixelFormat pixelFormat;
+    ANativeWindow_LegacyFormat aNativeWindowLegacyFormat;
+    int multi_stride;
+};
 
 extern "C" {
 JNIEXPORT void JNICALL
@@ -20,6 +26,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface);
 JNIEXPORT void JNICALL
 JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
     jboolean copy;
+
     LOG(env, jobj);
     const char *m_Url = env->GetStringUTFChars(url, &copy);
     LOGE("-------------------------init-----------------m_Url--%s", m_Url);
@@ -87,16 +94,24 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
     int m_RenderHeight = m_VideoHeight;
 
     AVFrame *m_RGBAFrame = av_frame_alloc();
+
+    RGBMode rgb656 = {AV_PIX_FMT_RGB565LE, WINDOW_FORMAT_RGB_565, 2};
+    RGBMode rgba8888 = {AV_PIX_FMT_RGBA, WINDOW_FORMAT_RGBA_8888, 4};
+
+    RGBMode rgbMode = true ? rgb656 : rgba8888;
+
 //计算 Buffer 的大小
-    int bufferSize = av_image_get_buffer_size(AV_PIX_FMT_RGBA, m_VideoWidth, m_VideoHeight, 1);
+    int bufferSize = av_image_get_buffer_size(rgbMode.pixelFormat, m_VideoWidth, m_VideoHeight, 1);
 //为 m_RGBAFrame 分配空间
     auto *m_FrameBuffer = (uint8_t *) av_malloc(bufferSize * sizeof(uint8_t));
-    av_image_fill_arrays(m_RGBAFrame->data, m_RGBAFrame->linesize, m_FrameBuffer, AV_PIX_FMT_RGBA,
+    av_image_fill_arrays(m_RGBAFrame->data, m_RGBAFrame->linesize, m_FrameBuffer,
+                         rgbMode.pixelFormat,
                          m_VideoWidth, m_VideoHeight, 1);
+
 //2.2. 获取转换的上下文
     SwsContext *m_SwsContext = sws_getContext(m_VideoWidth, m_VideoHeight,
                                               m_AVCodecContext->pix_fmt,
-                                              m_RenderWidth, m_RenderHeight, AV_PIX_FMT_RGBA,
+                                              m_RenderWidth, m_RenderHeight, rgbMode.pixelFormat,
                                               SWS_FAST_BILINEAR, nullptr, nullptr, nullptr);
 
 //3.1. 利用 Java 层 SurfaceView 传下来的 Surface 对象，获取 ANativeWindow
@@ -104,7 +119,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
 
 //3.2. 设置渲染区域和输入格式
     ANativeWindow_setBuffersGeometry(m_NativeWindow, m_VideoWidth,
-                                     m_VideoHeight, WINDOW_FORMAT_RGBA_8888);
+                                     m_VideoHeight, rgbMode.aNativeWindowLegacyFormat);
 
 //10.解码循环
     while (av_read_frame(m_AVFormatContext, m_Packet) >= 0) { //读取帧
@@ -113,7 +128,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                 return;
             }
             while (avcodec_receive_frame(m_AVCodecContext, m_Frame) == 0) {
-                //获取到 m_Frame 解码数据，在这里进行格式转换，然后进行渲染，下一节介绍 ANativeWindow 渲染过程
+                //获取到 m_Frame 解码数据，在这里进行格式转换，然后进行渲染
 
 //2.3. 格式转换
                 sws_scale(m_SwsContext, m_Frame->data, m_Frame->linesize, 0, m_VideoHeight,
@@ -125,8 +140,16 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                 ANativeWindow_lock(m_NativeWindow, &m_NativeWindowBuffer, nullptr);
                 auto *dstBuffer = static_cast<uint8_t *>(m_NativeWindowBuffer.bits);
 
-                int srcLineSize = m_RGBAFrame->linesize[0];//输入图的步长（一行像素有多少字节）
-                int dstLineSize = m_NativeWindowBuffer.stride * 4;//RGBA 缓冲区步长
+                //输入图的步长（一行像素有多少字节）
+                int srcLineSize = m_RGBAFrame->linesize[0];
+                //缓冲区步长 输出的stride步长，如果是RGBA是4，如果是RGB565是2
+                int dstLineSize = m_NativeWindowBuffer.stride * rgbMode.multi_stride;
+
+                LOGE("linesize0:%d, linesize1:%d, linesize2:%d, linesize3:%d, rgba_linesize0:%d, rgba_linesize1:%d, rgba_linesize2:%d, rgba_linesize3:%d, srcLineSize:%d, dstLineSize:%d",
+                     m_Frame->linesize[0], m_Frame->linesize[1], m_Frame->linesize[2],
+                     m_Frame->linesize[3], m_RGBAFrame->linesize[0], m_RGBAFrame->linesize[1],
+                     m_RGBAFrame->linesize[2],
+                     m_RGBAFrame->linesize[3], srcLineSize, dstLineSize);
 
                 for (int i = 0; i < m_VideoHeight; ++i) {
                     //一行一行地拷贝图像数据
