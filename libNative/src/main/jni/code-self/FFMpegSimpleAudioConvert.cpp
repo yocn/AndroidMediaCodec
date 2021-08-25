@@ -112,7 +112,6 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
     int outChannelCount = av_get_channel_layout_nb_channels(out_ch_layout);
 
     int currentIndex = 1;
-    int lastPercent = -1;
     LOGE("声道数量%d ", outChannelCount);
     // 设置音频缓冲区间 16bit   44100  PCM数据, 双声道
     auto *out_buffer = (uint8_t *) av_malloc(2 * 44100);
@@ -161,16 +160,13 @@ JNI_METHOD_NAME(convertJni)(JNIEnv *env, jobject jobj, jstring src, jstring pcm_
 
             LOGE("outChannelCount::%d outFormat::%d", outChannelCount, outFormat);
 
-//            if (percent % 20 == 0 && lastPercent != percent) {
-//                lastPercent = percent;
 //            LOGE("currTime::%lf  percent:%d, currentIndex:%d, real_time::%lf,  pts:%ld, real_time2::%lf,  packet->pos:%ld",
 //                 currTime, percent, currentIndex, real_time, inFrame->pts, curr, packet->pos);
-//            }
 
             progress(env, jobj, (long) currTime, durationForRealTime, percent);
         }
     }
-    mp3Lame->encode(reinterpret_cast<short *>(out_buffer), 4608, true);
+    mp3Lame->encode(reinterpret_cast<short *>(out_buffer), 1, true);
 
     LOGE("duration:%ld  frame_size:%d, bit_rate:%d, channels:%d, "
          "sample_rate:%d, currentIndex:%d,  time_base::%2.14lf, durationAll:%ld  num:%d  den:%d",
