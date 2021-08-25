@@ -5,7 +5,7 @@
 
 extern "C" {
 #include "JniProgress.h"
-#include <code-self/GlobalMacro.h>
+#include <code-self/common/GlobalMacro.h>
 
 void progress(JNIEnv *env, jobject jobj, long curr, long total, int progress) {
     jclass jclazz = env->FindClass("com/yocn/libnative/NativeProgress");

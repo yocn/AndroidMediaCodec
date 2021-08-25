@@ -1,5 +1,5 @@
 extern "C" {
-#include <code-self/GlobalMacro.h>
+#include <code-self/common/GlobalMacro.h>
 
 #define JNI_METHOD_NAME(name) Java_com_yocn_media_util_LogUtil_##name
 

@@ -3,7 +3,7 @@
 //
 
 #include "Mp3Lame.h"
-#include "GlobalMacro.h"
+#include "code-self/common/GlobalMacro.h"
 
 Mp3Lame::Mp3Lame(const char *mp3_path) {
     init(mp3_path);

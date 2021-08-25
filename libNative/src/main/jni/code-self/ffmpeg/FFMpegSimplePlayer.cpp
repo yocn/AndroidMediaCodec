@@ -6,8 +6,8 @@ extern "C" {
 #include <android/native_window_jni.h>
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
-#include <code-self/GlobalMacro.h>
-#include <code-self/Util.h>
+#include <code-self/common/GlobalMacro.h>
+#include <code-self/common/Util.h>
 }
 
 #define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimplePlayer_##name

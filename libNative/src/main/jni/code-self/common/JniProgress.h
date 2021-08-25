@@ -6,7 +6,7 @@
 #define ANDROIDMEDIACODEC_JNIPROGRESS_H
 
 extern "C" {
-#include <code-self/GlobalMacro.h>
+#include <code-self/common/GlobalMacro.h>
 void progress(JNIEnv *env, jobject jobj, long curr, long total, int progress);
 }
 

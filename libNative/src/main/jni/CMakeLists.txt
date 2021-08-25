@@ -51,13 +51,13 @@ set(
 
         code-self/native-lib.cpp
         code-self/YUVTrans.cpp
-        code-self/ffmpegTests.cpp
-        code-self/Util.cpp
-        code-self/JniProgress.cpp
-        code-self/FFMpegSimplePlayer.cpp
-        code-self/FFMpegSimpleAudioPlayer.cpp
-        code-self/FFMpegSimpleAudioConvert.cpp
-        code-self/audio/opensl_render.cpp
+        code-self/common/Util.cpp
+        code-self/common/JniProgress.cpp
+        code-self/ffmpeg/ffmpegTests.cpp
+        code-self/ffmpeg/FFMpegSimplePlayer.cpp
+        code-self/ffmpeg/FFMpegSimpleAudioPlayer.cpp
+        code-self/ffmpeg/FFMpegSimpleAudioConvert.cpp
+        code-self/audio/play/opensl_render.cpp
         code-self/audio/encode/Mp3Lame.cpp
 )
 
@@ -80,7 +80,8 @@ INCLUDE_DIRECTORIES(
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/ffmpeg
         ${CMAKE_SOURCE_DIR}/code-self
-        ${CMAKE_SOURCE_DIR}/code-self/audio
+        ${CMAKE_SOURCE_DIR}/code-self/common
+        ${CMAKE_SOURCE_DIR}/code-self/audio/play
         ${CMAKE_SOURCE_DIR}/code-self/audio/encode
         ${CMAKE_SOURCE_DIR}/libyuv/include
 )

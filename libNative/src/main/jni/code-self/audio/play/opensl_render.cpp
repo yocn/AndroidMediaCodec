@@ -6,7 +6,7 @@
 
 #include <thread>
 #include <unistd.h>
-#include <../GlobalMacro.h>
+#include <code-self/common/GlobalMacro.h>
 #include "opensl_render.h"
 
 OpenSLRender::OpenSLRender() {

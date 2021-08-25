@@ -5,7 +5,7 @@
 #ifndef ANDROIDMEDIACODEC_AUDIO_RENDER_H
 #define ANDROIDMEDIACODEC_AUDIO_RENDER_H
 
-#include "../../x264/extras/stdint.h"
+#include "x264/extras/stdint.h"
 
 class AudioRender {
 public:

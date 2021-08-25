@@ -1,5 +1,5 @@
-#include <code-self/audio/opensl_render.h>
-#include "JniProgress.h"
+#include <code-self/audio/play/opensl_render.h>
+#include "code-self/common/JniProgress.h"
 
 extern "C" {
 #include <libswresample/swresample.h>
@@ -9,8 +9,8 @@ extern "C" {
 #include <android/native_window_jni.h>
 #include "libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
-#include <code-self/GlobalMacro.h>
-#include <code-self/Util.h>
+#include <code-self/common/GlobalMacro.h>
+#include <code-self/common/Util.h>
 #include <SLES/OpenSLES.h>
 #include "SLES/OpenSLES_Android.h"
 }
