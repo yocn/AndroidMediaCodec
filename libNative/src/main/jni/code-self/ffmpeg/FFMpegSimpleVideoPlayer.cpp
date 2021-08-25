@@ -10,7 +10,7 @@ extern "C" {
 #include <code-self/common/Util.h>
 }
 
-#define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimplePlayer_##name
+#define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimpleVideoPlayer_##name
 
 extern "C" {
 JNIEXPORT void JNICALL

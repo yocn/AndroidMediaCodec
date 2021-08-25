@@ -4,7 +4,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import com.yocn.libnative.FFMpegSimplePlayer;
+import com.yocn.libnative.FFMpegSimpleVideoPlayer;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
 import com.yocn.meida.view.activity.BaseActivity;
@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
  * @Date 2019/8/4 9:46 AM
  * @ClassName PreviewPureActivity
  */
-public class SimpleFFMpegPlayActivity extends BaseActivity {
+public class SimpleFFMpegPlayVideoActivity extends BaseActivity {
     public static String DESC = "最简单的FFMpeg播放视频";
     private SurfaceView surfaceView;
 
@@ -30,7 +30,7 @@ public class SimpleFFMpegPlayActivity extends BaseActivity {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                FFMpegSimplePlayer simplePlayer = new FFMpegSimplePlayer();
+                FFMpegSimpleVideoPlayer simplePlayer = new FFMpegSimpleVideoPlayer();
                 String mp4FilePath = Constant.getTestMp4FilePath();
                 new Thread(() -> simplePlayer.play(mp4FilePath, surfaceView.getHolder().getSurface())).start();
             }

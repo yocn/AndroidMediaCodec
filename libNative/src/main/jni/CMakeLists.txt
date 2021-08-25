@@ -54,7 +54,7 @@ set(
         code-self/common/Util.cpp
         code-self/common/JniProgress.cpp
         code-self/ffmpeg/ffmpegTests.cpp
-        code-self/ffmpeg/FFMpegSimplePlayer.cpp
+        code-self/ffmpeg/FFMpegSimpleVideoPlayer.cpp
         code-self/ffmpeg/FFMpegSimpleAudioPlayer.cpp
         code-self/ffmpeg/FFMpegSimpleAudioConvert.cpp
         code-self/audio/play/opensl_render.cpp
