@@ -246,7 +246,7 @@ JNI_METHOD_NAME(playJni)(JNIEnv *env, jobject jobj, jstring src, jobject surface
 //解锁当前 Window ，渲染缓冲区数据
                 ANativeWindow_unlockAndPost(m_NativeWindow);
                 // sleep相应的毫秒
-//                usleep(sleep_time * 1000 * 1000);
+                usleep(sleep_time * 1000 * 1000);
             }
         } else if (m_Packet->stream_index == audio_stream_index) {
             avcodec_send_packet(audioCodecContext, m_Packet);

@@ -9,6 +9,12 @@
 #include <code-self/common/GlobalMacro.h>
 #include "opensl_render.h"
 
+inline void print_thread_id(const char *tag) {
+    std::thread::id tid = std::this_thread::get_id();
+    long thread_id = reinterpret_cast<long>(&tid);
+    LOGE("thread:%s:  tid:%ld", tag, thread_id);
+}
+
 OpenSLRender::OpenSLRender() {
 }
 
@@ -22,6 +28,60 @@ void OpenSLRender::InitRender() {
 
     std::thread t(sRenderPcm, this);
     t.detach();
+}
+
+void OpenSLRender::sRenderPcm(OpenSLRender *that) {
+    that->StartRender();
+}
+
+void OpenSLRender::StartRender() {
+    while (m_data_queue.empty()) {
+        WaitForCache();
+    }
+    (*m_pcm_player)->SetPlayState(m_pcm_player, SL_PLAYSTATE_PLAYING);
+    sReadPcmBufferCbFun(m_pcm_buffer, this);
+    print_thread_id("start");
+    LOGI("openSL render start playing");
+}
+
+/* worker thread */
+void
+OpenSLRender::sReadPcmBufferCbFun(SLAndroidSimpleBufferQueueItf bufferQueueItf, void *context) {
+    OpenSLRender *player = (OpenSLRender *) context;
+    player->BlockEnqueue();
+}
+
+/* worker thread */
+void OpenSLRender::BlockEnqueue() {
+    if (m_pcm_player == nullptr) return;
+
+    // 先将已经使用过的数据移除
+    while (!m_data_queue.empty()) {
+        PcmData *pcm = m_data_queue.front();
+        if (pcm->used) {
+            m_data_queue.pop();
+            delete pcm;
+        } else {
+            break;
+        }
+    }
+
+    // 等待数据缓冲
+    while (m_data_queue.empty() && m_pcm_player != nullptr) {
+        WaitForCache();
+    }
+    print_thread_id("Enqueue");
+
+    PcmData *pcmData = m_data_queue.front();
+    if (nullptr != pcmData && m_pcm_player) {
+        SLresult result = (*m_pcm_buffer)->Enqueue(m_pcm_buffer, pcmData->pcm,
+                                                   (SLuint32) pcmData->size);
+        if (result == SL_RESULT_SUCCESS) {
+            // 只做已经使用标记，在下一帧数据压入前移除
+            // 保证数据能正常使用，否则可能会出现破音
+            pcmData->used = true;
+        }
+    }
 }
 
 void OpenSLRender::Render(uint8_t *pcm, int size) {
@@ -38,6 +98,7 @@ void OpenSLRender::Render(uint8_t *pcm, int size) {
             PcmData *pcmData = new PcmData(data, size);
             m_data_queue.push(pcmData);
 
+            print_thread_id("Render");
             // 通知播放线程推出等待，恢复播放
             SendCacheReadySignal();
         }
@@ -170,54 +231,4 @@ bool OpenSLRender::CheckError(SLresult result, std::string hint) {
         return true;
     }
     return false;
-}
-
-void OpenSLRender::sRenderPcm(OpenSLRender *that) {
-    that->StartRender();
-}
-
-void OpenSLRender::StartRender() {
-    while (m_data_queue.empty()) {
-        WaitForCache();
-    }
-    (*m_pcm_player)->SetPlayState(m_pcm_player, SL_PLAYSTATE_PLAYING);
-    sReadPcmBufferCbFun(m_pcm_buffer, this);
-    LOGI("openSL render start playing");
-}
-
-void
-OpenSLRender::sReadPcmBufferCbFun(SLAndroidSimpleBufferQueueItf bufferQueueItf, void *context) {
-    OpenSLRender *player = (OpenSLRender *) context;
-    player->BlockEnqueue();
-}
-
-void OpenSLRender::BlockEnqueue() {
-    if (m_pcm_player == nullptr) return;
-
-    // 先将已经使用过的数据移除
-    while (!m_data_queue.empty()) {
-        PcmData *pcm = m_data_queue.front();
-        if (pcm->used) {
-            m_data_queue.pop();
-            delete pcm;
-        } else {
-            break;
-        }
-    }
-
-    // 等待数据缓冲
-    while (m_data_queue.empty() && m_pcm_player != nullptr) {// if m_pcm_player is nullptr, stop render
-        WaitForCache();
-    }
-
-    PcmData *pcmData = m_data_queue.front();
-    if (nullptr != pcmData && m_pcm_player) {
-        SLresult result = (*m_pcm_buffer)->Enqueue(m_pcm_buffer, pcmData->pcm,
-                                                   (SLuint32) pcmData->size);
-        if (result == SL_RESULT_SUCCESS) {
-            // 只做已经使用标记，在下一帧数据压入前移除
-            // 保证数据能正常使用，否则可能会出现破音
-            pcmData->used = true;
-        }
-    }
 }
