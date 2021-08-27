@@ -14,6 +14,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:max="100"/>
+        android:max="100" />
+
+    <TextView
+        android:id="@+id/tv_play"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:background="@color/half"
+        android:gravity="center"
+        android:text="PLAY"
+        android:textColor="@color/write"
+        android:visibility="gone" />
 
 </RelativeLayout>

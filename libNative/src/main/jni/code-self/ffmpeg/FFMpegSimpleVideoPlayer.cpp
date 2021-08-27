@@ -22,17 +22,24 @@ struct RGBMode {
     int multi_stride;
 };
 
+void saveYUV420P(unsigned char *buf, int wrap, int xsize, int ysize, FILE *f) {
+    for (int i = 0; i < ysize; ++i) {
+        fwrite(buf + i * wrap, 1, xsize, f);
+    }
+}
+
 extern "C" {
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface);
+JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src, jstring tar, jobject surface);
 }
 
 JNIEXPORT void JNICALL
-JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
+JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src, jstring tar, jobject surface) {
     jboolean copy;
 
     LOG(env, jobj);
-    const char *m_Url = env->GetStringUTFChars(url, &copy);
+    const char *m_Url = env->GetStringUTFChars(src, &copy);
+    const char *m_Tar_Url = env->GetStringUTFChars(tar, &copy);
     LOGE("-------------------------init-----------------m_Url--%s", m_Url);
 //1.创建封装格式上下文
     AVFormatContext *m_AVFormatContext = avformat_alloc_context();
@@ -124,6 +131,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
 //3.2. 设置渲染区域和输入格式
     ANativeWindow_setBuffersGeometry(m_NativeWindow, m_VideoWidth,
                                      m_VideoHeight, rgbMode.aNativeWindowLegacyFormat);
+    FILE *tar_file = fopen(m_Tar_Url, "wb");
 
 //10.解码循环
     while (av_read_frame(m_AVFormatContext, m_Packet) >= 0) { //读取帧
@@ -131,10 +139,19 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
             if (avcodec_send_packet(m_AVCodecContext, m_Packet) != 0) { //视频解码
                 return;
             }
-            int num = 0;
             while (avcodec_receive_frame(m_AVCodecContext, m_Frame) == 0) {
-                //获取到 m_Frame 解码数据，在这里进行格式转换，然后进行渲染
-                num++;
+                //获取到 m_Frame 解码数据，在这里进行格式转换，然后进行渲染'
+                int format = m_Frame->format;
+                //AV_PIX_FMT_YUV420P
+
+                LOGE("m_Frame->linesize::%d %d %d  %d/%d  format:%d", m_Frame->linesize[0],
+                     m_Frame->linesize[1], m_Frame->linesize[2], m_VideoWidth, m_VideoHeight,
+                     format);
+                saveYUV420P(m_Frame->data[0], m_Frame->linesize[0], m_VideoWidth, m_VideoHeight, tar_file);
+                saveYUV420P(m_Frame->data[1], m_Frame->linesize[1], m_VideoWidth/2, m_VideoHeight/2, tar_file);
+                saveYUV420P(m_Frame->data[2], m_Frame->linesize[2], m_VideoWidth/2, m_VideoHeight/2, tar_file);
+//                fwrite(m_Frame->data[0], 1, m_Frame->linesize[0] * m_VideoHeight, tar_file);
+
 //2.3. 格式转换
                 sws_scale(m_SwsContext, m_Frame->data, m_Frame->linesize, 0, m_VideoHeight,
                           m_RGBAFrame->data, m_RGBAFrame->linesize);
@@ -150,19 +167,23 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                 //缓冲区步长 输出的stride步长，如果是RGBA是4，如果是RGB565是2
                 int dstLineSize = m_NativeWindowBuffer.stride * rgbMode.multi_stride;
 
+                int dstSize = dstLineSize * m_VideoHeight;
+
 //                LOGE("linesize0:%d, linesize1:%d, linesize2:%d, linesize3:%d, rgba_linesize0:%d, rgba_linesize1:%d, rgba_linesize2:%d, rgba_linesize3:%d, srcLineSize:%d, dstLineSize:%d",
 //                     m_Frame->linesize[0], m_Frame->linesize[1], m_Frame->linesize[2],
 //                     m_Frame->linesize[3], m_RGBAFrame->linesize[0], m_RGBAFrame->linesize[1],
 //                     m_RGBAFrame->linesize[2],
 //                     m_RGBAFrame->linesize[3], srcLineSize, dstLineSize);
-                LOGE("m_RGBAFrame->data[0]:%d, m_FrameBuffer:%d  m_NativeWindowBuffer.stride：%d  num：%d",
-                     m_RGBAFrame->data[0], m_FrameBuffer, m_NativeWindowBuffer.stride, num);
+                LOGE("m_RGBAFrame->data[0]:%d, m_FrameBuffer:%d  m_NativeWindowBuffer.stride：%d  m_VideoWidth：%d   m_VideoHeight：%d  dstSize：%d",
+                     m_RGBAFrame->data[0], m_FrameBuffer, m_NativeWindowBuffer.stride,
+                     m_VideoWidth, m_VideoHeight, dstSize);
 
                 for (int i = 0; i < m_VideoHeight; ++i) {
                     //一行一行地拷贝图像数据
                     memcpy(dstBuffer + i * dstLineSize, m_FrameBuffer + i * srcLineSize,
                            srcLineSize);
                 }
+
 //解锁当前 Window ，渲染缓冲区数据
                 ANativeWindow_unlockAndPost(m_NativeWindow);
 
@@ -177,6 +198,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
         av_packet_unref(m_Packet); //释放 m_Packet 引用，防止内存泄漏
     }
 
+    fclose(tar_file);
 //3.4. 释放 ANativeWindow
     if (m_NativeWindow)
         ANativeWindow_release(m_NativeWindow);

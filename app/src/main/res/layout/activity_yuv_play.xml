@@ -9,6 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <TextView
+        android:id="@+id/tv_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/h_half"
+        android:gravity="center_horizontal"
+        android:textColor="@color/write" />
+
     <RelativeLayout
         android:id="@+id/rl_panel"
         android:layout_width="match_parent"

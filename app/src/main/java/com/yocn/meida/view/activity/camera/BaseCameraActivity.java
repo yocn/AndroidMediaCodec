@@ -2,7 +2,6 @@ package com.yocn.meida.view.activity.camera;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
@@ -26,7 +25,9 @@ public abstract class BaseCameraActivity extends BaseActivity implements View.On
     protected void initView(View root) {
         LogUtil.d("initView");
         mBack = root.findViewById(R.id.iv_back);
-        mBack.setOnClickListener(this);
+        if (mBack != null) {
+            mBack.setOnClickListener(this);
+        }
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.yocn.meida.view.activity;
 
 import android.animation.ObjectAnimator;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -30,6 +33,12 @@ import com.yocn.meida.view.widget.PopupWindowGenerater;
  */
 public class YUVPlayerActivity extends BaseActivity implements View.OnClickListener {
     public static String DESC = "I420播放器，可以配置参数，自己选定文件";
+    private static String WIDTH = "WIDTH";
+    private static String HEIGHT = "HEIGHT";
+    private static String PATH = "PATH";
+    private static String FPS = "FPS";
+    private static String AUTOPLAY = "AUTOPLAY";
+
     ImageView mArrayIV;
     ImageView mShowIV;
     ImageView mPlayIV;
@@ -52,7 +61,22 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     ObjectAnimator translationYUp;
     int startY = 0, endY = 0;
     int duration = 200;
+    private String yuvFilePath = Constant.getTestYuvFilePath();
+    private int width = 640;
+    private int height = 480;
+    private int fps = 30;
+    private boolean autoPlay = false;
+    private TextView pathTv;
 
+    public static void playYuv(Context context, String path, int width, int height, int fps, boolean autoPlay) {
+        Intent intent = new Intent(context, YUVPlayerActivity.class);
+        intent.putExtra(PATH, path);
+        intent.putExtra(WIDTH, width);
+        intent.putExtra(HEIGHT, height);
+        intent.putExtra(FPS, fps);
+        intent.putExtra(AUTOPLAY, autoPlay);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +91,7 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
 
     @Override
     protected void initView(View root) {
+        pathTv = root.findViewById(R.id.tv_path);
         mPanelRL = root.findViewById(R.id.rl_panel);
         mPanelLL = root.findViewById(R.id.ll_panel);
         mArrayIV = root.findViewById(R.id.iv_array);
@@ -86,8 +111,8 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         mRotateTV.setOnClickListener(this);
         mFormatTV.setOnClickListener(this);
         mFPSET.addTextChangedListener(mFpsTextWatcher);
-        mWidthET.addTextChangedListener(mFpsTextWatcher);
-        mHeigtET.addTextChangedListener(mFpsTextWatcher);
+        mWidthET.addTextChangedListener(mWidthTextWatcher);
+        mHeigtET.addTextChangedListener(mHeightTextWatcher);
     }
 
     @Override
@@ -98,8 +123,19 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
                 .setAnchorView(mRotateTV).setOnItemClickListener(mRotateItemClickListener).setOnDismissListener(mRotateDismissListener);
         mFormatOpoupWindow = new PopupWindowGenerater<String>().init(this).setItems(YUVFilePlayer.mFormatTextList)
                 .setAnchorView(mFormatTV).setOnItemClickListener(mFormatItemClickListener).setOnDismissListener(mFormatDismissListener);
-        String yuvFilePath = Constant.getTestYuvFilePath();
-        mYUVFilePlayer = new YUVFilePlayer(this).setFilePath(yuvFilePath).setWH(640, 480);
+        if (!TextUtils.isEmpty(getIntent().getStringExtra(PATH))) {
+            yuvFilePath = getIntent().getStringExtra(PATH);
+            width = getIntent().getIntExtra(WIDTH, 0);
+            height = getIntent().getIntExtra(HEIGHT, 0);
+            fps = getIntent().getIntExtra(FPS, 0);
+            autoPlay = getIntent().getBooleanExtra(AUTOPLAY, false);
+            mWidthET.setText(String.valueOf(width));
+            mHeigtET.setText(String.valueOf(height));
+            mFPSET.setText(String.valueOf(fps));
+        }
+        pathTv.setText(yuvFilePath);
+
+        mYUVFilePlayer = new YUVFilePlayer(this);
         mYUVFilePlayer.setYuvCallback(new YUVFilePlayer.OnYuvPlayCallbackInterface() {
             @Override
             public void getBitmap(Bitmap bitmap) {
@@ -118,13 +154,16 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
                     case YUVFilePlayer.STATUS_PAUSE:
                     case YUVFilePlayer.STATUS_STOP:
                     case YUVFilePlayer.STATUS_ERROR:
-
                         mPlayIV.setImageResource(R.drawable.mediacontroller_play);
                         break;
                     default:
                 }
             }
         });
+        if (autoPlay) {
+            exeAnim();
+            play();
+        }
     }
 
     @Override
@@ -152,17 +191,21 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         isShow = !isShow;
     }
 
+    private void play() {
+        if (mYUVFilePlayer.isRunning()) {
+            mYUVFilePlayer.pause();
+            mPlayIV.setImageResource(R.drawable.mediacontroller_play);
+        } else {
+            mYUVFilePlayer.setFilePath(yuvFilePath).setWH(width, height).setFPS(fps).start();
+            mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_play:
-                if (mYUVFilePlayer.isRunning()) {
-                    mYUVFilePlayer.pause();
-                    mPlayIV.setImageResource(R.drawable.mediacontroller_play);
-                } else {
-                    mYUVFilePlayer.start();
-                    mPlayIV.setImageResource(R.drawable.mediacontroller_pause);
-                }
+                play();
                 break;
             case R.id.iv_stop:
                 mYUVFilePlayer.stop();
@@ -192,9 +235,28 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             String num = s.toString();
-            LogUtil.d("onTextChanged:" + num);
             if (!StringUtils.isEmpty(num)) {
-                mYUVFilePlayer.setFPS(Integer.parseInt(s.toString()));
+                fps = Integer.parseInt(num);
+            }
+        }
+    };
+
+    MTextWatcher mWidthTextWatcher = new MTextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String num = s.toString();
+            if (!StringUtils.isEmpty(num)) {
+                width = Integer.parseInt(num);
+            }
+        }
+    };
+
+    MTextWatcher mHeightTextWatcher = new MTextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String num = s.toString();
+            if (!StringUtils.isEmpty(num)) {
+                height = Integer.parseInt(num);
             }
         }
     };

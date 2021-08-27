@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.yocn.libnative.YUVTransUtil;
-import com.yocn.meida.base.Constant;
-import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.YUVUtils;
@@ -114,12 +112,13 @@ public class YUVFilePlayer {
         data = new byte[chunkSize];
         argbRotateBytes = new byte[mWidth * mHeight * 4];
         argbBytes = new byte[mWidth * mHeight * 4];
-        LogUtil.d("chunkSize:" + chunkSize + " fileLength:" + fileLength + " mTotalFrames:" + mTotalFrames);
+        LogUtil.d("format::" + format + " w/h:" + width + "/" + height + " chunkSize:" + chunkSize + " fileLength:" + fileLength + " mTotalFrames:" + mTotalFrames);
         return this;
     }
 
     public YUVFilePlayer setFPS(int fps) {
         this.fps = fps;
+        LogUtil.d("fps:" + fps);
         return this;
     }
 
