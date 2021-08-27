@@ -31,7 +31,7 @@ public class SimpleFFMpegPlayVideoActivity extends BaseActivity {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
                 FFMpegSimpleVideoPlayer simplePlayer = new FFMpegSimpleVideoPlayer();
-                String mp4FilePath = Constant.getTestMp4FilePath();
+                String mp4FilePath = Constant.getTestMp4FilePath2();
                 new Thread(() -> simplePlayer.play(mp4FilePath, surfaceView.getHolder().getSurface())).start();
             }
 

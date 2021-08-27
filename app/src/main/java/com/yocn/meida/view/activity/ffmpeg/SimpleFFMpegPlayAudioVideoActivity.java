@@ -6,11 +6,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.yocn.libnative.FFMpegSimpleAudioVideoPlayer;
-import com.yocn.libnative.FFMpegSimpleVideoPlayer;
-import com.yocn.libnative.FFMpegSimpleVideoPlayerNormalTime;
 import com.yocn.libnative.NativeProgress;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
+import com.yocn.meida.util.TimeUtil;
 import com.yocn.meida.view.activity.BaseActivity;
 
 import androidx.annotation.NonNull;
@@ -18,13 +17,13 @@ import androidx.annotation.NonNull;
 /**
  * @Author yocn
  * @Date 2019/8/4 9:46 AM
- * @ClassName SimpleFFMpegPlayNormalTimeVideoActivity
+ * @ClassName PreviewPureActivity
  */
-public class SimpleFFMpegPlayNormalTimeVideoActivity extends BaseActivity {
-    public static String DESC = "视频正常速度播放";
+public class SimpleFFMpegPlayAudioVideoActivity extends BaseActivity {
+    public static String DESC = "音视频同步";
     private SurfaceView surfaceView;
-    private FFMpegSimpleVideoPlayerNormalTime simplePlayer;
-    private ProgressBar progressBar;
+    private FFMpegSimpleAudioVideoPlayer player;
+    private ProgressBar pb_test;
 
     @Override
     protected int getContentViewId() {
@@ -33,22 +32,24 @@ public class SimpleFFMpegPlayNormalTimeVideoActivity extends BaseActivity {
 
     protected void initView(View root) {
         surfaceView = root.findViewById(R.id.sv_play);
-        progressBar = root.findViewById(R.id.pb_test);
-        simplePlayer = new FFMpegSimpleVideoPlayerNormalTime();
-        simplePlayer.setGetProgressCallback(new NativeProgress.GetProgressCallback() {
+        pb_test = root.findViewById(R.id.pb_test);
+        player = new FFMpegSimpleAudioVideoPlayer();
+        player.setGetProgressCallback(new NativeProgress.GetProgressCallback() {
             @Override
             public void progress(long curr, long total, int percent) {
 
                 runOnUiThread(() -> {
-                    progressBar.setProgress(percent);
+                    pb_test.setProgress(percent);
                 });
             }
         });
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+
+
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                String mp4FilePath = Constant.getTestMp4FilePath();
-                new Thread(() -> simplePlayer.play(mp4FilePath, surfaceView.getHolder().getSurface())).start();
+                String mp4FilePath = Constant.getTestMp4FilePath2();
+                player.play(mp4FilePath, surfaceView.getHolder().getSurface());
             }
 
             @Override

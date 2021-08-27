@@ -11,6 +11,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include <code-self/common/GlobalMacro.h>
 #include <code-self/common/Util.h>
+#include <code-self/common/JniProgress.h>
 }
 #define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimpleVideoPlayerNormalTime_##name
 
@@ -176,15 +177,16 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
 
                 long durationForRealTime = m_AVFormatContext->duration / 1000;
                 double curr = m_Frame->pts * time_base;
+                int percent = curr * 100 * 1000 / durationForRealTime;
 
                 // 记录当前的时间戳
                 gettimeofday(&tpend, nullptr);
                 double curr_delta_time = get_base_time(&start_timeval, &tpend);
                 // 相对于pts的时间计算应该sleep的时间
                 double sleep_time = curr - curr_delta_time;
-                LOGE("m_Frame:%lf  durationForRealTime:%ld %ld/%ld   curr_delta_time::%lf  sleep_time::%lf",
+                LOGE("m_Frame:%lf  durationForRealTime:%ld %ld/%ld   curr_delta_time::%lf  sleep_time::%lf  percent:%d",
                      curr, durationForRealTime,
-                     tpend.tv_sec, tpend.tv_usec, curr_delta_time, sleep_time);
+                     tpend.tv_sec, tpend.tv_usec, curr_delta_time, sleep_time, percent);
 
                 for (int i = 0; i < m_VideoHeight; ++i) {
                     //一行一行地拷贝图像数据
@@ -193,6 +195,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                 }
 //解锁当前 Window ，渲染缓冲区数据
                 ANativeWindow_unlockAndPost(m_NativeWindow);
+                progress(env, jobj, curr, durationForRealTime, percent);
                 // sleep相应的毫秒
                 usleep(sleep_time * 1000 * 1000);
             }

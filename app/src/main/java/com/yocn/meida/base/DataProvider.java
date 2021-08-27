@@ -16,6 +16,7 @@ import com.yocn.meida.view.activity.camera.PreviewWithOpenGLESActivity;
 import com.yocn.meida.view.activity.camera.PreviewYUVDataActivity;
 import com.yocn.meida.view.activity.camera.PreviewYUVDataActivity2;
 import com.yocn.meida.view.activity.ffmpeg.FFMpegActivity;
+import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayNormalTimeVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioActivity;
@@ -70,9 +71,10 @@ public class DataProvider {
         cameraDataList.add(new JumpBean("ARGB转I420-libyuv", FormatTransportActivity.class));
         cameraDataList.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
 //--------------------------------------------------------------------------------------------------
-        ffmpegDataList.add(new JumpBean("FFMpeg播放", SimpleFFMpegPlayVideoActivity.class));
+        ffmpegDataList.add(new JumpBean("最简单的视频播放", SimpleFFMpegPlayVideoActivity.class));
         ffmpegDataList.add(new JumpBean("FFMpeg播放正常速度", SimpleFFMpegPlayNormalTimeVideoActivity.class));
-        ffmpegDataList.add(new JumpBean("FFMpeg播放Audio", SimpleFFMpegPlayAudioActivity.class));
+        ffmpegDataList.add(new JumpBean("音频的播放/转换", SimpleFFMpegPlayAudioActivity.class));
+        ffmpegDataList.add(new JumpBean("音视频同步", SimpleFFMpegPlayAudioVideoActivity.class));
     }
 
     public static List<JumpBean> getDataList(@Type int type) {

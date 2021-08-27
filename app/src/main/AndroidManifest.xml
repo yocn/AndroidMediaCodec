@@ -50,6 +50,7 @@
         <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayVideoActivity" />
         <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioActivity" />
         <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayNormalTimeVideoActivity" />
+        <activity android:name="com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioVideoActivity" />
     </application>
 
 </manifest>

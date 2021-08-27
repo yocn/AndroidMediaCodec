@@ -18,7 +18,7 @@ import com.yocn.meida.view.activity.BaseActivity;
  * @ClassName PreviewPureActivity
  */
 public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
-    public static String DESC = "最简单的FFMpeg播放音频";
+    public static String DESC = "音频播放/转换";
     private Button playBtn;
     private Button convertBtn;
     private Button convertBtn2;
@@ -49,7 +49,7 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
     }
 
     View.OnClickListener onClickListener = v -> {
-        String mp4FilePath = Constant.getTestMp4FilePath();
+        String mp4FilePath = Constant.getTestMp4FilePath2();
         String mp3FilePath = Constant.getTestMp3FilePath();
         String mp3FilePath2 = Constant.getTestMp3FilePath2();
         String targetPcmFilePath = Constant.getTestFilePath("output.pcm");
@@ -68,11 +68,11 @@ public class SimpleFFMpegPlayAudioActivity extends BaseActivity {
             }
         });
         if (v.getId() == R.id.btn_play) {
-            ffMpegSimpleAudioPlayer.play(mp3FilePath);
+            ffMpegSimpleAudioPlayer.play(mp4FilePath);
         } else if (v.getId() == R.id.btn_convert) {
             ffMpegSimpleAudioPlayer.convert(mp3FilePath, targetPcmFilePath, targetMp3FilePath);
         } else if (v.getId() == R.id.btn_convert2) {
-            ffMpegSimpleAudioPlayer.convert(mp3FilePath2, targetPcmFilePath, targetMp3FilePath);
+            ffMpegSimpleAudioPlayer.convert(mp4FilePath, targetPcmFilePath, targetMp3FilePath);
         }
     };
 }
