@@ -3,8 +3,11 @@ package com.yocn.meida.view.activity.ffmpeg;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.yocn.libnative.FFMpegSimpleVideoPlayer;
+import com.yocn.libnative.FFMpegSimpleVideoPlayerNormalTime;
+import com.yocn.libnative.NativeProgress;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
 import com.yocn.meida.view.activity.BaseActivity;
@@ -19,6 +22,8 @@ import androidx.annotation.NonNull;
 public class SimpleFFMpegPlayVideoActivity extends BaseActivity {
     public static String DESC = "最简单的FFMpeg播放视频";
     private SurfaceView surfaceView;
+    private FFMpegSimpleVideoPlayer simplePlayer;
+    private ProgressBar progressBar;
 
     @Override
     protected int getContentViewId() {
@@ -27,10 +32,20 @@ public class SimpleFFMpegPlayVideoActivity extends BaseActivity {
 
     protected void initView(View root) {
         surfaceView = root.findViewById(R.id.sv_play);
+        progressBar = root.findViewById(R.id.pb_test);
+        simplePlayer = new FFMpegSimpleVideoPlayer();
+        simplePlayer.setGetProgressCallback(new NativeProgress.GetProgressCallback() {
+            @Override
+            public void progress(long curr, long total, int percent) {
+
+                runOnUiThread(() -> {
+                    progressBar.setProgress(percent);
+                });
+            }
+        });
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
-                FFMpegSimpleVideoPlayer simplePlayer = new FFMpegSimpleVideoPlayer();
                 String mp4FilePath = Constant.getTestMp4FilePath2();
                 new Thread(() -> simplePlayer.play(mp4FilePath, surfaceView.getHolder().getSurface())).start();
             }

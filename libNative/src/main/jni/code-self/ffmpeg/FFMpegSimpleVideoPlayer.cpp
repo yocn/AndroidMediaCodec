@@ -8,6 +8,7 @@ extern "C" {
 #include "libavcodec/avcodec.h"
 #include <code-self/common/GlobalMacro.h>
 #include <code-self/common/Util.h>
+#include <code-self/common/JniProgress.h>
 }
 #define JNI_METHOD_NAME(name) Java_com_yocn_libnative_FFMpegSimpleVideoPlayer_##name
 
@@ -63,6 +64,7 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
     }
 //5.获取解码器参数
     AVCodecParameters *codecParameters = m_AVFormatContext->streams[m_StreamIndex]->codecpar;
+    double time_base = av_q2d(m_AVFormatContext->streams[m_StreamIndex]->time_base);
 
 //6.根据 codec_id 获取解码器
     AVCodec *m_AVCodec = avcodec_find_decoder(codecParameters->codec_id);
@@ -129,9 +131,10 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
             if (avcodec_send_packet(m_AVCodecContext, m_Packet) != 0) { //视频解码
                 return;
             }
+            int num = 0;
             while (avcodec_receive_frame(m_AVCodecContext, m_Frame) == 0) {
                 //获取到 m_Frame 解码数据，在这里进行格式转换，然后进行渲染
-
+                num++;
 //2.3. 格式转换
                 sws_scale(m_SwsContext, m_Frame->data, m_Frame->linesize, 0, m_VideoHeight,
                           m_RGBAFrame->data, m_RGBAFrame->linesize);
@@ -147,13 +150,13 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
                 //缓冲区步长 输出的stride步长，如果是RGBA是4，如果是RGB565是2
                 int dstLineSize = m_NativeWindowBuffer.stride * rgbMode.multi_stride;
 
-                LOGE("linesize0:%d, linesize1:%d, linesize2:%d, linesize3:%d, rgba_linesize0:%d, rgba_linesize1:%d, rgba_linesize2:%d, rgba_linesize3:%d, srcLineSize:%d, dstLineSize:%d",
-                     m_Frame->linesize[0], m_Frame->linesize[1], m_Frame->linesize[2],
-                     m_Frame->linesize[3], m_RGBAFrame->linesize[0], m_RGBAFrame->linesize[1],
-                     m_RGBAFrame->linesize[2],
-                     m_RGBAFrame->linesize[3], srcLineSize, dstLineSize);
-                LOGE("m_RGBAFrame->data[0]:%d, m_FrameBuffer:%d  m_NativeWindowBuffer.stride：%d", m_RGBAFrame->data[0],
-                     m_FrameBuffer, m_NativeWindowBuffer.stride);
+//                LOGE("linesize0:%d, linesize1:%d, linesize2:%d, linesize3:%d, rgba_linesize0:%d, rgba_linesize1:%d, rgba_linesize2:%d, rgba_linesize3:%d, srcLineSize:%d, dstLineSize:%d",
+//                     m_Frame->linesize[0], m_Frame->linesize[1], m_Frame->linesize[2],
+//                     m_Frame->linesize[3], m_RGBAFrame->linesize[0], m_RGBAFrame->linesize[1],
+//                     m_RGBAFrame->linesize[2],
+//                     m_RGBAFrame->linesize[3], srcLineSize, dstLineSize);
+                LOGE("m_RGBAFrame->data[0]:%d, m_FrameBuffer:%d  m_NativeWindowBuffer.stride：%d  num：%d",
+                     m_RGBAFrame->data[0], m_FrameBuffer, m_NativeWindowBuffer.stride, num);
 
                 for (int i = 0; i < m_VideoHeight; ++i) {
                     //一行一行地拷贝图像数据
@@ -163,8 +166,14 @@ JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
 //解锁当前 Window ，渲染缓冲区数据
                 ANativeWindow_unlockAndPost(m_NativeWindow);
 
+                long durationForRealTime = m_AVFormatContext->duration / 1000;
+                double curr = m_Frame->pts * time_base;
+                int percent = curr * 100 * 1000 / durationForRealTime;
+                progress(env, jobj, curr, durationForRealTime, percent);
             }
         }
+        LOGE("index::%d", m_Packet->stream_index);
+
         av_packet_unref(m_Packet); //释放 m_Packet 引用，防止内存泄漏
     }
 
