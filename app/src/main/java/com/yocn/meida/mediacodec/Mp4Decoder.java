@@ -1,6 +1,7 @@
 package com.yocn.meida.mediacodec;
 
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.text.TextUtils;
@@ -53,9 +54,12 @@ public class Mp4Decoder {
         // 只会返回此轨道的信息
         mediaExtractor.selectTrack(videoTrackIndex);
 
+//        videoMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
         MediaCodec videoCodec = MediaCodec.createDecoderByType(videoMediaFormat.getString(MediaFormat.KEY_MIME));
         videoCodec.configure(videoMediaFormat, surface, null, 0);
         videoCodec.start();
+
+        LogUtil.d(MediaCodecUtil.TAG, "getOutputFormat::" + videoCodec.getOutputFormat().toString());
 
         MediaCodec.BufferInfo videoBufferInfo = new MediaCodec.BufferInfo();
 
@@ -131,30 +135,6 @@ public class Mp4Decoder {
                 break;
             }
         }
-    }
-
-    //将缓冲区传递至解码器
-    private boolean putBufferToCoder(MediaExtractor extractor, MediaCodec decoder, ByteBuffer[] inputBuffers) {
-        boolean isMediaEOS = false;
-        // 返回要用数据填充的input buffer的index，仅仅是返回一个索引
-        int inputBufferIndex = decoder.dequeueInputBuffer(-1);
-        if (inputBufferIndex >= 0) {
-            ByteBuffer inputBuffer = inputBuffers[inputBufferIndex];
-            int sampleSize = extractor.readSampleData(inputBuffer, 0);
-            LogUtil.d(MediaCodecUtil.TAG, "inputBufferIndex::" + inputBufferIndex + " sampleSize::" + sampleSize
-                    + "  inputBuffers.length::" + inputBuffers.length);
-            if (sampleSize < 0) {
-                decoder.queueInputBuffer(inputBufferIndex, 0, 0, 0,
-                        MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                isMediaEOS = true;
-//                Log.v(TAG, "media eos");
-            } else {
-                decoder.queueInputBuffer(inputBufferIndex, 0, sampleSize,
-                        extractor.getSampleTime(), 0);
-                extractor.advance();
-            }
-        }
-        return isMediaEOS;
     }
 
 }

@@ -61,6 +61,7 @@ set(
         code-self/ffmpeg/FFMpegSimpleAudioConvert.cpp
         code-self/audio/play/opensl_render.cpp
         code-self/audio/encode/Mp3Lame.cpp
+        code-self/byteBuffer/ReadByteBuffer.cpp
 )
 
 # Creates and names a library, sets it as either STATIC
@@ -83,6 +84,7 @@ INCLUDE_DIRECTORIES(
         ${CMAKE_SOURCE_DIR}/ffmpeg
         ${CMAKE_SOURCE_DIR}/code-self
         ${CMAKE_SOURCE_DIR}/code-self/common
+        ${CMAKE_SOURCE_DIR}/code-self/byteBuffer
         ${CMAKE_SOURCE_DIR}/code-self/audio/play
         ${CMAKE_SOURCE_DIR}/code-self/audio/encode
         ${CMAKE_SOURCE_DIR}/libyuv/include
