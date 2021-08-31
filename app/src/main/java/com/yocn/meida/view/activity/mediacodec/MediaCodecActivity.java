@@ -1,71 +1,34 @@
 package com.yocn.meida.view.activity.mediacodec;
 
-import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
-import android.media.MediaCodecList;
-import android.media.MediaFormat;
 import android.os.Bundle;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.yocn.media.R;
-import com.yocn.meida.base.Constant;
-import com.yocn.meida.mediacodec.Mp4Decoder;
-import com.yocn.meida.mediacodec.SimplePlayer;
+import com.yocn.meida.base.DataProvider;
 import com.yocn.meida.view.activity.BaseActivity;
+import com.yocn.meida.view.widget.TopViewRecyclerView;
 
 public class MediaCodecActivity extends BaseActivity {
 
-    private SurfaceView mSurfaceView;
+    private TopViewRecyclerView topViewRecyclerView;
+    public static String DESC = "mediacodec";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
     }
 
     @Override
     protected int getContentViewId() {
-        return R.layout.activity_media_codec;
+        return R.layout.activity_main;
     }
 
-    @Override
     protected void initView(View root) {
-        mSurfaceView = findViewById(R.id.sv_camera);
+        topViewRecyclerView = root.findViewById(R.id.tvrv_main);
     }
 
-    @Override
-    public void initData() {
-        mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                String mp4Path = Constant.getTestMp4FilePath();
-                new Mp4Decoder().init(mp4Path, mSurfaceView.getHolder().getSurface());
-//                SimplePlayer simplePlayer = new SimplePlayer(mSurfaceView.getHolder().getSurface(), mp4Path);
-//                simplePlayer.play();
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-
-            }
-        });
+    protected void initData() {
+        topViewRecyclerView.setActivity(this, DataProvider.Type.MEDIA_CODEC);
     }
-
-    private void in() {
-        MediaCodecList allMediaCodecLists = new MediaCodecList(-1);
-        MediaCodecList regularMediaCodecLists = new MediaCodecList(MediaCodecList.REGULAR_CODECS);
-        for (MediaCodecInfo mediaCodecInfo : allMediaCodecLists.getCodecInfos()) {
-
-        }
-    }
-
 
 }

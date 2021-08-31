@@ -1,4 +1,4 @@
-package com.yocn.meida.mediacodec;
+package com.yocn.meida.mediacodec.decoder;
 
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -12,7 +12,7 @@ import android.view.Surface;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class SimplePlayer {
+public class SimpleDecodeAVPlayer {
 
     public interface IPlayStateListener {
         public void videoAspect(int width, int height, float time);
@@ -33,7 +33,7 @@ public class SimplePlayer {
     // 是否取消播放线程
     private boolean cancel = false;
 
-    public SimplePlayer(Surface surface, String filePath) {
+    public SimpleDecodeAVPlayer(Surface surface, String filePath) {
         this.surface = surface;
         this.filePath = filePath;
         isPlaying = false;

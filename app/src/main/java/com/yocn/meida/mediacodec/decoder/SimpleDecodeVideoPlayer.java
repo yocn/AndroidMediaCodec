@@ -1,18 +1,18 @@
-package com.yocn.meida.mediacodec;
+package com.yocn.meida.mediacodec.decoder;
 
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.text.TextUtils;
 import android.view.Surface;
 
+import com.yocn.meida.mediacodec.MediaCodecUtil;
 import com.yocn.meida.util.LogUtil;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class Mp4Decoder {
+public class SimpleDecodeVideoPlayer {
     private long TIMEOUT_US = 10000;
 
     public void init(String mp4Path, Surface surface) {

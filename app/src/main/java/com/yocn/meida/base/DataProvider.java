@@ -20,6 +20,8 @@ import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayNormalTimeVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioActivity;
+import com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeAVActivity;
+import com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeVActivity;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -38,6 +40,7 @@ public class DataProvider {
             Type.MAIN,
             Type.CAMERA,
             Type.FFMPEG,
+            Type.MEDIA_CODEC,
             Type.OTHER
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -45,12 +48,14 @@ public class DataProvider {
         int MAIN = 1;
         int CAMERA = 2;
         int FFMPEG = 3;
-        int OTHER = 4;
+        int MEDIA_CODEC = 4;
+        int OTHER = 5;
     }
 
     private static final List<JumpBean> mainDataList = new ArrayList<>();
     private static final List<JumpBean> cameraDataList = new ArrayList<>();
     private static final List<JumpBean> ffmpegDataList = new ArrayList<>();
+    private static final List<JumpBean> mediaCodecDataList = new ArrayList<>();
     private static final List<JumpBean> otherDataList = new ArrayList<>();
 
     static {
@@ -75,6 +80,9 @@ public class DataProvider {
         ffmpegDataList.add(new JumpBean("FFMpeg播放正常速度", SimpleFFMpegPlayNormalTimeVideoActivity.class));
         ffmpegDataList.add(new JumpBean("音频的播放/转换", SimpleFFMpegPlayAudioActivity.class));
         ffmpegDataList.add(new JumpBean("音视频同步", SimpleFFMpegPlayAudioVideoActivity.class));
+//--------------------------------------------------------------------------------------------------
+        mediaCodecDataList.add(new JumpBean("最简单的视频播放", SimpleMediaCodecDecodeVActivity.class));
+        mediaCodecDataList.add(new JumpBean("音视频", SimpleMediaCodecDecodeAVActivity.class));
     }
 
     public static List<JumpBean> getDataList(@Type int type) {
@@ -88,6 +96,9 @@ public class DataProvider {
                 break;
             case Type.FFMPEG:
                 list = ffmpegDataList;
+                break;
+            case Type.MEDIA_CODEC:
+                list = mediaCodecDataList;
                 break;
             case Type.OTHER:
                 list = otherDataList;
