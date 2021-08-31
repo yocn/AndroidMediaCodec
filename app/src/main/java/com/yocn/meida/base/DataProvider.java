@@ -3,7 +3,7 @@ package com.yocn.meida.base;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.view.activity.FormatTrans264Activity;
 import com.yocn.meida.view.activity.FormatTransportActivity;
-import com.yocn.meida.view.activity.MediaCodecActivity;
+import com.yocn.meida.view.activity.mediacodec.MediaCodecActivity;
 import com.yocn.meida.view.activity.PreviewDataActivity;
 import com.yocn.meida.view.activity.PreviewGPUImageActivity;
 import com.yocn.meida.view.activity.SimpleOpenGLESActivity;
