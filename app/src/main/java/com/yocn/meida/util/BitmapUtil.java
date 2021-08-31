@@ -103,18 +103,20 @@ public class BitmapUtil {
         }
     }
 
+    /**
+     * I420转nv21
+     */
     public static byte[] I420Tonv21(byte[] data, int width, int height) {
         byte[] ret = new byte[data.length];
         int total = width * height;
 
         ByteBuffer bufferY = ByteBuffer.wrap(ret, 0, total);
-        ByteBuffer bufferV = ByteBuffer.wrap(ret, total, total / 4);
-        ByteBuffer bufferU = ByteBuffer.wrap(ret, total + total / 4, total / 4);
+        ByteBuffer bufferVU = ByteBuffer.wrap(ret, total, total / 2);
 
         bufferY.put(data, 0, total);
         for (int i = 0; i < total / 4; i += 1) {
-            bufferV.put(data[total + i]);
-            bufferU.put(data[i + total + total / 4]);
+            bufferVU.put(data[i + total + total / 4]);
+            bufferVU.put(data[total + i]);
         }
 
         return ret;
