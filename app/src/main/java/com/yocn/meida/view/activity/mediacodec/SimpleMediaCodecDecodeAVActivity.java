@@ -1,7 +1,5 @@
 package com.yocn.meida.view.activity.mediacodec;
 
-import android.media.MediaCodecInfo;
-import android.media.MediaCodecList;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -11,10 +9,10 @@ import android.view.WindowManager;
 import com.yocn.media.R;
 import com.yocn.meida.base.Constant;
 import com.yocn.meida.mediacodec.decoder.SimpleDecodeAVPlayer;
-import com.yocn.meida.mediacodec.decoder.SimpleDecodeVideoPlayer;
 import com.yocn.meida.view.activity.BaseActivity;
 
 public class SimpleMediaCodecDecodeAVActivity extends BaseActivity {
+    public static String DESC = "音视频解码播放";
 
     private SurfaceView mSurfaceView;
 

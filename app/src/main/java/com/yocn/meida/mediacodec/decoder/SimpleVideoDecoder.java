@@ -7,10 +7,10 @@ import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.text.TextUtils;
 
-import com.yocn.meida.base.Constant;
 import com.yocn.meida.mediacodec.MediaCodecUtil;
 import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
+import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
 
 import java.io.File;
@@ -21,13 +21,17 @@ public class SimpleVideoDecoder {
     private long TIMEOUT_US = 10000;
 
     public interface PreviewCallback {
+        void info(int width, int height, int fps);
+
         void getBitmap(Bitmap bitmap);
+
+        void progress(int progress);
     }
 
-    public void init(String mp4Path, PreviewCallback previewCallback) {
+    public void init(String mp4Path, String yuvPath, PreviewCallback previewCallback) {
         new Thread(() -> {
             try {
-                initInternal(mp4Path, previewCallback);
+                initInternal(mp4Path, yuvPath, previewCallback);
             } catch (IOException e) {
                 LogUtil.d(MediaCodecUtil.TAG, e.toString());
                 e.printStackTrace();
@@ -35,10 +39,15 @@ public class SimpleVideoDecoder {
         }).start();
     }
 
-    private void initInternal(String mp4Path, PreviewCallback previewCallback) throws IOException {
+    private void initInternal(String mp4Path, String yuvPath, PreviewCallback previewCallback) throws IOException {
         if (TextUtils.isEmpty(mp4Path)) {
             return;
         }
+        File file = new File(yuvPath);
+        if (file.exists()) {
+            file.delete();
+        }
+
         MediaExtractor mediaExtractor = new MediaExtractor();
         mediaExtractor.setDataSource(mp4Path);
         MediaFormat videoMediaFormat = null;
@@ -58,8 +67,10 @@ public class SimpleVideoDecoder {
 
         int width = videoMediaFormat.getInteger(MediaFormat.KEY_WIDTH);
         int height = videoMediaFormat.getInteger(MediaFormat.KEY_HEIGHT);
-        long time = videoMediaFormat.getLong(MediaFormat.KEY_DURATION);
-        LogUtil.d(MediaCodecUtil.TAG, "width::" + width + " height::" + height + " time::" + time);
+        long totalTime = videoMediaFormat.getLong(MediaFormat.KEY_DURATION);
+        int frameRate = videoMediaFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
+        previewCallback.info(width, height, frameRate);
+        LogUtil.d(MediaCodecUtil.TAG, "width::" + width + " height::" + height + " totalTime::" + totalTime + " frameRate:" + frameRate);
         // 只会返回此轨道的信息
         mediaExtractor.selectTrack(videoTrackIndex);
 
@@ -73,11 +84,6 @@ public class SimpleVideoDecoder {
         MediaCodec.BufferInfo videoBufferInfo = new MediaCodec.BufferInfo();
 
         boolean isVideoEOS = false;
-        String path = Constant.getOutTestYuvFilePath();
-        File file = new File(path);
-        if (file.exists()) {
-            file.exists();
-        }
 
         while (!Thread.interrupted()) {
             //将资源传递到解码器
@@ -89,15 +95,13 @@ public class SimpleVideoDecoder {
                     ByteBuffer inputBuffer = videoCodec.getInputBuffer(inputBufferIndex);
                     // 使用extractor往MediaCodec的InputBuffer里面写入数据，-1表示已全部读取完
                     int sampleSize = mediaExtractor.readSampleData(inputBuffer, 0);
-                    LogUtil.d(MediaCodecUtil.TAG, "inputBufferIndex::" + inputBufferIndex + " sampleSize::" + sampleSize + " mediaExtractor.getSampleTime()::" + mediaExtractor.getSampleTime());
                     if (sampleSize < 0) {
                         videoCodec.queueInputBuffer(inputBufferIndex, 0, 0, 0,
                                 MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                         isVideoEOS = true;
                     } else {
                         // 填充好的数据写入第inputBufferIndex个InputBuffer，分贝设置size和sampleTime，这里sampleTime不一定是顺序来的，所以需要缓冲区来调节顺序。
-                        videoCodec.queueInputBuffer(inputBufferIndex, 0, sampleSize,
-                                mediaExtractor.getSampleTime(), 0);
+                        videoCodec.queueInputBuffer(inputBufferIndex, 0, sampleSize, mediaExtractor.getSampleTime(), 0);
                         // 在MediaExtractor执行完一次readSampleData方法后，需要调用advance()去跳到下一个sample，然后再次读取数据
                         mediaExtractor.advance();
                         isVideoEOS = false;
@@ -119,15 +123,17 @@ public class SimpleVideoDecoder {
                     LogUtil.v(MediaCodecUtil.TAG, outputBufferIndex + " output buffers changed");
                     break;
                 default:
+                    long currTime = videoBufferInfo.presentationTimeUs;
                     Image image = videoCodec.getOutputImage(outputBufferIndex);
                     byte[] i420bytes = CameraUtil.getDataFromImage(image, CameraUtil.COLOR_FormatI420);
+                    FileUtils.writeToFile(i420bytes, yuvPath, true);
+
                     byte[] nv21bytes = BitmapUtil.I420Tonv21(i420bytes, width, height);
-//                BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
+//                  BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
                     Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, width, height);
 
-                    if (previewCallback != null) {
-                        previewCallback.getBitmap(bitmap);
-                    }
+                    previewCallback.getBitmap(bitmap);
+                    previewCallback.progress((int) (currTime * 100 / totalTime));
                     // 将该ByteBuffer释放掉，以供缓冲区的循环使用。
                     videoCodec.releaseOutputBuffer(outputBufferIndex, true);
                     break;
@@ -138,17 +144,6 @@ public class SimpleVideoDecoder {
                 break;
             }
         }//end while
-    }
-
-    private void sleepRender(MediaCodec.BufferInfo audioBufferInfo, long startMs) {
-        while (audioBufferInfo.presentationTimeUs / 1000 > System.currentTimeMillis() - startMs) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                break;
-            }
-        }
     }
 
 }
