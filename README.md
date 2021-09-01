@@ -27,26 +27,35 @@ cd libNative/src/main/jni
 1. **Camera2相关**
 
 	1.1. Camera使用TextureView预览
+
 	1.2. ImageReader获取Camera2回调数据
+
 	1.3. 转换方式一：获取`YUV_420_888`格式回调，`I420Tonv21`转换成NV21格式，使用YuvImage(只接受NV21)获取Bitmap输出到ImageView预览
+
 	1.4. 转换方式二：获取`YUV_420_888`格式回调，同转换为NV21，根据`Image`和`ImageReader`一步一步转换得出。
+
 	1.5. 使用libYuv库做ARGB和YUV的转换。
+
 	1.6. 使用GPUImage库做预览，可以选择各种gles效果。
 
 2. **FFmpeg相关**
 
 	2.1. 解码播放视频
+
 	2.2. 解码播放音频，存储pcm数据，使用libmp3lame库转成mp3
+
 	2.3. 最简单的音视频同步
 
 3. **MediaCodec相关**
 
 	3.1. 视频解码播放到Surface，获取到yuv数据并存储
+
 	3.2. 音频解码
 
 4. **open gles相关**
 
 	4.1. 部分gles坐标系入门
+	
 	4.2. 预览camera
 
 5. **一个简单的yuv播放器**
