@@ -144,6 +144,10 @@ public class SimpleVideoDecoder {
                 break;
             }
         }//end while
+
+        mediaExtractor.release();
+        videoCodec.stop();
+        videoCodec.release();
     }
 
 }
