@@ -1,6 +1,7 @@
 # Android 音视频处理集合
 
-关联了ffmpeg\libyuv等等库，可以作为参考
+关联了ffmpeg\libyuv等等库，可以作为参考。部分模块博客有介绍，详细可以移步我的博客：[简书 - YocnZhao](https://www.jianshu.com/u/96cd25086c38)
+
 编译前需要做的：
 
 1. 下载NDK，在你的电脑里配置好，如果是mac请在.bash_profile/.zshrc等配置环境变量
@@ -61,4 +62,3 @@ cd libNative/src/main/jni
 5. **一个简单的yuv播放器**
 
 
-部分模块博客有介绍，可以移步我的博客：[简书 - YocnZhao](https://www.jianshu.com/u/96cd25086c38)
