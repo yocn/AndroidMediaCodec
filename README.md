@@ -1,8 +1,7 @@
 # Android 音视频处理集合
 
-关联了ffmpeg\libyuv等等库，可以作为参考。部分模块博客有介绍，详细可以移步我的博客：[简书 - YocnZhao](https://www.jianshu.com/u/96cd25086c38)
-
----
+关联了ffmpeg\libyuv等等库，可以作为参考。
+部分模块博客有介绍，详细可以移步我的博客：[简书 - YocnZhao](https://www.jianshu.com/u/96cd25086c38)
 
 ### 编译步骤：
 
@@ -25,8 +24,6 @@ cd libNative/src/main/jni
 ```
 
 成功之后就可以啦~
-
----
 
 ### 包含的内容：
 1. **Camera2相关**
@@ -65,5 +62,3 @@ cd libNative/src/main/jni
 
 5. **一个简单的yuv播放器**
 
-
----
