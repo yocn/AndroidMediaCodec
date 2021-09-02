@@ -1,4 +1,4 @@
-# Android Camera2从入门到放弃
+# Android 音视频处理集合
 
 关联了ffmpeg\libyuv等等库，可以作为参考
 编译前需要做的：
