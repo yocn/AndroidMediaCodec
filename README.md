@@ -61,4 +61,4 @@ cd libNative/src/main/jni
 5. **一个简单的yuv播放器**
 
 
-部分模块博客有介绍，可以移步 [YocnZhao](https://www.jianshu.com/u/96cd25086c38)
+部分模块博客有介绍，可以移步我的博客：[简书 - YocnZhao](https://www.jianshu.com/u/96cd25086c38)
