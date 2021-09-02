@@ -42,6 +42,7 @@
         <activity android:name="com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeAVActivity" />
         <activity android:name="com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeVActivity" />
         <activity android:name="com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeActivity" />
+        <activity android:name="com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeEncodeActivity" />
         <activity
             android:name="com.yocn.meida.view.activity.camera.PreviewWithOpenGLESActivity"
             android:screenOrientation="portrait" />

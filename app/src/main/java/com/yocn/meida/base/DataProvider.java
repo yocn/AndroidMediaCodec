@@ -22,6 +22,7 @@ import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayVideoActivity;
 import com.yocn.meida.view.activity.ffmpeg.SimpleFFMpegPlayAudioActivity;
 import com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeAVActivity;
 import com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeActivity;
+import com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeEncodeActivity;
 import com.yocn.meida.view.activity.mediacodec.SimpleMediaCodecDecodeVActivity;
 
 import java.lang.annotation.Retention;
@@ -85,6 +86,7 @@ public class DataProvider {
         mediaCodecDataList.add(new JumpBean("最简单的视频播放", SimpleMediaCodecDecodeVActivity.class));
         mediaCodecDataList.add(new JumpBean("音视频", SimpleMediaCodecDecodeAVActivity.class));
         mediaCodecDataList.add(new JumpBean("解码", SimpleMediaCodecDecodeActivity.class));
+        mediaCodecDataList.add(new JumpBean("解码编码", SimpleMediaCodecDecodeEncodeActivity.class));
     }
 
     public static List<JumpBean> getDataList(@Type int type) {

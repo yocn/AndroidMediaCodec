@@ -1,6 +1,8 @@
 package com.yocn.meida.base;
 
 import android.app.Application;
+import android.os.Build;
+import android.os.StrictMode;
 
 import com.yocn.meida.util.FileUtils;
 
@@ -21,6 +23,10 @@ public class BaseApplication extends Application {
         mInstance = this;
         super.onCreate();
         FileUtils.copyAssets();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+            StrictMode.setVmPolicy(builder.build());
+        }
     }
 
     public static Application getAppContext() {

@@ -1,8 +1,14 @@
 package com.yocn.meida.util;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 
+import com.yocn.meida.base.BaseApplication;
 import com.yocn.meida.bean.WH;
+
+import java.io.File;
 
 public class MediaUtil {
     public static WH get(String path) {
@@ -15,5 +21,14 @@ public class MediaUtil {
         int width = Integer.parseInt(widthS);
         int height = Integer.parseInt(heightS);
         return new WH(width, height);
+    }
+
+    public static void playVideo(Activity activity, String path) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+//        String path = Environment.getExternalStorageDirectory().getPath()+ "/1.mp4";//该路径可以自定义
+        File file = new File(path);
+        Uri uri = Uri.fromFile(file);
+        intent.setDataAndType(uri, "video/*");
+        activity.startActivity(intent);
     }
 }
