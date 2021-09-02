@@ -4,7 +4,7 @@
 
 ---
 
-编译前需要做的：
+### 编译步骤：
 
 1. 下载NDK，在你的电脑里配置好，如果是mac请在.bash_profile/.zshrc等配置环境变量
 ```shell script
@@ -28,7 +28,7 @@ cd libNative/src/main/jni
 
 ---
 
-包含的内容：
+### 包含的内容：
 1. **Camera2相关**
 
 	1.1. Camera使用TextureView预览
