@@ -52,7 +52,7 @@ cd libNative/src/main/jni
 
 	3.1. 视频解码播放到Surface，获取到yuv数据并存储
 
-	3.2. 音频解码
+	3.2. 时频解码之后编码成mp4文件
 
 4. **open gles相关**
 
