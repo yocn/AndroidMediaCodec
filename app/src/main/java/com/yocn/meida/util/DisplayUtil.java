@@ -2,6 +2,7 @@ package com.yocn.meida.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Size;
 import android.view.View;
 import android.view.Window;
@@ -37,6 +38,12 @@ public class DisplayUtil {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(activity.getResources().getColor(colorId));
+    }
+
+    public static int getNavigationBarHeight(Activity activity) {
+        Resources resources = activity.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        return resources.getDimensionPixelSize(resourceId);
     }
 
     public static void setAndroidNativeLightStatusBar(Activity activity, boolean dark) {

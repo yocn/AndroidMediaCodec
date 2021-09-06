@@ -214,7 +214,6 @@ public class SimpleVideoDecoderAndEncoder {
             encodeCodec.queueInputBuffer(inputBufferIndex, 0, yuvBytes.length, presentationTimeUs, 0);
         }
 
-
         if ((encodeOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
             LogUtil.v(MediaCodecUtil.TAG, " encode  buffer stream end");
         }
@@ -222,8 +221,9 @@ public class SimpleVideoDecoderAndEncoder {
         int outputBufferIndex = encodeCodec.dequeueOutputBuffer(encodeOutputBufferInfo, -1);
         switch (outputBufferIndex) {
             case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
-//                MediaFormat newFormat = encodeCodec.getOutputFormat();
-                encodeVideoTrackIndex = mMediaMuxer.addTrack(encodeMediaFormat);
+                MediaFormat newFormat = encodeCodec.getOutputFormat();
+//                encodeVideoTrackIndex = mMediaMuxer.addTrack(encodeMediaFormat);
+                encodeVideoTrackIndex = mMediaMuxer.addTrack(newFormat);
                 mMediaMuxer.start();
                 break;
             case MediaCodec.INFO_TRY_AGAIN_LATER:

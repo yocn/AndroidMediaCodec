@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,41 +9,17 @@
         android:id="@+id/iv_back"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/bg_back"
-        android:src="@drawable/icon_back_normal" />
+        android:src="@drawable/icon_back_normal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_play_yuv"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:text="play yuv"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <Button
-            android:id="@+id/btn_play_mp4"
-            android:layout_width="100dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:text="play mp4"
-            android:visibility="gone"
-            tools:visibility="visible" />
-    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/pb_play"
@@ -50,6 +27,94 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:max="100" />
+        android:max="100"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/tv_path_yuv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:background="@color/h_half"
+        android:gravity="center"
+        android:textColor="@color/write"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/pb_play"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btn_play_yuv"
+        tools:text="/sdcard/Android/data/com.yocn.media/files/media_codec/test.yuv"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_play_yuv"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="play yuv"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tv_path_yuv"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toRightOf="@id/tv_path_yuv"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_path_yuv"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_path_mp4"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:background="@color/h_half"
+        android:gravity="center"
+        android:textColor="@color/write"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_path_yuv"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btn_play_mp4"
+        tools:text="/sdcard/Android/data/com.yocn.media/files/media_codec/test.yuv"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_play_mp4"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="play mp4"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tv_path_mp4"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toRightOf="@id/tv_path_mp4"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_path_mp4"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/tv_path_h264"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:background="@color/h_half"
+        android:gravity="center"
+        android:textColor="@color/write"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/tv_path_mp4"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btn_play_h264"
+        tools:text="/sdcard/Android/data/com.yocn.media/files/media_codec/test.yuv"
+        tools:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_play_h264"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="play h264"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tv_path_h264"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toRightOf="@id/tv_path_h264"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_path_h264"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
