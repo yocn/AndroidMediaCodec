@@ -973,6 +973,12 @@ public class FileUtils {
         return deleteFileSafely(file);
     }
 
+    public static void deleteFiles(String... files) {
+        for (String file : files) {
+            deleteFile(file);
+        }
+    }
+
     public static boolean deleteFile(File file) {
         if (!file.exists())
             return true;

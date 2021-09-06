@@ -27,6 +27,7 @@ public class SimpleMediaCodecDecodeEncodeActivity extends BaseActivity {
     private final String mp4Path = Constant.getTestMp4FilePath();
     private final String yuvPath = Constant.getOutTestYuvFilePath();
     private final String mp4OutPath = Constant.getTestFilePath("encode.mp4");
+    private final String h264OutPath = Constant.getTestFilePath("encode.h264");
     private int width, height, fps;
 
     @Override
@@ -54,7 +55,7 @@ public class SimpleMediaCodecDecodeEncodeActivity extends BaseActivity {
     public void initData() {
         mainHandler = new Handler(Looper.getMainLooper());
         SimpleVideoDecoderAndEncoder simpleVideoDecoderAndEncoder = new SimpleVideoDecoderAndEncoder();
-        simpleVideoDecoderAndEncoder.init(mp4Path, yuvPath, mp4OutPath, new SimpleVideoDecoderAndEncoder.PreviewCallback() {
+        simpleVideoDecoderAndEncoder.init(mp4Path, yuvPath, h264OutPath, mp4OutPath, new SimpleVideoDecoderAndEncoder.PreviewCallback() {
             @Override
             public void info(int width, int height, int fps) {
                 SimpleMediaCodecDecodeEncodeActivity.this.width = width;

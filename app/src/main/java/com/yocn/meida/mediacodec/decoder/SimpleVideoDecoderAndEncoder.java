@@ -15,12 +15,16 @@ import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class SimpleVideoDecoderAndEncoder {
     private long TIMEOUT_US = 10000;
+    private int encodeVideoTrackIndex = -1;
+    private MediaCodec encodeCodec;
+    private MediaMuxer mMediaMuxer;
+    private MediaFormat encodeMediaFormat;
+    private MediaFormat decodeMediaFormat;
 
     public interface PreviewCallback {
         void info(int width, int height, int fps);
@@ -30,10 +34,10 @@ public class SimpleVideoDecoderAndEncoder {
         void progress(int progress);
     }
 
-    public void init(String mp4Path, String yuvPath, String outputMp4Path, PreviewCallback previewCallback) {
+    public void init(String mp4Path, String yuvPath, String outputH264Path, String outputMp4Path, PreviewCallback previewCallback) {
         new Thread(() -> {
             try {
-                initInternal(mp4Path, yuvPath, outputMp4Path, previewCallback);
+                initInternal(mp4Path, yuvPath, outputH264Path, outputMp4Path, previewCallback);
             } catch (IOException e) {
                 LogUtil.d(MediaCodecUtil.TAG, e.toString());
                 e.printStackTrace();
@@ -41,56 +45,76 @@ public class SimpleVideoDecoderAndEncoder {
         }).start();
     }
 
-    private void initInternal(String mp4Path, String yuvPath, String outputMp4Path, PreviewCallback previewCallback) throws IOException {
+    private void initInternal(String mp4Path, String outputYuvPath, String outputH264Path, String outputMp4Path, PreviewCallback previewCallback) throws IOException {
         if (TextUtils.isEmpty(mp4Path)) {
             return;
         }
-        File file = new File(yuvPath);
-        if (file.exists()) {
-            file.delete();
-        }
+        FileUtils.deleteFiles(outputYuvPath, outputH264Path, outputMp4Path);
 
         MediaExtractor mediaExtractor = new MediaExtractor();
         mediaExtractor.setDataSource(mp4Path);
-        MediaFormat videoMediaFormat = null;
         int videoTrackIndex = -1;
         for (int i = 0; i < mediaExtractor.getTrackCount(); i++) {
             MediaFormat mediaFormat = mediaExtractor.getTrackFormat(i);
             String mime = mediaFormat.getString(MediaFormat.KEY_MIME);
             if (mime.startsWith("video/")) {
-                videoMediaFormat = mediaFormat;
+                decodeMediaFormat = mediaFormat;
                 videoTrackIndex = i;
             }
             LogUtil.d(MediaCodecUtil.TAG, mime);
         }
-        if (videoMediaFormat == null) {
+        if (decodeMediaFormat == null) {
             return;
         }
 
-        int width = videoMediaFormat.getInteger(MediaFormat.KEY_WIDTH);
-        int height = videoMediaFormat.getInteger(MediaFormat.KEY_HEIGHT);
-        long totalTime = videoMediaFormat.getLong(MediaFormat.KEY_DURATION);
-        int frameRate = videoMediaFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
+        int width = decodeMediaFormat.getInteger(MediaFormat.KEY_WIDTH);
+        int height = decodeMediaFormat.getInteger(MediaFormat.KEY_HEIGHT);
+        long totalTime = decodeMediaFormat.getLong(MediaFormat.KEY_DURATION);
+        int frameRate = decodeMediaFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
         previewCallback.info(width, height, frameRate);
         LogUtil.d(MediaCodecUtil.TAG, "width::" + width + " height::" + height + " totalTime::" + totalTime + " frameRate:" + frameRate);
         // 只会返回此轨道的信息
         mediaExtractor.selectTrack(videoTrackIndex);
 
-//        videoMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible);
-        MediaCodec videoCodec = MediaCodec.createDecoderByType(videoMediaFormat.getString(MediaFormat.KEY_MIME));
-        videoCodec.configure(videoMediaFormat, null, null, 0);
-        videoCodec.start();
+        decodeMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar);
+        MediaCodec decodeCodec = MediaCodec.createDecoderByType(decodeMediaFormat.getString(MediaFormat.KEY_MIME));
+        decodeCodec.configure(decodeMediaFormat, null, null, 0);
+        decodeCodec.start();
 
-        LogUtil.d(MediaCodecUtil.TAG, "getOutputFormat::" + videoCodec.getOutputFormat().toString());
+        ByteBuffer byteBuffer0 = decodeMediaFormat.getByteBuffer("csd-0");
+        ByteBuffer byteBuffer1 = decodeMediaFormat.getByteBuffer("csd-1");
+        StringBuilder sb0 = new StringBuilder();
+        for (byte b : byteBuffer0.array()) {
+            sb0.append(b).append(", ");
+        }
+        StringBuilder sb1 = new StringBuilder();
+        for (byte b : byteBuffer1.array()) {
+            sb1.append(b).append(", ");
+        }
+        LogUtil.d(MediaCodecUtil.TAG, sb0.toString());
+        LogUtil.d(MediaCodecUtil.TAG, sb1.toString());
 
-        MediaMuxer mMediaMuxer = new MediaMuxer(outputMp4Path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-//        MediaFormat mediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height);
-        MediaFormat mediaFormat = videoMediaFormat;
-        mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar);
-        mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, width * height);
-        mediaFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, 30);
-        int encodeVideoTrackIndex = mMediaMuxer.addTrack(mediaFormat);
-        mMediaMuxer.start();
+        int colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar;
+        String codecName = MediaCodecUtil.getExpectedEncodeCodec(MediaFormat.MIMETYPE_VIDEO_AVC, colorFormat);
+        if (TextUtils.isEmpty(codecName)) {
+            colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;
+            codecName = MediaCodecUtil.getExpectedEncodeCodec(MediaFormat.MIMETYPE_VIDEO_AVC, colorFormat);
+        }
+        int encodeFrameRate = 20;
+        encodeMediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height);
+//        byte[] header_sps = {0, 0, 0, 1, 39, 100, 0, 31, -84, 86, -64, -120, 30, 105, -88, 8, 8, 8, 16};
+//        byte[] header_pps = {0, 0, 0, 1, 40, -18, 60, -80};
+//        encodeMediaFormat.setByteBuffer("csd-0", ByteBuffer.wrap(header_sps));
+//        encodeMediaFormat.setByteBuffer("csd-1", ByteBuffer.wrap(header_pps));
+        encodeMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat);
+        encodeMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 2500000);
+        encodeMediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, encodeFrameRate);
+        encodeMediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1);
+        encodeCodec = MediaCodec.createByCodecName(codecName);
+        encodeCodec.configure(encodeMediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        encodeCodec.start();
+
+        mMediaMuxer = new MediaMuxer(outputMp4Path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
 
         MediaCodec.BufferInfo videoBufferInfo = new MediaCodec.BufferInfo();
         MediaCodec.BufferInfo encodeBufferInfo = new MediaCodec.BufferInfo();
@@ -101,20 +125,20 @@ public class SimpleVideoDecoderAndEncoder {
             //将资源传递到解码器
             if (!isVideoEOS) {
                 // dequeue:出列，拿到一个输入缓冲区的index，因为有好几个缓冲区来缓冲数据，所以需要先请求拿到一个InputBuffer的index，-1表示暂时没有可用的
-                int inputBufferIndex = videoCodec.dequeueInputBuffer(-1);
+                int inputBufferIndex = decodeCodec.dequeueInputBuffer(-1);
                 if (inputBufferIndex >= 0) {
                     // 使用返回的inputBuffer的index得到一个ByteBuffer，可以放数据了
-                    ByteBuffer inputBuffer = videoCodec.getInputBuffer(inputBufferIndex);
+                    ByteBuffer inputBuffer = decodeCodec.getInputBuffer(inputBufferIndex);
                     // 使用extractor往MediaCodec的InputBuffer里面写入数据，-1表示已全部读取完
                     int sampleSize = mediaExtractor.readSampleData(inputBuffer, 0);
                     if (sampleSize < 0) {
-                        videoCodec.queueInputBuffer(inputBufferIndex, 0, 0, 0,
+                        decodeCodec.queueInputBuffer(inputBufferIndex, 0, 0, 0,
                                 MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                         isVideoEOS = true;
                     } else {
-                        write(encodeBufferInfo, sampleSize, encodeVideoTrackIndex, inputBuffer, mMediaMuxer, frameRate, false);
+//                        write(encodeBufferInfo, sampleSize, encodeVideoTrackIndex, inputBuffer, mMediaMuxer, frameRate, false);
                         // 填充好的数据写入第inputBufferIndex个InputBuffer，分贝设置size和sampleTime，这里sampleTime不一定是顺序来的，所以需要缓冲区来调节顺序。
-                        videoCodec.queueInputBuffer(inputBufferIndex, 0, sampleSize, mediaExtractor.getSampleTime(), 0);
+                        decodeCodec.queueInputBuffer(inputBufferIndex, 0, sampleSize, mediaExtractor.getSampleTime(), 0);
                         // 在MediaExtractor执行完一次readSampleData方法后，需要调用advance()去跳到下一个sample，然后再次读取数据
                         mediaExtractor.advance();
                         isVideoEOS = false;
@@ -123,10 +147,17 @@ public class SimpleVideoDecoderAndEncoder {
             }
 
             // 获取outputBuffer的index，
-            int outputBufferIndex = videoCodec.dequeueOutputBuffer(videoBufferInfo, TIMEOUT_US);
+            int outputBufferIndex = decodeCodec.dequeueOutputBuffer(videoBufferInfo, TIMEOUT_US);
             switch (outputBufferIndex) {
                 case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
                     LogUtil.v(MediaCodecUtil.TAG, outputBufferIndex + " format changed");
+//                    MediaFormat newFormat = mEncoder.getOutputFormat();
+//                    Log.d(TAG, "encoder output format changed: " + newFormat);
+//
+//                    // now that we have the Magic Goodies, start the muxer
+//                    mTrackIndex = mMuxer.addTrack(newFormat);
+//                    mMuxer.start();
+//                    mMuxerStarted = true;
                     break;
                 case MediaCodec.INFO_TRY_AGAIN_LATER:
                     LogUtil.v(MediaCodecUtil.TAG, outputBufferIndex + " 解码当前帧超时");
@@ -137,18 +168,26 @@ public class SimpleVideoDecoderAndEncoder {
                     break;
                 default:
                     long currTime = videoBufferInfo.presentationTimeUs;
-                    Image image = videoCodec.getOutputImage(outputBufferIndex);
+                    Image image = decodeCodec.getOutputImage(outputBufferIndex);
                     byte[] i420bytes = CameraUtil.getDataFromImage(image, CameraUtil.COLOR_FormatI420);
-                    FileUtils.writeToFile(i420bytes, yuvPath, true);
+                    FileUtils.writeToFile(i420bytes, outputYuvPath, true);
+
+                    boolean end = ((videoBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0);
+                    encodeData(i420bytes, outputH264Path, currTime, end);
 
                     byte[] nv21bytes = BitmapUtil.I420Tonv21(i420bytes, width, height);
 //                  BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
                     Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, width, height);
+//                    write(encodeBufferInfo, sampleSize, encodeVideoTrackIndex, inputBuffer, mMediaMuxer, frameRate, false);
 
                     previewCallback.getBitmap(bitmap);
-                    previewCallback.progress((int) (currTime * 100 / totalTime));
+                    int progress = (int) (currTime * 100 / totalTime);
+                    previewCallback.progress(progress);
+
+                    LogUtil.v(MediaCodecUtil.TAG, "progress::" + progress);
+
                     // 将该ByteBuffer释放掉，以供缓冲区的循环使用。
-                    videoCodec.releaseOutputBuffer(outputBufferIndex, true);
+                    decodeCodec.releaseOutputBuffer(outputBufferIndex, true);
                     break;
             }
 
@@ -161,16 +200,53 @@ public class SimpleVideoDecoderAndEncoder {
         mMediaMuxer.stop();
         mMediaMuxer.release();
         mediaExtractor.release();
-        videoCodec.stop();
-        videoCodec.release();
+        decodeCodec.stop();
+        decodeCodec.release();
     }
 
-    private void write(MediaCodec.BufferInfo encodeBufferInfo, int sampleSize, int encodeVideoTrackIndex,
-                       ByteBuffer inputBuffer, MediaMuxer mMediaMuxer, int frameRate, boolean isEnd) {
-        encodeBufferInfo.offset = 0;
-        encodeBufferInfo.size = sampleSize;
-        encodeBufferInfo.flags = isEnd ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : MediaCodec.BUFFER_FLAG_KEY_FRAME;
-        encodeBufferInfo.presentationTimeUs += 1000 * 1000 / frameRate;
-        mMediaMuxer.writeSampleData(encodeVideoTrackIndex, inputBuffer, encodeBufferInfo);
+    private void encodeData(byte[] yuvBytes, String outputH264Path, long presentationTimeUs, boolean isVideoEOS) {
+        MediaCodec.BufferInfo encodeOutputBufferInfo = new MediaCodec.BufferInfo();
+        MediaCodec.BufferInfo muxerOutputBufferInfo = new MediaCodec.BufferInfo();
+        int inputBufferIndex = encodeCodec.dequeueInputBuffer(-1);
+        if (inputBufferIndex >= 0) {
+            ByteBuffer inputBuffer = encodeCodec.getInputBuffer(inputBufferIndex);
+            inputBuffer.put(yuvBytes);
+            encodeCodec.queueInputBuffer(inputBufferIndex, 0, yuvBytes.length, presentationTimeUs, 0);
+        }
+
+
+        if ((encodeOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+            LogUtil.v(MediaCodecUtil.TAG, " encode  buffer stream end");
+        }
+
+        int outputBufferIndex = encodeCodec.dequeueOutputBuffer(encodeOutputBufferInfo, -1);
+        switch (outputBufferIndex) {
+            case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
+//                MediaFormat newFormat = encodeCodec.getOutputFormat();
+                encodeVideoTrackIndex = mMediaMuxer.addTrack(encodeMediaFormat);
+                mMediaMuxer.start();
+                break;
+            case MediaCodec.INFO_TRY_AGAIN_LATER:
+                break;
+            default:
+                ByteBuffer outputBuffer = encodeCodec.getOutputBuffer(outputBufferIndex);
+                byte[] outData = new byte[encodeOutputBufferInfo.size];
+                outputBuffer.get(outData);
+                FileUtils.writeToFile(outData, outputH264Path, true);
+
+                MediaFormat outputFormat = encodeCodec.getOutputFormat(outputBufferIndex);
+                LogUtil.d("outputFormat::" + outputFormat.toString());
+
+                muxerOutputBufferInfo.offset = 0;
+                muxerOutputBufferInfo.size = encodeOutputBufferInfo.size;
+                muxerOutputBufferInfo.flags = isVideoEOS ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : MediaCodec.BUFFER_FLAG_KEY_FRAME;
+                muxerOutputBufferInfo.presentationTimeUs = presentationTimeUs;
+                LogUtil.d("presentationTimeUs::" + presentationTimeUs + " size::" + encodeOutputBufferInfo.size + "  isVideoEOS:" + isVideoEOS);
+                mMediaMuxer.writeSampleData(encodeVideoTrackIndex, outputBuffer, encodeOutputBufferInfo);
+
+                encodeCodec.releaseOutputBuffer(outputBufferIndex, false);
+                break;
+        }
+
     }
 }

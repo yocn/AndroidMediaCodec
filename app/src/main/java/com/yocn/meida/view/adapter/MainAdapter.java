@@ -104,7 +104,7 @@ public class MainAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.all.setBackgroundResource(colors[(position - 1) % colors.length]);
             holder.all.setOnClickListener(v -> {
                 //item 点击事件
-                LogUtil.d("realPosition    click-" + (position - 1) + "    " + mDatas.get((position - 1)).getToClass() + " position-》" + (position - 1));
+//                LogUtil.d("realPosition    click-" + (position - 1) + "    " + mDatas.get((position - 1)).getToClass() + " position-》" + (position - 1));
                 if (mContext != null) {
                     mContext.startActivity(new Intent(mContext, mDatas.get(position - 1).getToClass()));
                 }
