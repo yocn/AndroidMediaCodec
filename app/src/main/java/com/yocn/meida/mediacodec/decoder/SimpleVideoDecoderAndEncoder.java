@@ -102,10 +102,6 @@ public class SimpleVideoDecoderAndEncoder {
         }
         int encodeFrameRate = 20;
         encodeMediaFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height);
-//        byte[] header_sps = {0, 0, 0, 1, 39, 100, 0, 31, -84, 86, -64, -120, 30, 105, -88, 8, 8, 8, 16};
-//        byte[] header_pps = {0, 0, 0, 1, 40, -18, 60, -80};
-//        encodeMediaFormat.setByteBuffer("csd-0", ByteBuffer.wrap(header_sps));
-//        encodeMediaFormat.setByteBuffer("csd-1", ByteBuffer.wrap(header_pps));
         encodeMediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat);
         encodeMediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 2500000);
         encodeMediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, encodeFrameRate);
@@ -115,9 +111,7 @@ public class SimpleVideoDecoderAndEncoder {
         encodeCodec.start();
 
         mMediaMuxer = new MediaMuxer(outputMp4Path, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
-
         MediaCodec.BufferInfo videoBufferInfo = new MediaCodec.BufferInfo();
-        MediaCodec.BufferInfo encodeBufferInfo = new MediaCodec.BufferInfo();
 
         boolean isVideoEOS = false;
 
@@ -136,7 +130,6 @@ public class SimpleVideoDecoderAndEncoder {
                                 MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                         isVideoEOS = true;
                     } else {
-//                        write(encodeBufferInfo, sampleSize, encodeVideoTrackIndex, inputBuffer, mMediaMuxer, frameRate, false);
                         // 填充好的数据写入第inputBufferIndex个InputBuffer，分贝设置size和sampleTime，这里sampleTime不一定是顺序来的，所以需要缓冲区来调节顺序。
                         decodeCodec.queueInputBuffer(inputBufferIndex, 0, sampleSize, mediaExtractor.getSampleTime(), 0);
                         // 在MediaExtractor执行完一次readSampleData方法后，需要调用advance()去跳到下一个sample，然后再次读取数据
@@ -151,13 +144,6 @@ public class SimpleVideoDecoderAndEncoder {
             switch (outputBufferIndex) {
                 case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
                     LogUtil.v(MediaCodecUtil.TAG, outputBufferIndex + " format changed");
-//                    MediaFormat newFormat = mEncoder.getOutputFormat();
-//                    Log.d(TAG, "encoder output format changed: " + newFormat);
-//
-//                    // now that we have the Magic Goodies, start the muxer
-//                    mTrackIndex = mMuxer.addTrack(newFormat);
-//                    mMuxer.start();
-//                    mMuxerStarted = true;
                     break;
                 case MediaCodec.INFO_TRY_AGAIN_LATER:
                     LogUtil.v(MediaCodecUtil.TAG, outputBufferIndex + " 解码当前帧超时");
@@ -176,9 +162,7 @@ public class SimpleVideoDecoderAndEncoder {
                     encodeData(i420bytes, outputH264Path, currTime, end);
 
                     byte[] nv21bytes = BitmapUtil.I420Tonv21(i420bytes, width, height);
-//                  BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
                     Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, width, height);
-//                    write(encodeBufferInfo, sampleSize, encodeVideoTrackIndex, inputBuffer, mMediaMuxer, frameRate, false);
 
                     previewCallback.getBitmap(bitmap);
                     int progress = (int) (currTime * 100 / totalTime);
@@ -222,6 +206,10 @@ public class SimpleVideoDecoderAndEncoder {
         switch (outputBufferIndex) {
             case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
                 MediaFormat newFormat = encodeCodec.getOutputFormat();
+//                byte[] header_sps = {0, 0, 0, 1, 39, 100, 0, 31, -84, 86, -64, -120, 30, 105, -88, 8, 8, 8, 16};
+//                byte[] header_pps = {0, 0, 0, 1, 40, -18, 60, -80};
+//                encodeMediaFormat.setByteBuffer("csd-0", ByteBuffer.wrap(header_sps));
+//                encodeMediaFormat.setByteBuffer("csd-1", ByteBuffer.wrap(header_pps));
 //                encodeVideoTrackIndex = mMediaMuxer.addTrack(encodeMediaFormat);
                 encodeVideoTrackIndex = mMediaMuxer.addTrack(newFormat);
                 mMediaMuxer.start();
@@ -235,6 +223,7 @@ public class SimpleVideoDecoderAndEncoder {
                 FileUtils.writeToFile(outData, outputH264Path, true);
 
                 MediaFormat outputFormat = encodeCodec.getOutputFormat(outputBufferIndex);
+                LogUtil.d("encodeMediaFormat::" + encodeMediaFormat.toString());
                 LogUtil.d("outputFormat::" + outputFormat.toString());
 
                 muxerOutputBufferInfo.offset = 0;
@@ -249,4 +238,5 @@ public class SimpleVideoDecoderAndEncoder {
         }
 
     }
+
 }

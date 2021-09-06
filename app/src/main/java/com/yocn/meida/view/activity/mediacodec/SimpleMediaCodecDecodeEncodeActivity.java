@@ -23,7 +23,7 @@ import com.yocn.meida.view.activity.YUVPlayerActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class SimpleMediaCodecDecodeEncodeActivity extends BaseActivity {
-    public static String DESC = "视频解码并通过Image获取数据";
+    public static String DESC = "视频解码成yuv数据后编码成h264并生成mp4";
 
     private ImageView previewIv;
     private Handler mainHandler;
