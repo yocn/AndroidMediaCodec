@@ -2,19 +2,17 @@ package com.yocn.meida.view.activity.camera;
 
 import android.graphics.SurfaceTexture;
 import android.opengl.GLSurfaceView;
-import android.os.Bundle;
 import android.util.Log;
-import android.util.Size;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.yocn.media.R;
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.camera.Camera2ProviderWithGL;
-import com.yocn.meida.gles.util.GlUtil;
 import com.yocn.meida.gles.render.SquarePreviewCameraRender;
+import com.yocn.meida.gles.util.GlUtil;
 import com.yocn.meida.util.LogUtil;
-import com.yocn.meida.view.widget.MyTextureView;
+import com.yocn.meida.view.widget.AspectTextureView;
 
 /**
  * @Author yocn
@@ -26,7 +24,7 @@ public class PreviewWithOpenGLESActivity extends BaseCameraActivity {
     GLSurfaceView mPreviewGlSurafceView;
     Camera2ProviderWithGL mCamera2Provider;
     public static String DESC = "Camera2 通过OpenGLES预览";
-    MyTextureView textureView;
+    AspectTextureView textureView;
 
     @Override
     protected int getContentViewId() {
@@ -57,7 +55,7 @@ public class PreviewWithOpenGLESActivity extends BaseCameraActivity {
         layoutParams.height = showHeight;
         layoutParams.width = showWidth;
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        textureView.setShowSize(new Size(showWidth, showHeight));
+        textureView.setAspectRation(showWidth, showHeight);
         textureView.setLayoutParams(layoutParams);
         LogUtil.d("yocnyocn", "ScreenSize:" + BaseCameraProvider.ScreenSize.getHeight() + "/" + BaseCameraProvider.ScreenSize.getWidth());
         LogUtil.d("yocnyocn", "previewSize:" + BaseCameraProvider.previewSize.getHeight() + "/" + BaseCameraProvider.previewSize.getWidth());

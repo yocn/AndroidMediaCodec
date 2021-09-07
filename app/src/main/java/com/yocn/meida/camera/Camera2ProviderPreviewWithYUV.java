@@ -120,6 +120,8 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
                     LogUtil.d(MediaCodecUtil.TAG, "c::" + c.toString());
                 }
                 fpsRanges = allFpsRanges[allFpsRanges.length - 1];
+                int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+
                 //获取是前置还是后置摄像头
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 //使用后置摄像头
