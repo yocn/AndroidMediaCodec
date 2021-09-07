@@ -3,6 +3,7 @@ package com.yocn.meida.base;
 import com.yocn.meida.JumpBean;
 import com.yocn.meida.view.activity.FormatTrans264Activity;
 import com.yocn.meida.view.activity.FormatTransportActivity;
+import com.yocn.meida.view.activity.camera.PreviewAllActivity;
 import com.yocn.meida.view.activity.mediacodec.MediaCodecActivity;
 import com.yocn.meida.view.activity.PreviewDataActivity;
 import com.yocn.meida.view.activity.PreviewGPUImageActivity;
@@ -75,6 +76,7 @@ public class DataProvider {
         cameraDataList.add(new JumpBean("Yuv数据获取", PreviewYUVDataActivity.class));
         cameraDataList.add(new JumpBean("Yuv数据获取 方式2", PreviewYUVDataActivity2.class));
         cameraDataList.add(new JumpBean("Native转换Yuv", PreviewNativeYUVActivity.class));
+        cameraDataList.add(new JumpBean("全尺寸预览", PreviewAllActivity.class));
         cameraDataList.add(new JumpBean("ARGB转I420-libyuv", FormatTransportActivity.class));
         cameraDataList.add(new JumpBean("GPUImage预览", PreviewGPUImageActivity.class));
 //--------------------------------------------------------------------------------------------------
