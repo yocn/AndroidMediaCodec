@@ -22,14 +22,13 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
-import com.yocn.meida.base.Constant;
 import com.yocn.meida.mediacodec.MediaCodecUtil;
 import com.yocn.meida.presenter.Mp4Writer;
-import com.yocn.meida.presenter.yuv.YUVFileWriter;
 import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
+import com.yocn.meida.view.widget.AspectTextureView;
 
 import java.util.Arrays;
 
@@ -46,13 +45,14 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
     private String mCameraId;
     private Handler mCameraHandler;
     private CameraDevice mCameraDevice;
-    private TextureView mTextureView;
+    private AspectTextureView mTextureView;
     private CaptureRequest.Builder mPreviewBuilder;
     private ImageReader mImageReader;
     private OnGetBitmapInterface mOnGetBitmapInterface;
     private Range<Integer> fpsRanges;
     private Mp4Writer mp4Writer;
     private String outMp4Path;
+    private Size[] sizeMap;
 
     public interface OnGetBitmapInterface {
         public void getABitmap(Bitmap bitmap);
@@ -82,7 +82,7 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
         mCameraHandler = new Handler(handlerThread.getLooper());
     }
 
-    public void initTexture(TextureView textureView) {
+    public void initTexture(AspectTextureView textureView) {
         mTextureView = textureView;
         textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
@@ -120,7 +120,6 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
                     LogUtil.d(MediaCodecUtil.TAG, "c::" + c.toString());
                 }
                 fpsRanges = allFpsRanges[allFpsRanges.length - 1];
-                int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
 
                 //获取是前置还是后置摄像头
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
@@ -128,13 +127,10 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
-                        Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
-                        LogUtil.d("preview->" + previewSize.toString());
+                        sizeMap = map.getOutputSizes(SurfaceTexture.class);
                         mCameraId = cameraIds[i];
-                        for (Size s : sizeMap) {
-                            LogUtil.d("s->" + s.toString());
-                        }
                     }
+
                     mImageReader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(),
                             ImageFormat.YUV_420_888, 2);
                     mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mCameraHandler);

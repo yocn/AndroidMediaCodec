@@ -17,6 +17,7 @@ import com.yocn.meida.util.CameraUtil;
 import com.yocn.meida.util.FileUtils;
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.MediaUtil;
+import com.yocn.meida.view.widget.AspectTextureView;
 
 import androidx.annotation.NonNull;
 
@@ -28,7 +29,7 @@ import androidx.annotation.NonNull;
  */
 public class PreviewYUVDataActivity extends BaseCameraActivity {
     public static String DESC = "Camera2 两路预览：YUV输出格式为ImageFormat.YUV_420_888，工具类转化为NV21，再使用YuvImage生成Bitmap实现预览";
-    private TextureView mPreviewView;
+    private AspectTextureView mPreviewView;
     private ImageView mShowIv;
     private Button mStartBtn;
     private Button mEndBtn;
