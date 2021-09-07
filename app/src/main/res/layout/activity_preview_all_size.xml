@@ -6,7 +6,8 @@
     <com.yocn.meida.view.widget.AspectTextureView
         android:id="@+id/tv_camera"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginBottom="50dp" />
 
     <com.yocn.meida.view.widget.AspectTextureView
         android:id="@+id/tv_camera_2"
@@ -22,4 +23,14 @@
         android:layout_marginTop="50dp"
         android:background="@drawable/bg_back"
         android:src="@drawable/icon_back_normal" />
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:text="click" />
+
 </RelativeLayout>

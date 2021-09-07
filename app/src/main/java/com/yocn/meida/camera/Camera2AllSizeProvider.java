@@ -9,22 +9,19 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.util.Size;
 import android.view.Surface;
-import android.view.TextureView;
 
-import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
+import com.yocn.meida.view.widget.AspectTextureView;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Camera2AllSizeProvider extends BaseCommonCameraProvider {
-    private Activity mContext;
     private CaptureRequest.Builder mPreviewBuilder;
-    List<Size> outputSizes;
+    private List<Size> outputSizes;
 
     public Camera2AllSizeProvider(Activity mContext) {
         super(mContext);
-        initCamera();
     }
 
     private void initCamera() {
@@ -33,17 +30,28 @@ public class Camera2AllSizeProvider extends BaseCommonCameraProvider {
         outputSizes = getCameraOutputSizes(mCameraId, SurfaceTexture.class);
         //初始化预览尺寸
         previewSize = outputSizes.get(0);
+        if (getCameraInfoListener != null) {
+            getCameraInfoListener.getInfos(outputSizes);
+        }
     }
 
-    public void initTexture(TextureView textureView) {
-        mTextureView = textureView;
-        textureView.setSurfaceTextureListener(new SimplifyInterface.SimplifySurfaceTextureListener() {
-            @Override
-            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-                LogUtil.d("w/h->" + width + "|" + height);
-                openCamera();
-            }
-        });
+    int index = 0;
+
+    public void initTexture(AspectTextureView... textureViews) {
+        initCamera();
+        mTextureViews = textureViews;
+        int size = textureViews.length;
+        for (AspectTextureView aspectTextureView : textureViews) {
+            aspectTextureView.setSurfaceTextureListener(new SimplifyInterface.SimplifySurfaceTextureListener() {
+                @Override
+                public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                    if (++index == size) {
+                        // 所有的textureView都准备好
+                        openCamera();
+                    }
+                }
+            });
+        }
     }
 
     private void openCamera() {
@@ -61,19 +69,29 @@ public class Camera2AllSizeProvider extends BaseCommonCameraProvider {
     private final CameraDevice.StateCallback mStateCallback = new SimplifyInterface.SimplifyCameraDeviceStateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
-            try {
-                mCameraDevice = camera;
-                SurfaceTexture surfaceTexture = mTextureView.getSurfaceTexture();
-                surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
-                Surface previewSurface = new Surface(surfaceTexture);
-                mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-                mPreviewBuilder.addTarget(previewSurface);
-                mCameraDevice.createCaptureSession(Arrays.asList(previewSurface), mStateCallBack, mCameraHandler);
-            } catch (CameraAccessException e) {
-                e.printStackTrace();
-            }
+            mCameraDevice = camera;
+            startPreviewSession(previewSize);
         }
     };
+
+    public void startPreviewSession(Size size) {
+        try {
+            releaseCameraSession(session);
+            mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            List<Surface> outputs = new ArrayList<>();
+            for (AspectTextureView aspectTextureView : mTextureViews) {
+                aspectTextureView.setAspect(size.getHeight(), size.getWidth());
+                SurfaceTexture surfaceTexture = aspectTextureView.getSurfaceTexture();
+                surfaceTexture.setDefaultBufferSize(size.getWidth(), size.getHeight());
+                Surface previewSurface = new Surface(surfaceTexture);
+                mPreviewBuilder.addTarget(previewSurface);
+                outputs.add(previewSurface);
+            }
+            mCameraDevice.createCaptureSession(outputs, mStateCallBack, mCameraHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     private final CameraCaptureSession.StateCallback mStateCallBack = new SimplifyInterface.SimplifyStateCallback() {
         @Override

@@ -11,7 +11,8 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Size;
-import android.view.TextureView;
+
+import com.yocn.meida.view.widget.AspectTextureView;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,9 +25,18 @@ public class BaseCommonCameraProvider extends BaseCameraProvider {
     protected Handler mCameraHandler;
     protected CameraDevice mCameraDevice;
     protected CameraCaptureSession session;
-    protected TextureView mTextureView;
+    protected AspectTextureView[] mTextureViews;
     protected HandlerThread handlerThread;
     protected CameraManager cameraManager;
+    protected GetCameraInfoListener getCameraInfoListener;
+
+    public interface GetCameraInfoListener {
+        void getInfos(List<Size> outputSizes);
+    }
+
+    public void setGetCameraInfoListener(GetCameraInfoListener getCameraInfoListener) {
+        this.getCameraInfoListener = getCameraInfoListener;
+    }
 
     protected BaseCommonCameraProvider(Activity mContext) {
         this.mContext = mContext;

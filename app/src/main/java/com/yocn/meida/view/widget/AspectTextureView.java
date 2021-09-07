@@ -2,10 +2,9 @@ package com.yocn.meida.view.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Size;
 import android.view.TextureView;
 
-import com.yocn.meida.camera.BaseCameraProvider;
+import com.yocn.meida.util.LogUtil;
 
 /**
  * @Author yocn
@@ -39,10 +38,12 @@ public class AspectTextureView extends TextureView {
         if (width < 0 || height < 0) {
             throw new IllegalArgumentException("width or height can not be negative.");
         }
-        ratioW = width;
-        ratioH = height;
-        //请求重新布局
-        requestLayout();
+        post(() -> {
+            ratioW = width;
+            ratioH = height;
+            //请求重新布局
+            requestLayout();
+        });
     }
 
     @Override
@@ -55,12 +56,18 @@ public class AspectTextureView extends TextureView {
             //未设定宽高比，使用预览窗口默认宽高
             setMeasuredDimension(width, height);
         } else {
+            int tarW, tarH;
             //设定宽高比，调整预览窗口大小（调整后窗口大小不超过默认值）
             if (width < height * ratioW / ratioH) {
-                setMeasuredDimension(width, width * ratioH / ratioW);
+                tarW = width;
+                tarH = width * ratioH / ratioW;
             } else {
-                setMeasuredDimension(height * ratioW / ratioH, height);
+                tarW = height * ratioW / ratioH;
+                tarH = height;
             }
+            LogUtil.d("AspectTextureView", "原来的:" + width + "|" + height
+                    + "  raw:" + ratioW + "|" + ratioH + "  后：" + tarH + ":" + tarH);
+            setMeasuredDimension(tarW, tarH);
         }
 
     }
