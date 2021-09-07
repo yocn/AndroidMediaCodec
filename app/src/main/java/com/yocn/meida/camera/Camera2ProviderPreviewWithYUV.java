@@ -17,10 +17,14 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Range;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
+import com.yocn.meida.base.Constant;
+import com.yocn.meida.mediacodec.MediaCodecUtil;
+import com.yocn.meida.presenter.Mp4Writer;
 import com.yocn.meida.presenter.yuv.YUVFileWriter;
 import com.yocn.meida.util.BitmapUtil;
 import com.yocn.meida.util.CameraUtil;
@@ -46,8 +50,9 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
     private CaptureRequest.Builder mPreviewBuilder;
     private ImageReader mImageReader;
     private OnGetBitmapInterface mOnGetBitmapInterface;
-    private YUVFileWriter mYUVFileWriter;
-    private boolean isWriteYuvFile = false;
+    private Range<Integer> fpsRanges;
+    private Mp4Writer mp4Writer;
+    private String outMp4Path;
 
     public interface OnGetBitmapInterface {
         public void getABitmap(Bitmap bitmap);
@@ -57,22 +62,21 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
         this.mOnGetBitmapInterface = mOnGetBitmapInterface;
     }
 
-    public void setSaveYUVPath(Context context, String yuvPath) {
-        mYUVFileWriter = new YUVFileWriter(context, yuvPath);
-    }
-
-    public void shouldWriteYuvFile(boolean onOff) {
-        isWriteYuvFile = onOff;
-        if(onOff){
-            mYUVFileWriter.startWrite();
-        }else{
-            mYUVFileWriter.endWrite();
+    public void startRecord() {
+        if (mp4Writer != null) {
+            mp4Writer.startWrite();
         }
-        LogUtil.d("on_Off->" + onOff);
     }
 
-    public Camera2ProviderPreviewWithYUV(Activity mContext) {
+    public void stopRecord() {
+        if (mp4Writer != null) {
+            mp4Writer.endWrite();
+        }
+    }
+
+    public Camera2ProviderPreviewWithYUV(Activity mContext, String outMp4Path) {
         this.mContext = mContext;
+        this.outMp4Path = outMp4Path;
         HandlerThread handlerThread = new HandlerThread("camera");
         handlerThread.start();
         mCameraHandler = new Handler(handlerThread.getLooper());
@@ -107,9 +111,15 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
     private void openCamera(int width, int height) {
         CameraManager cameraManager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         try {
-            for (String cameraId : cameraManager.getCameraIdList()) {
+            String[] cameraIds = cameraManager.getCameraIdList();
+            for (int i = 0; i < cameraIds.length; i++) {
                 //描述相机设备的属性类
-                CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraId);
+                CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraIds[i]);
+                Range<Integer>[] allFpsRanges = characteristics.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES);
+                for (Range<Integer> c : allFpsRanges) {
+                    LogUtil.d(MediaCodecUtil.TAG, "c::" + c.toString());
+                }
+                fpsRanges = allFpsRanges[allFpsRanges.length - 1];
                 //获取是前置还是后置摄像头
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 //使用后置摄像头
@@ -118,7 +128,10 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
                     if (map != null) {
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
                         LogUtil.d("preview->" + previewSize.toString());
-                        mCameraId = cameraId;
+                        mCameraId = cameraIds[i];
+                        for (Size s : sizeMap) {
+                            LogUtil.d("s->" + s.toString());
+                        }
                     }
                     mImageReader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(),
                             ImageFormat.YUV_420_888, 2);
@@ -135,34 +148,6 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
         }
     }
 
-    private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
-        @Override
-        public void onImageAvailable(ImageReader reader) {
-            Image image = reader.acquireLatestImage();
-            if (image == null) {
-                return;
-            }
-            int width = image.getWidth(), height = image.getHeight();
-            byte[] i420bytes = CameraUtil.getDataFromImage(image, CameraUtil.COLOR_FormatI420);
-
-            if (isWriteYuvFile && mYUVFileWriter != null) {
-                mYUVFileWriter.write(i420bytes);
-            }
-
-            byte[] i420RorateBytes = BitmapUtil.rotateYUV420Degree90(i420bytes, width, height);
-            byte[] nv21bytes = BitmapUtil.I420Tonv21(i420RorateBytes, height, width);
-            //TODO check YUV数据是否正常
-//                BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
-
-            Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, height, width);
-//            LogUtil.d("image->" + width + "|" + height);
-            if (mOnGetBitmapInterface != null) {
-                mOnGetBitmapInterface.getABitmap(bitmap);
-            }
-            image.close();
-        }
-    };
-
     private CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
@@ -172,6 +157,7 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
                 surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
                 Surface previewSurface = new Surface(surfaceTexture);
                 mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+                mPreviewBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, fpsRanges);
                 mPreviewBuilder.addTarget(previewSurface);
                 mPreviewBuilder.addTarget(mImageReader.getSurface());
                 mCameraDevice.createCaptureSession(Arrays.asList(previewSurface, mImageReader.getSurface()), mStateCallBack, mCameraHandler);
@@ -179,6 +165,7 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
                 e.printStackTrace();
             }
             LogUtil.d("mStateCallback----onOpened---");
+            mp4Writer = new Mp4Writer(mContext, previewSize.getWidth(), previewSize.getHeight(), fpsRanges.getUpper(), outMp4Path);
         }
 
         @Override
@@ -191,6 +178,31 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
         public void onError(CameraDevice camera, int error) {
             LogUtil.d("mStateCallback----onError---" + error);
             camera.close();
+        }
+    };
+
+    private ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+            Image image = reader.acquireLatestImage();
+            if (image == null) {
+                return;
+            }
+            int width = image.getWidth(), height = image.getHeight();
+            byte[] i420bytes = CameraUtil.getDataFromImage(image, CameraUtil.COLOR_FormatI420);
+            mp4Writer.write(i420bytes);
+
+            byte[] i420RorateBytes = BitmapUtil.rotateYUV420Degree90(i420bytes, width, height);
+            byte[] nv21bytes = BitmapUtil.I420Tonv21(i420RorateBytes, height, width);
+            //TODO check YUV数据是否正常
+//                BitmapUtil.dumpFile("mnt/sdcard/1.yuv", i420bytes);
+
+            Bitmap bitmap = BitmapUtil.getBitmapImageFromYUV(nv21bytes, height, width);
+            LogUtil.d("image->" + width + "|" + height);
+            if (mOnGetBitmapInterface != null) {
+                mOnGetBitmapInterface.getABitmap(bitmap);
+            }
+            image.close();
         }
     };
 
@@ -217,6 +229,7 @@ public class Camera2ProviderPreviewWithYUV extends BaseCameraProvider {
     public void closeCamera() {
         mCameraDevice.close();
         mImageReader.close();
+        mp4Writer.endWrite();
     }
 
 }

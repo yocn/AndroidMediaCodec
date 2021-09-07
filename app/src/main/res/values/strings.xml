@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CamDemo</string>
+    <string name="save_mp4">将数据存成mp4文件：%s</string>
 </resources>
