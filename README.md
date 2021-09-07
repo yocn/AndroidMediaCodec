@@ -36,9 +36,11 @@ cd libNative/src/main/jni
 
 	1.4. 转换方式二：获取`YUV_420_888`格式回调，同转换为NV21，根据`Image`和`ImageReader`一步一步转换得出。
 
-	1.5. 使用libYuv库做ARGB和YUV的转换。
+	1.5. 适配预览所有的尺寸，使画面不变形
 
-	1.6. 使用GPUImage库做预览，可以选择各种gles效果。
+	1.6. 使用libYuv库做ARGB和YUV的转换。
+
+	1.7. 使用GPUImage库做预览，可以选择各种gles效果。
 
 2. **FFmpeg相关**
 
