@@ -80,7 +80,7 @@ public class Camera2AllSizeProvider extends BaseCommonCameraProvider {
             mPreviewBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             List<Surface> outputs = new ArrayList<>();
             for (AspectTextureView aspectTextureView : mTextureViews) {
-                aspectTextureView.setAspect(size.getHeight(), size.getWidth());
+                aspectTextureView.setSize(size.getHeight(), size.getWidth());
                 SurfaceTexture surfaceTexture = aspectTextureView.getSurfaceTexture();
                 surfaceTexture.setDefaultBufferSize(size.getWidth(), size.getHeight());
                 Surface previewSurface = new Surface(surfaceTexture);

@@ -1,6 +1,7 @@
 package com.yocn.meida.util;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import com.yocn.libnative.YUVTransUtil;
 
@@ -16,6 +17,9 @@ import java.nio.ByteBuffer;
  */
 public class YUVUtils {
     public static Bitmap getFirstFrame(String yuvPath, int width, int height, int rotate) {
+        if (TextUtils.isEmpty(yuvPath)) {
+            return null;
+        }
         LogUtil.d("rotate:" + rotate);
         int chunkSize = width * height * 3 / 2;
         byte[] data = new byte[chunkSize];

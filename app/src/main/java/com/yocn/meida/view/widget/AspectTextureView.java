@@ -50,10 +50,7 @@ public class AspectTextureView extends TextureView {
         this.scaleType = scaleType;
     }
 
-    public void setAspect(int width, int height) {
-        if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("width or height can not be negative.");
-        }
+    public void setSize(int width, int height) {
         post(() -> {
             previewW = width;
             previewH = height;

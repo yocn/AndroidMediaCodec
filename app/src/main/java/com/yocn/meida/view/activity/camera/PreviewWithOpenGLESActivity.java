@@ -55,7 +55,7 @@ public class PreviewWithOpenGLESActivity extends BaseCameraActivity {
         layoutParams.height = showHeight;
         layoutParams.width = showWidth;
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        textureView.setAspect(showWidth, showHeight);
+        textureView.setSize(showWidth, showHeight);
         textureView.setLayoutParams(layoutParams);
         LogUtil.d("yocnyocn", "ScreenSize:" + BaseCameraProvider.ScreenSize.getHeight() + "/" + BaseCameraProvider.ScreenSize.getWidth());
         LogUtil.d("yocnyocn", "previewSize:" + BaseCameraProvider.previewSize.getHeight() + "/" + BaseCameraProvider.previewSize.getWidth());
