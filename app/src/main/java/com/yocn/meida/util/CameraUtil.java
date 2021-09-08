@@ -5,6 +5,7 @@ import android.graphics.Rect;
 import android.media.Image;
 import android.util.Size;
 import android.view.TextureView;
+import android.view.ViewGroup;
 
 import com.yocn.meida.camera.BaseCameraProvider;
 import com.yocn.meida.codec.YUVData;
@@ -49,7 +50,23 @@ public class CameraUtil {
         return sizeMap[0];
     }
 
-    public static void transTextureView(TextureView mPreviewView){
+    public static void transTextureView(ViewGroup parentViewGroup, TextureView mPreviewView) {
+        int parentHeight = parentViewGroup.getHeight();
+        int parentWidth = parentViewGroup.getWidth();
+        int tarHeight = mPreviewView.getHeight();
+        int tarWidth = mPreviewView.getWidth();
+        LogUtil.d("yocn", "parentHeight::" + parentHeight + " parentWidth::" + parentWidth + " tarHeight::" + tarHeight + " tarWidth::" + tarWidth);
+        if (parentWidth * 1.0f / parentHeight > tarWidth * 1.0f / tarHeight) {
+            // parent的宽高比 比 预览的宽高比大, 也就是parent比较宽，预览比较细长，需要移动x轴
+            int deltaX = (int) (parentWidth - parentHeight * 1.0f * tarWidth / tarHeight);
+            LogUtil.d("yocn", "deltaX::" + deltaX);
+        } else {
+            int deltaY = (int) (parentHeight - parentWidth * 1.0f * tarHeight / tarWidth);
+            LogUtil.d("yocn", "deltaY::" + deltaY);
+        }
+    }
+
+    public static void transTextureView(TextureView mPreviewView) {
         int minus = BaseCameraProvider.TextureViewSize.getWidth() - BaseCameraProvider.ScreenSize.getWidth();
         mPreviewView.setTranslationX(-minus / 2);
     }
@@ -91,7 +108,7 @@ public class CameraUtil {
             planes[2].getBuffer().get(vSrcBytes);
         } else {
             //YYYYYYYYUVUV
-            byte[] uvBytes =  new byte[w * h / 2];
+            byte[] uvBytes = new byte[w * h / 2];
         }
 
         LogUtil.d("-----------------wh->" + w + "/" + h);

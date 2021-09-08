@@ -285,7 +285,7 @@ public class YUVPlayerActivity extends BaseActivity implements View.OnClickListe
     };
 
     private void setTVDrawable(TextView tv, boolean open) {
-        Drawable drawable = open ? getResources().getDrawable(R.drawable.tanchuang_icon_zhankai) : getResources().getDrawable(R.drawable.tanchuang_icon_shouqi);
+        Drawable drawable = open ? getResources().getDrawable(R.drawable.arrow_up) : getResources().getDrawable(R.drawable.arrow_down);
         drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
         tv.setCompoundDrawables(null, null, drawable, null);
     }

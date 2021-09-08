@@ -1,36 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.yocn.meida.view.widget.AspectTextureView
-        android:id="@+id/tv_camera"
+    <FrameLayout
+        android:id="@+id/fl_camera_1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/color1"
+        app:layout_constraintBottom_toTopOf="@id/stub"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/fl_camera_2"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.yocn.meida.view.widget.AspectTextureView
+            android:id="@+id/tv_camera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/fl_camera_2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/color3"
+        app:layout_constraintBottom_toTopOf="@id/stub"
+        app:layout_constraintLeft_toRightOf="@id/fl_camera_1"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.yocn.meida.view.widget.AspectTextureView
+            android:id="@+id/tv_camera_2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+    <View
+        android:id="@+id/stub"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="50dp" />
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fl_camera_1" />
 
-    <com.yocn.meida.view.widget.AspectTextureView
-        android:id="@+id/tv_camera_2"
-        android:layout_width="100dp"
-        android:layout_height="200dp"
-        android:layout_alignParentEnd="true" />
-
-    <ImageView
-        android:id="@+id/iv_back"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="20dp"
+    <TextView xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/tv_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:background="@drawable/bg_back"
-        android:src="@drawable/icon_back_normal" />
+        android:background="@color/half"
+        android:padding="5dp"
+        android:text="4000*3000"
+        android:textColor="@color/write"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="4000*3000" />
+
+    <com.yocn.meida.view.widget.FlowLayout
+        android:id="@+id/flow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/half"
+        android:padding="5dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/stub" />
 
     <Button
-        android:id="@+id/btn"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
-        android:text="click" />
+        android:id="@+id/btn_change"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:text="更改分辨率"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/btn_show" />
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/btn_show"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:text="显示所有分辨率"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toRightOf="@id/btn_change"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

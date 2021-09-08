@@ -66,8 +66,11 @@ public class AspectTextureView extends TextureView {
                 tarH = height;
             }
             LogUtil.d("AspectTextureView", "原来的:" + width + "|" + height
-                    + "  raw:" + ratioW + "|" + ratioH + "  后：" + tarH + ":" + tarH);
+                    + "  raw:" + ratioW + "|" + ratioH + "  后：" + tarW + ":" + tarH);
             setMeasuredDimension(tarW, tarH);
+
+            setTranslationX((width - tarW) * 1.0f / 2);
+            setTranslationY((height - tarH) * 1.0f / 2);
         }
 
     }
