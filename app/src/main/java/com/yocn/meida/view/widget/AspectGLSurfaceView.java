@@ -1,34 +1,20 @@
 package com.yocn.meida.view.widget;
 
 import android.content.Context;
+import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.view.TextureView;
 
 import com.yocn.meida.util.LogUtil;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
-
-/**
- * @Author yocn
- * @Date 2019/8/13 6:48 PM
- * @ClassName AspectTextureView
- */
-public class AspectTextureView extends TextureView implements AspectInterface{
-
-    public AspectTextureView(Context context) {
+public class AspectGLSurfaceView extends GLSurfaceView implements AspectInterface{
+    public AspectGLSurfaceView(Context context) {
         super(context);
     }
 
-    public AspectTextureView(Context context, AttributeSet attrs) {
+    public AspectGLSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public AspectTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
 
     @ScaleType
     private int scaleType = ScaleType.FIT_CENTER;
@@ -84,7 +70,7 @@ public class AspectTextureView extends TextureView implements AspectInterface{
                     tarH = previewH * width / previewW;
                 }
             }
-            LogUtil.d("AspectTextureView", "原来的:" + width + "|" + height
+            LogUtil.d("AspectGLSurfaceView", "原来的:" + width + "|" + height
                     + "  raw:" + previewW + "|" + previewH + "  后：" + tarW + ":" + tarH);
             setMeasuredDimension(tarW, tarH);
             setTranslationX((width - tarW) * 1F / 2);

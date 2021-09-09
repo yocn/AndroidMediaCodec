@@ -9,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.yocn.meida.camera.BaseCameraProvider;
+import com.yocn.meida.view.widget.AspectInterface;
 
 /**
  * @Author yocn
@@ -82,4 +83,5 @@ public class DisplayUtil {
         LogUtil.d("计算的宽高：" + tWidth + "/" + tHeight);
         return new Size(tWidth, tHeight);
     }
+
 }

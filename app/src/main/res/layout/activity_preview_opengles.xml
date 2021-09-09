@@ -5,23 +5,44 @@
     android:background="@color/black"
     android:orientation="vertical">
 
-    <com.yocn.meida.view.widget.AspectTextureView
-        android:id="@+id/tv_camera"
+    <com.yocn.meida.view.widget.AspectGLSurfaceView
+        android:id="@+id/glsv_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.opengl.GLSurfaceView
-        android:id="@+id/glsv_preview"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/glsv_preview"
+        android:layout_alignTop="@id/glsv_preview"
+        android:layout_alignEnd="@id/glsv_preview"
+        android:layout_alignBottom="@id/glsv_preview"
+        android:layout_marginTop="200dp"
+        android:gravity="center"
+        android:text="OpenGles 分成六份屏幕预览" />
+
+    <com.yocn.meida.view.widget.AspectTextureView
+        android:id="@+id/tv_camera"
         android:layout_width="200dp"
         android:layout_height="300dp"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="50dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/tv_camera"
+        android:layout_alignTop="@id/tv_camera"
+        android:layout_alignEnd="@id/tv_camera"
+        android:layout_alignBottom="@id/tv_camera"
+        android:gravity="center"
+        android:text="texture预览" />
 
     <ImageView
         android:id="@+id/iv_back"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="50dp"
         android:background="@drawable/bg_back"
         android:src="@drawable/icon_back_normal" />

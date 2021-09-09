@@ -41,6 +41,29 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
                     "  gl_FragColor = texture2D(uTextureSampler, vTextureCoord);\n" +
                     "}";
 
+    // 片元着色器的脚本, 分六屏
+    String fragmentShaderCode2 =
+            "#extension GL_OES_EGL_image_external : require\n" +
+                    "precision mediump float;\n" +
+                    "uniform samplerExternalOES uTextureSampler;\n" +
+                    "varying vec2 vTextureCoord;\n" +
+                    "void main() {\n" +
+                    "    vec2 uv = vTextureCoord;\n" +
+                    "    // 左右分三屏\n" +
+                    "    if (uv.x <= 1.0 / 3.0) {\n" +
+                    "        uv.x = uv.x + 1.0 / 3.0;\n" +
+                    "    } else if (uv.x >= 2.0 / 3.0) {\n" +
+                    "        uv.x = uv.x - 1.0 / 3.0;\n" +
+                    "    }\n" +
+                    "    // 上下分两屏，保留 0.25 ~ 0.75部分\n" +
+                    "    if (uv.y <= 0.5) {\n" +
+                    "        uv.y = uv.y + 0.25;\n" +
+                    "    } else {\n" +
+                    "        uv.y = uv.y - 0.25;\n" +
+                    "    }\n" +
+                    "    gl_FragColor = texture2D(uTextureSampler, uv);\n" +
+                    "}";
+
     private FloatBuffer vertexBuffer;
     private FloatBuffer colorCoordsBuffer;
 
@@ -82,7 +105,7 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         gl.glClearColor(1.0f, 0.3f, 0.2f, 1.0f);
-        mProgramId = GlUtil.createProgram(vertexShaderCode, fragmentShaderCode);
+        mProgramId = GlUtil.createProgram(vertexShaderCode, fragmentShaderCode2);
     }
 
     private float[] mvpMatrix = new float[16];
@@ -91,19 +114,21 @@ public class SquarePreviewCameraRender implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
 
-        float surfaceRadio = (float) height / width;
-        float previewRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
-        Log.d("yocnyocn", "surfaceRadio:" + surfaceRadio);
-        Log.d("yocnyocn", "previewRadio:" + previewRadio);
-        if (surfaceRadio > previewRadio) {
-            // 预览画面比较长
-            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
-            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -surfaceRadio / previewRadio, surfaceRadio / previewRadio, -1f, 1f);
-        } else {
-            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
-            Matrix.orthoM(mvpMatrix, 0, -previewRadio / surfaceRadio, previewRadio / surfaceRadio, -1f, 1f, -1f, 1f);
-//            Matrix.orthoM(mvpMatrix, 0, -surfaceRadio, surfaceRadio, -1f, 1f, -1f, 1f);
-        }
+//        float surfaceRadio = (float) height / width;
+//        float previewRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
+//        Log.d("yocnyocn", "surfaceRadio:" + surfaceRadio);
+//        Log.d("yocnyocn", "previewRadio:" + previewRadio);
+//        if (surfaceRadio > previewRadio) {
+//            // 预览画面比较长
+//            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
+////            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -surfaceRadio / previewRadio, surfaceRadio / previewRadio, -1f, 1f);
+//            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -1f, 1f, -1f, 1f);
+//        } else {
+//            //orthoM(float[] m, int mOffset, float left, float right, float bottom, float top, float near, float far)
+////            Matrix.orthoM(mvpMatrix, 0, -previewRadio / surfaceRadio, previewRadio / surfaceRadio, -1f, 1f, -1f, 1f);
+//            Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -1f, 1f, -1f, 1f);
+//        }
+        Matrix.orthoM(mvpMatrix, 0, -1f, 1f, -1f, 1f, -1f, 1f);
         Matrix.rotateM(mvpMatrix, 0, 270, 0, 0, 1);
     }
 

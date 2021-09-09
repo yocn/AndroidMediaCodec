@@ -12,6 +12,7 @@ import com.yocn.meida.camera.Camera2ProviderWithGL;
 import com.yocn.meida.gles.render.SquarePreviewCameraRender;
 import com.yocn.meida.gles.util.GlUtil;
 import com.yocn.meida.util.LogUtil;
+import com.yocn.meida.view.widget.AspectGLSurfaceView;
 import com.yocn.meida.view.widget.AspectTextureView;
 
 /**
@@ -21,10 +22,10 @@ import com.yocn.meida.view.widget.AspectTextureView;
  * 预览并获取数据
  */
 public class PreviewWithOpenGLESActivity extends BaseCameraActivity {
-    GLSurfaceView mPreviewGlSurafceView;
-    Camera2ProviderWithGL mCamera2Provider;
     public static String DESC = "Camera2 通过OpenGLES预览";
+    AspectGLSurfaceView mPreviewGlSurafceView;
     AspectTextureView textureView;
+    Camera2ProviderWithGL mCamera2Provider;
 
     @Override
     protected int getContentViewId() {
@@ -40,34 +41,11 @@ public class PreviewWithOpenGLESActivity extends BaseCameraActivity {
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        float previewRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
-        float cameraRadio = (float) BaseCameraProvider.previewSize.getHeight() / BaseCameraProvider.previewSize.getWidth();
-
-        int showHeight = BaseCameraProvider.previewSize.getHeight() * BaseCameraProvider.ScreenSize.getWidth() / BaseCameraProvider.previewSize.getWidth();
-        int showWidth = BaseCameraProvider.ScreenSize.getWidth();
-        if (previewRadio > cameraRadio) {
-            showHeight = BaseCameraProvider.ScreenSize.getHeight();
-            showWidth = BaseCameraProvider.previewSize.getWidth() * BaseCameraProvider.ScreenSize.getHeight() / BaseCameraProvider.previewSize.getHeight();
-        }
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) textureView.getLayoutParams();
-        layoutParams.height = showHeight;
-        layoutParams.width = showWidth;
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        textureView.setSize(showWidth, showHeight);
-        textureView.setLayoutParams(layoutParams);
-        LogUtil.d("yocnyocn", "ScreenSize:" + BaseCameraProvider.ScreenSize.getHeight() + "/" + BaseCameraProvider.ScreenSize.getWidth());
-        LogUtil.d("yocnyocn", "previewSize:" + BaseCameraProvider.previewSize.getHeight() + "/" + BaseCameraProvider.previewSize.getWidth());
-        LogUtil.d("yocnyocn", "showSize:" + showHeight + "/" + showWidth);
-    }
-
-    @Override
     protected void initData() {
         mCamera2Provider = new Camera2ProviderWithGL(this);
         int mTextureId = GlUtil.getOESTextureId();
         SurfaceTexture mSurfaceTexture = new SurfaceTexture(mTextureId);
-        mCamera2Provider.initTexture(mSurfaceTexture, textureView);
+        mCamera2Provider.initTexture(mSurfaceTexture, textureView, mPreviewGlSurafceView);
         mSurfaceTexture.setOnFrameAvailableListener(surfaceTexture -> {
             Log.d(TAG, "onFrameAvailable: ");
             mPreviewGlSurafceView.requestRender();

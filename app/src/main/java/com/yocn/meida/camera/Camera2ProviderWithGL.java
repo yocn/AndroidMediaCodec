@@ -16,21 +16,14 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Size;
 import android.view.Surface;
-import android.view.TextureView;
 
 import com.yocn.meida.util.LogUtil;
 import com.yocn.meida.util.PermissionUtil;
+import com.yocn.meida.view.widget.AspectGLSurfaceView;
+import com.yocn.meida.view.widget.AspectTextureView;
 
 import java.util.Arrays;
 
-/**
- * @Author yocn
- * @Date 2019/8/2 10:58 AM
- * @ClassName Camera2ProviderWithData
- * Camera2 两路预览：
- * 1、使用TextureView预览，直接输出。
- * 2、使用ImageReader获取数据，输出格式为ImageFormat.JPEG，直接生成bitmap生成预览。
- */
 public class Camera2ProviderWithGL extends BaseCameraProvider {
     private Activity mContext;
     private String mCameraId;
@@ -38,7 +31,8 @@ public class Camera2ProviderWithGL extends BaseCameraProvider {
     private CameraDevice mCameraDevice;
     private SurfaceTexture surfaceTexture;
     private CaptureRequest.Builder mPreviewBuilder;
-    private TextureView textureView;
+    private AspectTextureView textureView;
+    private AspectGLSurfaceView glSurfaceView;
 
     public Camera2ProviderWithGL(Activity mContext) {
         this.mContext = mContext;
@@ -47,9 +41,10 @@ public class Camera2ProviderWithGL extends BaseCameraProvider {
         mCameraHandler = new Handler(handlerThread.getLooper());
     }
 
-    public void initTexture(SurfaceTexture surfaceTexture, TextureView textureView) {
+    public void initTexture(SurfaceTexture surfaceTexture, AspectTextureView textureView, AspectGLSurfaceView glSurfaceView) {
         this.textureView = textureView;
         this.surfaceTexture = surfaceTexture;
+        this.glSurfaceView = glSurfaceView;
         //delay 300只是为了测试，因为这里camera输出同时在GLSurfaceView和textureView上，延时300毫秒保证这俩都准备好。
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
@@ -57,6 +52,7 @@ public class Camera2ProviderWithGL extends BaseCameraProvider {
                 openCamera();
             }
         }, 300);
+
     }
 
     private void openCamera() {
@@ -74,9 +70,9 @@ public class Camera2ProviderWithGL extends BaseCameraProvider {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map != null) {
                         Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
-                        for (Size size : sizeMap) {
-                            LogUtil.d("preview->" + size.toString());
-                        }
+                        previewSize = sizeMap[0];
+                        textureView.setSize(previewSize.getHeight(), previewSize.getWidth());
+                        glSurfaceView.setSize(previewSize.getHeight(), previewSize.getWidth());
                         mCameraId = cameraId;
                     }
                     String[] params = new String[]{Manifest.permission.CAMERA};

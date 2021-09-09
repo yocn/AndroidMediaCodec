@@ -64,11 +64,11 @@ public class DataProvider {
     static {
         mainDataList.add(new JumpBean("Camera", CameraActivity.class));
         mainDataList.add(new JumpBean("FFMpeg", FFMpegActivity.class));
-        mainDataList.add(new JumpBean("播放YUV文件", YUVPlayerActivity.class));
+        mainDataList.add(new JumpBean("MediaCodec编解码", MediaCodecActivity.class));
         mainDataList.add(new JumpBean("OpenGLES", SimpleOpenGLESActivity.class));
         mainDataList.add(new JumpBean("Preview OpenGLES", PreviewWithOpenGLESActivity.class));
+        mainDataList.add(new JumpBean("播放YUV文件", YUVPlayerActivity.class));
         mainDataList.add(new JumpBean("x264转换", FormatTrans264Activity.class));
-        mainDataList.add(new JumpBean("MediaCodec编解码", MediaCodecActivity.class));
 //--------------------------------------------------------------------------------------------------
         cameraDataList.add(new JumpBean("Camera1预览", Camera1PreviewActivity.class));
         cameraDataList.add(new JumpBean("TextureView预览", PreviewPureActivity.class));
