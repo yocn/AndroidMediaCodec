@@ -48,7 +48,6 @@ JNIEXPORT void JNICALL
 JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring url, jobject surface) {
     jboolean copy;
 
-    LOG(env, jobj);
     const char *m_Url = env->GetStringUTFChars(url, &copy);
     LOGE("-------------------------init-----------------m_Url--%s", m_Url);
 //1.创建封装格式上下文

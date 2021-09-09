@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.yocn.libnative.X264Encoder;
 import com.yocn.media.R;
+import com.yocn.meida.base.Constant;
 import com.yocn.meida.base.DataProvider;
 import com.yocn.meida.util.PermissionsUtils;
 import com.yocn.meida.view.widget.TopViewRecyclerView;
@@ -36,6 +38,9 @@ public class MainActivity extends BaseActivity {
 
     protected void initData() {
         topViewRecyclerView.setActivity(this, DataProvider.Type.MAIN);
+        String yuvPath = Constant.getTestFilePath("test.yuv");
+        String x264Path = Constant.getTestFilePath("test.x264");
+        new X264Encoder().initEncoder(yuvPath, x264Path, 544, 960, 30);
     }
 
     private void requestPermission() {

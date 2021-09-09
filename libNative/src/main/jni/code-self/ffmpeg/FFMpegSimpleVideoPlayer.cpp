@@ -37,7 +37,6 @@ JNIEXPORT void JNICALL
 JNI_METHOD_NAME(play)(JNIEnv *env, jobject jobj, jstring src, jstring tar, jobject surface) {
     jboolean copy;
 
-    LOG(env, jobj);
     const char *m_Url = env->GetStringUTFChars(src, &copy);
     const char *m_Tar_Url = env->GetStringUTFChars(tar, &copy);
     LOGE("-------------------------init-----------------m_Url--%s", m_Url);

@@ -68,7 +68,7 @@ public class DataProvider {
         mainDataList.add(new JumpBean("OpenGLES", SimpleOpenGLESActivity.class));
         mainDataList.add(new JumpBean("Preview OpenGLES", PreviewWithOpenGLESActivity.class));
         mainDataList.add(new JumpBean("播放YUV文件", YUVPlayerActivity.class));
-        mainDataList.add(new JumpBean("x264转换", FormatTrans264Activity.class));
+        mainDataList.add(new JumpBean("x264编码I420成H264", FormatTrans264Activity.class));
 //--------------------------------------------------------------------------------------------------
         cameraDataList.add(new JumpBean("Camera1预览", Camera1PreviewActivity.class));
         cameraDataList.add(new JumpBean("TextureView预览", PreviewPureActivity.class));

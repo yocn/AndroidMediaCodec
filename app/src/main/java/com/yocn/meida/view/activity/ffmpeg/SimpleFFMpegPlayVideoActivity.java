@@ -25,7 +25,7 @@ public class SimpleFFMpegPlayVideoActivity extends BaseActivity {
     private FFMpegSimpleVideoPlayer simplePlayer;
     private ProgressBar progressBar;
     private TextView playTv;
-    String mp4FilePath = Constant.getTestMp4FilePath2();
+    String mp4FilePath = Constant.getTestMp4FilePath();
     String yuvFilePath = Constant.getOutTestYuvFilePath();
 
     @Override

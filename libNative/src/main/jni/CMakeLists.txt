@@ -49,9 +49,7 @@ set(
 set(
         self-code
 
-        code-self/native-lib.cpp
         code-self/YUVTrans.cpp
-        code-self/common/Util.cpp
         code-self/common/JniProgress.cpp
         code-self/ffmpeg/ffmpegTests.cpp
         code-self/ffmpeg/FFMpegSimpleVideoPlayer.cpp
@@ -62,6 +60,7 @@ set(
         code-self/audio/play/opensl_render.cpp
         code-self/audio/encode/Mp3Lame.cpp
         code-self/byteBuffer/ReadByteBuffer.cpp
+        code-self/video/encode/X264Encoder.cpp
 )
 
 # Creates and names a library, sets it as either STATIC
