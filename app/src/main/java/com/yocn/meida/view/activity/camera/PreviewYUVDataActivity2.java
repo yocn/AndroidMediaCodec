@@ -31,7 +31,6 @@ public class PreviewYUVDataActivity2 extends BaseCameraActivity {
     protected void initView(View root) {
         super.initView(root);
         mPreviewView = root.findViewById(R.id.tv_camera);
-        CameraUtil.transTextureView(mPreviewView);
         mShowIv = root.findViewById(R.id.iv_show);
     }
 

@@ -14,9 +14,12 @@
         android:max="100" />
 
     <TextView
-        android:id="@+id/tv_src"
+        android:id="@+id/tv_hint"
+        style="@style/tv_show_hint"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/save_mp4" />
 
     <Button
         android:id="@+id/btn_click"
@@ -24,6 +27,15 @@
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="点击转换" />
+        android:text="点击编码" />
+
+    <Button
+        android:id="@+id/btn_play"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:text="播放生成的H264文件"
+        android:visibility="gone" />
 
 </RelativeLayout>

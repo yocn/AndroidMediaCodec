@@ -1,11 +1,12 @@
 package com.yocn.meida.view.activity.mediacodec;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -38,6 +39,11 @@ public class SimpleMediaCodecDecodeEncodeActivity extends BaseActivity {
     private TextView mp4PathTv;
     private TextView h264PathTv;
 
+    public static void start(Context context) {
+        Intent intent = new Intent(context, SimpleMediaCodecDecodeEncodeActivity.class);
+        context.startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +57,8 @@ public class SimpleMediaCodecDecodeEncodeActivity extends BaseActivity {
 
     @Override
     protected void initView(View root) {
+        TextView tv = findViewById(R.id.tv_hint);
+        tv.setText(DESC);
         previewIv = findViewById(R.id.iv_preview);
         playPb = findViewById(R.id.pb_play);
         playYuvBtn = findViewById(R.id.btn_play_yuv);

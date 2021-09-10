@@ -2,13 +2,13 @@ package com.yocn.meida.view.activity.camera;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.TextureView;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.yocn.media.R;
 import com.yocn.meida.camera.Camera2ProviderNativeYuv;
 import com.yocn.meida.util.CameraUtil;
+import com.yocn.meida.view.widget.AspectTextureView;
 
 /**
  * @Author yocn
@@ -17,7 +17,7 @@ import com.yocn.meida.util.CameraUtil;
  * Native转换Yuv
  */
 public class PreviewNativeYUVActivity extends BaseCameraActivity {
-    TextureView mPreviewView;
+    AspectTextureView mPreviewView;
     ImageView mShowIv;
     Camera2ProviderNativeYuv mCamera2Provider;
     public static String DESC = "libyuv做rgb跟yuv的转换|NV21ToArgb";
@@ -36,7 +36,6 @@ public class PreviewNativeYUVActivity extends BaseCameraActivity {
     protected void initView(View root) {
         super.initView(root);
         mPreviewView = root.findViewById(R.id.tv_camera);
-        CameraUtil.transTextureView(mPreviewView);
         mShowIv = root.findViewById(R.id.iv_show);
     }
 

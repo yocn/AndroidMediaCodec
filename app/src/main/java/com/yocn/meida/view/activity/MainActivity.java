@@ -38,9 +38,6 @@ public class MainActivity extends BaseActivity {
 
     protected void initData() {
         topViewRecyclerView.setActivity(this, DataProvider.Type.MAIN);
-        String yuvPath = Constant.getTestFilePath("test.yuv");
-        String x264Path = Constant.getTestFilePath("test.x264");
-        new X264Encoder().initEncoder(yuvPath, x264Path, 544, 960, 30);
     }
 
     private void requestPermission() {

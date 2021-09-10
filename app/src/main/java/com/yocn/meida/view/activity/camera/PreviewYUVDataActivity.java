@@ -50,7 +50,6 @@ public class PreviewYUVDataActivity extends BaseCameraActivity {
         mStartBtn = root.findViewById(R.id.btn_start);
         mEndBtn = root.findViewById(R.id.btn_end);
         mOpenBtn = root.findViewById(R.id.btn_open);
-        CameraUtil.transTextureView(mPreviewView);
         mShowIv = root.findViewById(R.id.iv_show);
         mShowTv = root.findViewById(R.id.tv_show);
         mStartBtn.setOnClickListener(this);

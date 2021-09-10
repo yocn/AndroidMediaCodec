@@ -117,4 +117,14 @@
         app:layout_constraintTop_toTopOf="@id/tv_path_h264"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/tv_hint"
+        style="@style/tv_show_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

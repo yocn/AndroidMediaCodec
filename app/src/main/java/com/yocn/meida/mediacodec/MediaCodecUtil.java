@@ -52,6 +52,8 @@ public class MediaCodecUtil {
         }
     }
 
+    // OMX.google开头的是软解码
+    // OMX.开头的是硬解码
     public static String getExpectedEncodeCodec(String expectedMimeType, int expectedColorFormat) {
         MediaCodecList allMediaCodecLists = new MediaCodecList(-1);
         for (MediaCodecInfo mediaCodecInfo : allMediaCodecLists.getCodecInfos()) {

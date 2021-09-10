@@ -7,6 +7,7 @@ import android.view.View;
 import com.yocn.media.R;
 import com.yocn.meida.camera.Camera2Provider;
 import com.yocn.meida.util.CameraUtil;
+import com.yocn.meida.view.widget.AspectTextureView;
 
 /**
  * @Author yocn
@@ -15,7 +16,7 @@ import com.yocn.meida.util.CameraUtil;
  * TextureView预览
  */
 public class PreviewPureActivity extends BaseCameraActivity {
-    TextureView mPreviewView;
+    AspectTextureView mPreviewView;
     Camera2Provider mCamera2Provider;
     public static String DESC = "使用Camera2，最基本API，直接输出到TextureView进行预览";
 
@@ -33,7 +34,6 @@ public class PreviewPureActivity extends BaseCameraActivity {
     protected void initView(View root) {
         super.initView(root);
         mPreviewView = root.findViewById(R.id.tv_camera);
-        CameraUtil.transTextureView(mPreviewView);
     }
 
     @Override

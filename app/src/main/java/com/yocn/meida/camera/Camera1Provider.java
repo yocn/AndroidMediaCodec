@@ -141,6 +141,8 @@ public class Camera1Provider {
     public void stopPreview() {
         if (mCamera != null) {
             mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
             LogUtil.d("stopPreview() called");
         }
     }

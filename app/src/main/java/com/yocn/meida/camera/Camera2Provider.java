@@ -13,6 +13,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
 
@@ -27,7 +28,7 @@ import java.util.Arrays;
  * @ClassName Camera2
  * 使用Camera2，最基本API，直接输出到TextureView进行预览
  */
-public class Camera2Provider extends BaseCameraProvider{
+public class Camera2Provider extends BaseCameraProvider {
     private Activity mContext;
     private String mCameraId;
     private Handler mCameraHandler;
@@ -90,9 +91,10 @@ public class Camera2Provider extends BaseCameraProvider{
                 //使用后置摄像头
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_BACK) {
                     StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                    if (map != null) {
-                        mCameraId = cameraId;
-                    }
+                    mCameraId = cameraId;
+                    Size[] sizeMap = map.getOutputSizes(SurfaceTexture.class);
+                    previewSize = sizeMap[0];
+                    LogUtil.d("yocn", "sizeMap::" + previewSize.toString());
                 }
             }
             String[] params = new String[]{Manifest.permission.CAMERA};

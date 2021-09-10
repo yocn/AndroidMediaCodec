@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">CamDemo</string>
     <string name="save_mp4">将数据存成mp4文件：%s</string>
+    <string name="save_h264_src">源文件：%s</string>
+    <string name="save_h264">将数据编码成h264文件：%s</string>
     <string name="show_all_size">显示所有分辨率</string>
     <string name="hide_all_size">隐藏所有分辨率</string>
 </resources>
