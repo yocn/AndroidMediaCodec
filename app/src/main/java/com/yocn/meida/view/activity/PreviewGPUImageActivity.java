@@ -55,7 +55,7 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
 
     @Override
     protected void initData() {
-        endY = -DisplayUtil.dip2px(this, 290);
+        endY = -DisplayUtil.dip2px(this, 300);
         mCamera2Provider = new Camera2ProviderPreviewWithGPUImage(this);
         mCamera2Provider.setmOnGetBitmapInterface((bitmap, nv21, w, h) -> {
             mShowIV.post(() -> {
@@ -100,11 +100,8 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
     @Override
     public void onClick(View v) {
         super.onClick(v);
-        switch (v.getId()) {
-            case R.id.btn_select:
-                exeAnim();
-                break;
-            default:
+        if (v.getId() == R.id.btn_select) {
+            exeAnim();
         }
     }
 
@@ -123,10 +120,10 @@ public class PreviewGPUImageActivity extends BaseCameraActivity {
 
     private void exeAnim() {
         if (isShow) {
-            mSelectFilterBtn.setText("打开选择Filter面板");
+            mSelectFilterBtn.setText("打开Filter");
             translationYUp.start();
         } else {
-            mSelectFilterBtn.setText("关闭选择Filter面板");
+            mSelectFilterBtn.setText("关闭Filter");
             translationYDown.start();
         }
         isShow = !isShow;
