@@ -11,13 +11,13 @@ export NDK=/Your-Path/Android/sdk/ndk/20.1.5948944
 export PATH=${PATH}:${NDK}
 ```
 
-2. 因为ffmpeg使用了子模块，使用前请使用子模块来更新代码
+2. 因为ffmpeg和libyuv使用了子模块，使用前请使用子模块来更新代码
 ```shell script
 git submodule init
 git submodule update
 ```
 
-3. 编译ffmpeg等的so库
+3. 编译ffmpeg和yuv等的so库
 ```shell script
 cd libNative/src/main/jni
 ./build-all.sh
